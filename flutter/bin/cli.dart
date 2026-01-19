@@ -1,19 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
-import '../lib/session1.dart';
+import 'package:http/http.dart' as http;
 
-void main() {
-  // 1. Read JSON string (could be null)
-  String? input = stdin.readLineSync();
-  
-  // 2. Parse with fallback
-  Map<String, dynamic> json = jsonDecode(input ?? '{"amount": null}');
-  
-  // 3. Create transaction
-  Transaction t = Transaction()
-    ..id = json['id']
-    ..amount = json['amount'];
-  
-  // 4. Print amount or "MISSING"
-  print(t.amount ?? 'MISSING');
+Future<void> main() async {
+  print('Send request');
+  final response = await http.get(
+    Uri.parse('https://jsonplaceholder.typicode.com/posts/1'),
+  );
+
+  print("Response received");
+  final json = jsonDecode(response.body);
+  print(json['title']);
 }

@@ -27,6 +27,8 @@ class TransactionRemoteDataSource {
         id: json['id'].toString(),
         amount: 100,
         category: json['title'],
+        date: DateTime.parse(json['date'] as String),
+        isSynced: json['is_synced'] as bool,
       );
     }).toList();
     }
@@ -45,15 +47,15 @@ class TransactionRemoteDataSource {
 
 
 
-  Future<void> createTransaction(Transaction tx) async {
-    final response = await client.post(
-      Uri.parse("https://jsonplaceholder.typicode.com/posts"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(tx.toJson()),
-    );
+  // Future<void> createTransaction(Transaction tx) async {
+  //   final response = await client.post(
+  //     Uri.parse("https://jsonplaceholder.typicode.com/posts"),
+  //     headers: {"Content-Type": "application/json"},
+  //     body: jsonEncode(tx.toJson()),
+  //   );
 
-    if (response.statusCode != 201) {
-      throw Exception("Create failed");
-    }
-  }
+  //   if (response.statusCode != 201) {
+  //     throw Exception("Create failed");
+  //   }
+  // }
 }

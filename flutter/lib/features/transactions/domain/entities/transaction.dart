@@ -1,38 +1,32 @@
 class Transaction {
-    final String? id;
-    final double? amount;
-    final DateTime? date;
-    final String? category;
+    final String id;
+    final double amount;
+    final DateTime date;
+    final String category;
+    final bool isSynced;
 
     const Transaction({
-        this.id,
-        this.amount,
-        this.date,
-        this.category,
+        required this.id,
+        required this.amount,
+        required this.date,
+        required this.category,
+        required this.isSynced,
     });
 
-    factory Transaction.fromJson(Map<String, dynamic> json) {
+    Transaction copyWith({
+        String? id,
+        double? amount,
+        DateTime? date,
+        String? category,
+        bool? isSynced,
+    }) {
         return Transaction(
-            id: json['id'] as String?,
-            amount: json['amount'] as double?,
-            date: json['date'] !=null ? DateTime.parse(json['date']) : null,
-            category: json['category'] as String?,
+            id: id ?? this.id,
+            amount: amount ?? this.amount,
+            date: date ?? this.date,
+            category: category ?? this.category,
+            isSynced: isSynced ?? this.isSynced,
         );
-        
-    }
-
-    @override
-    String toString() {
-        return 'Transaction{id: $id, amount: $amount, date: $date, category: $category}';
-    }
-
-    Map<String, dynamic> toJson() {
-        return {
-            'id': id,
-            'amount': amount,
-            'date': date?.toIso8601String(),
-            'category': category,
-        };
     }
 
 }

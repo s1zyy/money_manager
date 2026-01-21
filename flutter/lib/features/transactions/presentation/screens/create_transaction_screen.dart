@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/injection_container.dart';
 import 'package:uuid/uuid.dart';
-import '../domain/entities/transaction.dart';
-import '../domain/repositories/transaction_repository.dart';
+import '../../domain/entities/transaction.dart';
+import '../../domain/repositories/transaction_repository.dart';
 
 
 class CreateTransactionScreen extends StatefulWidget {
-  final TransactionRepository repository;
   
-  const CreateTransactionScreen({
-    super.key,
-    required this.repository,
-  });
+  const CreateTransactionScreen({super.key,});
 
   @override
   State<CreateTransactionScreen> createState() =>
@@ -18,6 +15,8 @@ class CreateTransactionScreen extends StatefulWidget {
 }
 
 class _CreateTransactionScreenState extends State<CreateTransactionScreen>{
+
+  final repository = sl<TransactionRepository>();
   final _amountController = TextEditingController();
   final _categoryController = TextEditingController();
   final _uuid = Uuid();
@@ -49,7 +48,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen>{
         isSynced: false,
       );
 
-      await widget.repository.createTransaction(transaction);
+      await repository.createTransaction(transaction);
 
       Navigator.pop(context, true);
     } catch(e) {

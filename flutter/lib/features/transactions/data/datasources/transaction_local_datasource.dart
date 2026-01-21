@@ -32,7 +32,7 @@ class TransactionLocalDataSource {
         'id': tx.id,
         'amount': tx.amount,
         'category': tx.category,
-        'date': tx.date!.toIso8601String(),
+        'date': tx.date.toIso8601String(),
         'is_synced': tx.isSynced ? 1 : 0,
       },
     );
@@ -47,11 +47,43 @@ class TransactionLocalDataSource {
         'id': tx.id,
         'amount': tx.amount,
         'category': tx.category,
-        'date': tx.date!.toIso8601String(),
+        'date': tx.date.toIso8601String(),
         'is_synced': tx.isSynced ? 1 : 0,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   
+  }
+
+  Future<List<Transaction>> getUnsyncedTransactions() async {
+    final db = await AppDatabase.database;
+
+    final result = await db.query(
+      'transactions',
+      where: 'is_synced = ?',
+      whereArgs: [0],
+    );
+
+    return result.map((row) {
+      return Transaction(
+        id: row['id'].toString(),
+        amount: row['amount'] as double,
+        category: row['category'] as String,
+        date: DateTime.parse(row['date'] as String),
+        isSynced: false,
+      );
+    }).toList();
+  }
+
+
+  Future<void> markAsSynced(String id) async {
+    final db = await AppDatabase.database;
+
+    await db.update(
+      'transactions',
+      {'is_synced': 1},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

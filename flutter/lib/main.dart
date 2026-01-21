@@ -1,35 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:money_manager/features/transactions/data/datasources/transaction_remote_datasource.dart';
+import 'package:money_manager/injection_container.dart' as di;
+import 'features/transactions/presentation/screens/transaction_screen.dart';
 
-import 'features/transactions/data/datasources/transaction_local_datasource.dart';
-import 'features/transactions/data/repositories/transaction_repository_impl.dart';
-import 'features/transactions/presentation/transaction_screen.dart';
-import 'features/transactions/domain/repositories/transaction_repository.dart';
+void main() async {
 
-void main() {
-  final client = http.Client();
-  final localDataSource = TransactionLocalDataSource();
-  final remoteDataSource = TransactionRemoteDataSource(client);
-  final repository = TransactionRepositoryImpl(localDataSource, remoteDataSource);
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await di.init();
 
   runApp(
-    MoneyManagerApp(repository: repository),
+    const MoneyManagerApp()
   );
 }
 
 class MoneyManagerApp extends StatelessWidget {
-  final TransactionRepository repository;
-
-  const MoneyManagerApp({
-    super.key,
-    required this.repository,
-  });
+  const MoneyManagerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TransactionsScreen(repository: repository),
+      title: 'Money Manager',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const TransactionsScreen(),
     );
   }
 }

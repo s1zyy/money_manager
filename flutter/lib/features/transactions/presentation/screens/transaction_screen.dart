@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:money_manager/features/transactions/presentation/create_transaction_screen.dart';
-import '../domain/entities/transaction.dart';
-import '../domain/repositories/transaction_repository.dart';
+import 'package:money_manager/features/transactions/presentation/screens/create_transaction_screen.dart';
+import 'package:money_manager/injection_container.dart';
+import '../../domain/entities/transaction.dart';
+import '../../domain/repositories/transaction_repository.dart';
 
 class TransactionsScreen extends StatefulWidget {
-  final TransactionRepository repository;
 
   const TransactionsScreen({
     super.key,
-    required this.repository,
   });
 
   @override
@@ -16,12 +15,14 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
+  final repository = sl<TransactionRepository>();
+
   late Future<List<Transaction>> _future;
 
   @override
   void initState() {
     super.initState();
-    _future = widget.repository.getTransactions();
+    _future = repository.getTransactions();
   }
 
   @override
@@ -35,15 +36,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => CreateTransactionScreen(
-                repository: widget.repository,
-              ),
+              builder: (_) => CreateTransactionScreen(),
             ),
           );
 
           if (result == true) {
             setState(() {
-              _future = widget.repository.getTransactions();
+              _future = repository.getTransactions();
             });
           }
         },
@@ -74,7 +73,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             itemBuilder: (context, index) {
               final tx = transactions[index];
               return ListTile(
-                title: Text(tx.category ?? 'No Category'),
+                title: Text(tx.category),
                 subtitle: Text('Amount: ${tx.amount}'),
               );
             },

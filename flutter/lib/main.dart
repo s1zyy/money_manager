@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_manager/injection_container.dart' as di;
 import 'features/transactions/presentation/screens/transaction_screen.dart';
+import 'features/transactions/presentation/transaction_bloc/transaction_bloc.dart';
+
 
 void main() async {
 
@@ -9,7 +12,10 @@ void main() async {
   await di.init();
 
   runApp(
-    const MoneyManagerApp()
+    BlocProvider(
+      create: (_) => di.sl<TransactionBloc>()..add(LoadTransactions()),
+      child: const MoneyManagerApp(),
+    ),
   );
 }
 

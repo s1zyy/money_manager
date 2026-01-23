@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:money_manager/injection_container.dart';
+import 'package:money_manager/features/transactions/presentation/transaction_bloc/transaction_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/entities/transaction.dart';
-import '../../domain/repositories/transaction_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 
 class CreateTransactionScreen extends StatefulWidget {
+
+  final Transaction? transaction;
   
-  const CreateTransactionScreen({super.key,});
+  const CreateTransactionScreen({super.key, this.transaction,});
 
   @override
   State<CreateTransactionScreen> createState() =>
@@ -16,31 +19,32 @@ class CreateTransactionScreen extends StatefulWidget {
 
 class _CreateTransactionScreenState extends State<CreateTransactionScreen>{
 
-  final repository = sl<TransactionRepository>();
   final _amountController = TextEditingController();
   final _categoryController = TextEditingController();
-  final _uuid = Uuid();
+  final _uuid = Uuid();  
 
-  bool _isLoading = false;
-  
+  @override
+  void initState(){
+    super.initState();
+    if (widget.transaction != null){
+      _amountController.text = widget.transaction!.amount.toString();
+      _categoryController.text = widget.transaction!.category;
+    }
+  }
 
   Future<void> _submit() async {
     final amount = double.tryParse(_amountController.text);
     final category = _categoryController.text;
 
     if(amount == null || category.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid input'),)
-      );
       return;
     }
 
-    setState(() {
-     _isLoading = true;  
-    });
-
-    try{
-      final transaction = Transaction(
+    
+      final transaction = widget.transaction?.copyWith(
+        amount: amount,
+        category: category,
+      ) ?? Transaction(
         id: _uuid.v4(),
         amount: amount,
         category: category,
@@ -48,18 +52,20 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen>{
         isSynced: false,
       );
 
-      await repository.createTransaction(transaction);
-
-      Navigator.pop(context, true);
-    } catch(e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'),)
+      if(widget.transaction != null){
+        context.read<TransactionBloc>().add(
+          UpdateTransaction(transaction),
+        );
+        } else {
+          context.read<TransactionBloc>().add(
+        AddTransaction(transaction),
       );
-    } finally {
-      setState(() {
-       _isLoading = false;  
-      });
-    }
+      }
+      
+
+
+      Navigator.pop(context);
+    
   }
 
 
@@ -90,12 +96,10 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen>{
               decoration: const InputDecoration(labelText: 'Category'),
             ),
             const SizedBox(height: 16),
-            _isLoading
-            ? const CircularProgressIndicator()
-            : ElevatedButton(
+            ElevatedButton(
               onPressed: _submit,
               child: const Text('Save'),
-              ),
+            ),
           ]
         )
       )

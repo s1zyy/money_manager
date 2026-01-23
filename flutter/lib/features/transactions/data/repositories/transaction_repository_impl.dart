@@ -40,6 +40,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     }
   }
 
+  @override
   Future<void> sync() async {
     final unsynced = await localDataSource.getUnsyncedTransactions();
 
@@ -51,6 +52,26 @@ class TransactionRepositoryImpl implements TransactionRepository {
         
       }
     }
+
+    try {
+      final remoteTransacitons = await remoteDataSource.getTransactions();
+      for (final tx in remoteTransacitons) {
+        await localDataSource.upsertTransaction(tx);
+      }
+    } catch (e) {
+      print("Pull failed: $e");
+    }
+  }
+  
+  @override
+  Future<void> updateTransaction(Transaction transaction) async{
+    localDataSource.updateTransaction(transaction);
+    try{
+      await sync();
+    } catch(e){
+      print("Push failed: $e");
+    }
+    
   }
 }
 

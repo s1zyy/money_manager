@@ -36,7 +36,22 @@ class TransactionLocalDataSource {
         'is_synced': tx.isSynced ? 1 : 0,
       },
     );
-}
+  }
+
+  Future<void> updateTransaction(Transaction transaction) async {
+    final db = await AppDatabase.database;
+
+    await db.update(
+      'transactions',
+      {
+        'amount': transaction.amount,
+        'category': transaction.category,
+        'date': transaction.date.toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [transaction.id],
+    );
+  }
 
   Future<void> upsertTransaction(Transaction tx) async {
     final db = await AppDatabase.database;
@@ -86,4 +101,6 @@ class TransactionLocalDataSource {
       whereArgs: [id],
     );
   }
+
+  
 }

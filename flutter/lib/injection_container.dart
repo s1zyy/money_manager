@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:money_manager/features/transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:money_manager/features/transactions/presentation/transaction_bloc/transaction_bloc.dart';
 import 'features/transactions/data/datasources/transaction_local_datasource.dart';
 import 'features/transactions/data/datasources/transaction_remote_datasource.dart';
 import 'features/transactions/data/repositories/transaction_repository_impl.dart';

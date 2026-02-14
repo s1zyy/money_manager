@@ -1,22 +1,26 @@
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
-import 'package:money_manager/features/transactions/presentation/transaction_bloc/transaction_bloc.dart';
-import 'features/transactions/data/datasources/transaction_local_datasource.dart';
-import 'features/transactions/data/datasources/transaction_remote_datasource.dart';
-import 'features/transactions/data/repositories/transaction_repository_impl.dart';
-import 'features/transactions/domain/repositories/transaction_repository.dart';
+import 'package:money_manager/core/dio_client.dart';
+import 'package:money_manager/data/datasources/trip_remote_data_source.dart';
+import 'package:money_manager/data/repositories/trip_repository_impl.dart';
+import 'package:money_manager/domain/repositories/trip_repository.dart';
+import 'package:money_manager/domain/usecases/getUserTrips.dart';
 
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton(() => GetUserTrips(sl())
+  );
 
-  sl.registerLazySingleton(() => TransactionLocalDataSource());
-  sl.registerLazySingleton(() => TransactionRemoteDataSource(sl()));
+  sl.registerLazySingleton<TripRepository>(
+    () => TripRepositoryImpl(remoteDataSource: sl()),
+    );
 
-  sl.registerLazySingleton<TransactionRepository>(() => TransactionRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<TripRemoteDataSource>(
+    () => TripRemoteDataSourceImpl(dio: sl()),
+  );
+
+  sl.registerLazySingleton(() => DioClient().dio);
 
 
-  sl.registerFactory(() => TransactionBloc(sl()));
 }

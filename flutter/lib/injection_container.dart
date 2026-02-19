@@ -9,11 +9,12 @@ import 'package:money_manager/data/repositories/auth_repository_impl.dart';
 import 'package:money_manager/data/repositories/trip_repository_impl.dart';
 import 'package:money_manager/domain/repositories/auth_repository.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
-import 'package:money_manager/domain/usecases/getUserTrips.dart';
+import 'package:money_manager/domain/usecases/get_user_trips.dart';
 import 'package:money_manager/core/auth_interceptor.dart';
 import 'package:money_manager/domain/usecases/login.dart';
 import 'package:money_manager/domain/usecases/register.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
+import 'package:money_manager/presentation/providers/trips_provider.dart';
 
 final sl = GetIt.instance;
 
@@ -28,6 +29,11 @@ Future<void> init() async {
   sl.registerLazySingleton<TripRemoteDataSource>(
     () => TripRemoteDataSourceImpl(dio: sl()),
   );
+
+  sl.registerLazySingleton(
+    () => TripsProvider(getUserTrips: sl()),
+  );
+
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(secureStorage: sl())
   );

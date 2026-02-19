@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/presentation/pages/register_page.dart';
+import 'package:money_manager/presentation/pages/trips_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +21,9 @@ class _LoginPageState extends State<LoginPage> {
       emailController.text.trim(), 
       passwordController.text.trim());
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful!')),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TripsPage()),
       );
     }
   }

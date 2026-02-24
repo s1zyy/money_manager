@@ -1,6 +1,6 @@
 
-
 import 'package:flutter/material.dart';
+import 'package:money_manager/presentation/pages/create_trip_page.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +25,15 @@ class _TripsPageState extends State<TripsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trips'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateTripPage()),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
       body: Consumer<TripsProvider>(
         builder: (context, provider, child) {
@@ -59,3 +68,4 @@ class _TripsPageState extends State<TripsPage> {
   }
   
 }
+

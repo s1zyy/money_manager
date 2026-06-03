@@ -71,9 +71,15 @@ Future<void> init() async {
     () => AuthInterceptor(localDataSource: sl()),
   );
 
+  sl.registerLazySingleton(() => DioClient());
+
   sl.registerLazySingleton<Dio>(() {
-    final dio = DioClient().dio;
+
+    final dio = sl<DioClient>().dio;
+    
     dio.interceptors.add(sl<AuthInterceptor>());
+
+    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
     return dio;
   });
 

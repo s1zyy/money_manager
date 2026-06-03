@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
+import 'package:money_manager/presentation/pages/trip_details_page.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -15,16 +16,18 @@ class _TripsPageState extends State<TripsPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => 
-    context.read<TripsProvider>().loadTrips());
+    Future.microtask(() =>
+      context.read<TripsProvider>().loadTrips());
   }
 
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trips'),
+        
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -58,6 +61,15 @@ class _TripsPageState extends State<TripsPage> {
                 subtitle: Text("Budget: \$${trip.totalBudget}"),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TripDetailsPage(
+                        tripId: trip.id,
+                        tripName: trip.name,
+                      ),
+                    ),
+                  );
                 },
               );
             }

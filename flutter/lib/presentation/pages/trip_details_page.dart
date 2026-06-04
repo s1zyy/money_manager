@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TripDetailsPage extends StatelessWidget {
   final String tripId;
   final String tripName;
+  final String joinCode;
 
   const TripDetailsPage({
     Key? key,
     required this.tripId,
     required this.tripName,
+    required this.joinCode,
   }) : super(key: key);
 
   @override
@@ -21,7 +24,7 @@ class TripDetailsPage extends StatelessWidget {
           IconButton(
             icon:const Icon(Icons.group_add_outlined),
             onPressed: () {
-              // Handle add member button press
+              _showAddParticipantModal(context);
             },
           ),
           IconButton(
@@ -149,7 +152,7 @@ class TripDetailsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          //TODO: Handle add expense button press
+          //TODO: Handle add expense button presы
         },
         label: const Text('Add Expense'),
         icon: const Icon(Icons.add_card),
@@ -170,6 +173,93 @@ class TripDetailsPage extends StatelessWidget {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: valueColor),
         ),
       ],
+    );
+  }
+
+  void _showAddParticipantModal(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    
+
+    showModalBottomSheet(
+      context: context,
+      
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text('Invite Participants',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+
+
+              const SizedBox(height: 8),
+
+
+              Text(
+                'Share the code below to invite others to join this trip',
+                style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: colorScheme.outlineVariant),
+                ),
+                child: Text(
+                  joinCode,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: joinCode));
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Join code copied to clipboard!'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    
+                    );
+                  },
+                  icon: const Icon(Icons.copy),
+                  label: const Text('Copy Code', style: TextStyle(fontSize: 16)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

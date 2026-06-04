@@ -17,7 +17,7 @@ class TripModel extends Trip {
 
   factory TripModel.fromJson(Map<String, dynamic> json) {
     return TripModel (
-      id: json['id'] as String, 
+      id: json['id'] as String,
       ownerId: json['ownerId'] as String,
       name: json['name'] as String,
       startDate: DateTime.parse(json['startDate'] as String),

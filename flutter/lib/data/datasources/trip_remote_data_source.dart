@@ -6,6 +6,7 @@ abstract class TripRemoteDataSource {
   Future<List<TripModel>> getUserTrips();
   Future<void> createTrip(Map<String, dynamic> tripData);
   Future<TripDashboardModel> getTripDashboard(String tripId);
+  Future<TripModel> joinTripByCode(String joinCode);
 }
 
 class TripRemoteDataSourceImpl implements TripRemoteDataSource {
@@ -25,7 +26,7 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
 
   
 
-  @override 
+  @override
   Future<void> createTrip(Map<String, dynamic> tripData) async {
     try {
       await dio.post('/trips', data: tripData);
@@ -42,6 +43,20 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
         return TripDashboardModel.fromJson(response.data);
       } else {
         throw Exception('Failed to load trip dashboard');
+      }
+    } on DioException catch (e) {
+      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+    }
+  }
+  
+  @override
+  Future<TripModel> joinTripByCode(String joinCode) async {
+    try {
+      final response = await dio.post('/trips/join', data: {'joinCode': joinCode});
+      if(response.statusCode == 200) {
+        return TripModel.fromJson(response.data);
+      } else {
+        throw Exception('Failed to join trip');
       }
     } on DioException catch (e) {
       throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");

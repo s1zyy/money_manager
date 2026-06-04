@@ -33,12 +33,19 @@ class TripRepositoryImpl implements TripRepository{
     } catch (e) {
       rethrow;
     }
-
-
   }
 
   @override
   Future<TripDashboardModel> getTripDashboard(String tripId) {
     return remoteDataSource.getTripDashboard(tripId);
+  }
+  
+  @override
+  Future<Trip> joinTripByCode(String joinCode) async {
+    try{
+      return await remoteDataSource.joinTripByCode(joinCode);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

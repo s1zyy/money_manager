@@ -12,5 +12,7 @@ abstract class TripRepository {
     required DateTime endDate,
   });
 
+  Future<Trip> joinTripByCode(String joinCode);
+
   Future<TripDashboardModel> getTripDashboard(String tripId);
 }

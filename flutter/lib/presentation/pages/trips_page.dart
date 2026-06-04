@@ -29,6 +29,7 @@ class _TripsPageState extends State<TripsPage> {
         title: const Text('Trips'),
         
       ),
+      //TODO: add join trip button in app bar and implement join trip page
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -67,6 +68,7 @@ class _TripsPageState extends State<TripsPage> {
                       builder: (context) => TripDetailsPage(
                         tripId: trip.id,
                         tripName: trip.name,
+                        joinCode: trip.joinCode,
                       ),
                     ),
                   );

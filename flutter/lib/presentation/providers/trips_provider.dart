@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/domain/usecases/create_trip.dart';
 import 'package:money_manager/domain/usecases/get_user_trips.dart';
+import 'package:money_manager/domain/usecases/join_trip_by_code.dart';
 
 class TripsProvider extends ChangeNotifier {
   final GetUserTrips getUserTrips;
   final CreateTripUseCase createTripUseCase;
+  final JointripByCode joinTripByCodeUseCase;
 
 
-  TripsProvider({required this.getUserTrips, required this.createTripUseCase});
+  TripsProvider({required this.getUserTrips, required this.createTripUseCase, required this.joinTripByCodeUseCase});
 
   List<Trip> _trips = [];
   List<Trip> get trips => _trips;
@@ -56,6 +58,27 @@ class TripsProvider extends ChangeNotifier {
       await loadTrips();
       return true;
     } catch(e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> joinTrip(String code) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+
+      final Trip trip = await joinTripByCodeUseCase(code);
+      
+      _trips.add(trip);
+      return true;
+    } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
       return false;

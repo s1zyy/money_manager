@@ -28,13 +28,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
                   TextField(controller: passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Password')),
                   const SizedBox(height: 24),
-                  auth.isLoading 
+                  auth.isLoading
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
                         onPressed: () async {
                           final success = await auth.register(
-                            emailController.text, 
-                            passwordController.text, 
+                            emailController.text,
+                            passwordController.text,
                             nameController.text
                           );
                           if (success && mounted) {

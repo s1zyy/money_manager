@@ -112,7 +112,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                     SnackBar(content: Text(provider.errorMessage ?? 'Failed to create trip')),
                   );
                 }
-              }, 
+              },
               style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
               child: const Text('Create Trip'),
             )

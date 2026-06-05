@@ -12,6 +12,7 @@ import 'package:money_manager/domain/repositories/trip_repository.dart';
 import 'package:money_manager/domain/usecases/create_trip.dart';
 import 'package:money_manager/domain/usecases/get_user_trips.dart';
 import 'package:money_manager/core/auth_interceptor.dart';
+import 'package:money_manager/domain/usecases/join_trip_by_code.dart';
 import 'package:money_manager/domain/usecases/login.dart';
 import 'package:money_manager/domain/usecases/register.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
@@ -37,7 +38,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton(
-    () => TripsProvider(getUserTrips: sl(), createTripUseCase: sl()),
+    () => TripsProvider(getUserTrips: sl(), createTripUseCase: sl(), joinTripByCodeUseCase: sl()),
   );
 
   sl.registerLazySingleton<AuthLocalDataSource>(
@@ -58,6 +59,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton(
     () => LoginUseCase(repository: sl()),
+  );
+
+  sl.registerFactory(
+    () => JointripByCode(repository: sl()),
   );
 
   sl.registerLazySingleton<AuthRepository>(

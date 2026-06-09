@@ -1,10 +1,10 @@
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
 
-class JointripByCode {
+class JoinTripByCode {
   final TripRepository repository;
 
-  JointripByCode({required this.repository});
+  JoinTripByCode({required this.repository});
 
   Future<Trip> call(String joinCode) async {
     // Validate join code format

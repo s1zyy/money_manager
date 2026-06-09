@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
 import 'package:money_manager/presentation/pages/trip_details_page.dart';
+import 'package:money_manager/presentation/providers/expense_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +31,6 @@ class _TripsPageState extends State<TripsPage> {
         title: const Text('Trips'),
         
       ),
-      //TODO: add join trip button in app bar and implement join trip page
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddOrJoinTripModal(context),
         child: const Icon(Icons.add),
@@ -60,10 +61,13 @@ class _TripsPageState extends State<TripsPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TripDetailsPage(
+                      builder: (context) => ChangeNotifierProvider(
+                        create: (_) => sl<ExpensesProvider>(),
+                        child: TripDetailsPage(
                         tripId: trip.id,
                         tripName: trip.name,
                         joinCode: trip.joinCode,
+                        ),
                       ),
                     ),
                   );

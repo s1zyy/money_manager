@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/domain/entities/trip.dart';
-import 'package:money_manager/domain/usecases/create_trip.dart';
-import 'package:money_manager/domain/usecases/get_user_trips.dart';
-import 'package:money_manager/domain/usecases/join_trip_by_code.dart';
+import 'package:money_manager/domain/usecases/trip/create_trip.dart';
+import 'package:money_manager/domain/usecases/trip/get_user_trips.dart';
+import 'package:money_manager/domain/usecases/trip/join_trip_by_code.dart';
 
 class TripsProvider extends ChangeNotifier {
   final GetUserTrips getUserTrips;
   final CreateTripUseCase createTripUseCase;
-  final JointripByCode joinTripByCodeUseCase;
+  final JoinTripByCode joinTripByCodeUseCase;
 
 
   TripsProvider({required this.getUserTrips, required this.createTripUseCase, required this.joinTripByCodeUseCase});

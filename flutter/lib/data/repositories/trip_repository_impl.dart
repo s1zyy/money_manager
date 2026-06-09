@@ -21,7 +21,7 @@ class TripRepositoryImpl implements TripRepository{
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    try {
+    
       final Map<String, dynamic> tripData = {
         'name': name,
         'totalBudget': totalBudget,
@@ -30,9 +30,7 @@ class TripRepositoryImpl implements TripRepository{
         'endDate': endDate.toIso8601String().split('T')[0], // Format as YYYY-MM-DD
       };
       await remoteDataSource.createTrip(tripData);
-    } catch (e) {
-      rethrow;
-    }
+    
   }
 
   @override
@@ -42,10 +40,7 @@ class TripRepositoryImpl implements TripRepository{
   
   @override
   Future<Trip> joinTripByCode(String joinCode) async {
-    try{
       return await remoteDataSource.joinTripByCode(joinCode);
-    } catch (e) {
-      rethrow;
-    }
+    
   }
 }

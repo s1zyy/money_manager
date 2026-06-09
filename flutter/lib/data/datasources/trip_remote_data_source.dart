@@ -15,6 +15,9 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
 
   @override
   Future<List<TripModel>> getUserTrips() async {
+    try{
+
+    
     final response = await dio.get('/trips');
     if (response.statusCode == 200) {
       final List data = response.data as List;
@@ -22,6 +25,9 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
     } else {
       throw Exception('Failed to load trips');
     }
+  } on DioException catch (e) {
+    throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+  }
   }
 
   

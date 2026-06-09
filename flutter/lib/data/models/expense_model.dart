@@ -22,4 +22,14 @@ class ExpenseModel extends Expense{
       participantIds: List<String>.from(json['participantIds'] ?? []),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'payerId': payerId,
+      'amount': amount,
+      'description': description,
+      'date': date.toIso8601String().split('T')[0],
+      'participantIds': participantIds,
+    };
+  }
 } 

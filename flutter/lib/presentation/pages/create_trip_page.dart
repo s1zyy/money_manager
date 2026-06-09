@@ -8,6 +8,7 @@ class CreateTripPage extends StatefulWidget{
 }
 
 class _CreateTripPageState extends State<CreateTripPage> {
+  
   final _nameController = TextEditingController();
   final _budgetController = TextEditingController();
   final _prepaidController = TextEditingController();

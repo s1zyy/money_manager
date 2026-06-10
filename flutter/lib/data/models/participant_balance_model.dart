@@ -1,16 +1,18 @@
-import 'package:money_manager/domain/entities/participant_balance.dart';
+import 'package:money_manager/domain/entities/dashboard_participant.dart';
 
-class ParticipantBalanceModel extends ParticipantBalance {
+class DashboardParticipantModel extends DashboardParticipant {
 
-    ParticipantBalanceModel({
+    DashboardParticipantModel({
         required super.participantId,
         required super.balance,
+        required super.name,
     });
 
-    factory ParticipantBalanceModel.fromJson(Map<String, dynamic> json) {
-        return ParticipantBalanceModel(
+    factory DashboardParticipantModel.fromJson(Map<String, dynamic> json) {
+        return DashboardParticipantModel(
             participantId: json['participantId'] as String,
             balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+            name: (json['name'] as String),
         );
     }
 }

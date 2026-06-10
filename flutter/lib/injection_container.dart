@@ -14,6 +14,7 @@ import 'package:money_manager/domain/repositories/expense_repository.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
+import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/trip/create_trip.dart';
@@ -23,7 +24,7 @@ import 'package:money_manager/domain/usecases/trip/join_trip_by_code.dart';
 import 'package:money_manager/domain/usecases/login.dart';
 import 'package:money_manager/domain/usecases/register.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
-import 'package:money_manager/presentation/providers/expense_provider.dart';
+import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 
 final sl = GetIt.instance;
@@ -51,6 +52,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton(
     () => TripsProvider(getUserTrips: sl(), createTripUseCase: sl(), joinTripByCodeUseCase: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => GetTripDashboardUseCase(repository: sl()),
   );
 
   //----
@@ -81,7 +86,7 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => ExpensesProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), listExpensesUseCase: sl(), updateExpenseUseCase: sl()),
+    () => TripDashboardProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), getTripDashboardUseCase: sl(), updateExpenseUseCase: sl()),
   );
 
 

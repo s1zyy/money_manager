@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_manager/presentation/providers/expense_provider.dart';
+import 'package:money_manager/domain/entities/dashboard_participant.dart';
+import 'package:money_manager/presentation/pages/add_expense_page.dart';
+import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
 class TripDetailsPage extends StatefulWidget {
   final String tripId;
   final String tripName;
-  final String joinCode;
+
 
   const TripDetailsPage({
     Key? key,
     required this.tripId,
     required this.tripName,
-    required this.joinCode,
   }) : super(key: key);
 
   @override
@@ -23,7 +24,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExpensesProvider>().loadExpenses(widget.tripId);
+      context.read<TripDashboardProvider>().loadDashboard(widget.tripId);
     });
   }
 
@@ -32,9 +33,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final expensesProvider = context.watch<ExpensesProvider>();
+    final tripDashboardProvider = context.watch<TripDashboardProvider>();
 
-    final double totalSpent = expensesProvider.expenses.fold(0, (sum, item) => sum + item.amount);
+    final double totalSpent = tripDashboardProvider.expenses.fold(0, (sum, item) => sum + item.amount);
     
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +44,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           IconButton(
             icon:const Icon(Icons.group_add_outlined),
             onPressed: () {
-              _showAddParticipantModal(context);
+              _showAddParticipantModal(context, tripDashboardProvider);
             },
           ),
           IconButton(
@@ -55,7 +56,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => expensesProvider.loadExpenses(widget.tripId),
+        onRefresh: () => tripDashboardProvider.loadDashboard(widget.tripId),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
@@ -121,7 +122,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               ),
               const SizedBox(height: 12,),
 
-              _buildExpensesContent(expensesProvider, colorScheme),
+              _buildExpensesContent(tripDashboardProvider, colorScheme),
             ],
           ),
         ),
@@ -130,6 +131,19 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           //TODO: Handle add expense button pressed DOING THIS RIGHT NOW
+          final tripDashboardProvider = context.read<TripDashboardProvider>();
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider.value(
+                value: tripDashboardProvider,
+                child: AddExpensePage(tripId: widget.tripId,
+                  
+                    ),
+              ),
+            ),
+          );
         },
         label: const Text('Add Expense'),
         icon: const Icon(Icons.add_card),
@@ -140,7 +154,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       
   }
 
-  Widget _buildExpensesContent(ExpensesProvider provider, ColorScheme colorScheme) {
+  Widget _buildExpensesContent(TripDashboardProvider provider, ColorScheme colorScheme) {
     if(provider.isLoading && provider.expenses.isEmpty) {
       return const Center(
         child: Padding(
@@ -161,7 +175,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               Text(provider.errorMessage!, textAlign: TextAlign.center),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => provider.loadExpenses(widget.tripId),
+                onPressed: () => provider.loadDashboard(widget.tripId),
                 child: const Text('Retry'),
               ),
             ],
@@ -195,6 +209,12 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       itemBuilder: (context, index) {
         final expense = provider.expenses[index];
 
+        final payerObj = provider.dashboard?.participants.firstWhere(
+          (p) => p.participantId == expense.payerId,
+          orElse: () => DashboardParticipant(participantId: '', name: 'Unknown', balance: 0),
+        );
+        final String payerName = payerObj?.name ?? 'Unknown';
+
         return Dismissible(
           key: Key(expense.id),
           direction: DismissDirection.endToStart,
@@ -227,7 +247,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               subtitle: Text(
-                'Paid by ID: ${expense.payerId.substring(0, 5)}... • ${expense.date.toIso8601String().split('T')[0]}',
+                'Paid by ID: $payerName ... • ${expense.date.toIso8601String().split('T')[0]}',
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Text(
@@ -257,8 +277,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
   }
 
-  void _showAddParticipantModal(BuildContext context) {
+  void _showAddParticipantModal(BuildContext context, TripDashboardProvider provider) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    String joinCode = provider.dashboard?.trip.joinCode ?? '------';
 
     
 
@@ -305,7 +327,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   border: Border.all(color: colorScheme.outlineVariant),
                 ),
                 child: Text(
-                  widget.joinCode,
+                  joinCode,
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -321,7 +343,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 height: 50,
                 child: FilledButton.icon(
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: widget.joinCode));
+                    Clipboard.setData(ClipboardData(text: joinCode));
 
                     Navigator.pop(context);
 

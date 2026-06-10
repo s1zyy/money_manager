@@ -8,15 +8,15 @@ class TripDashboardModel extends TripDashboard {
     required super.trip,
     required super.dailyLimit,
     required super.expenses,
-    required super.balances,
+    required super.participants,
   });
   
   factory TripDashboardModel.fromJson(Map<String, dynamic> json) {
     return TripDashboardModel(
       trip: TripModel.fromJson(json['trip']),
       dailyLimit: (json['dailyLimit'] as num?)?.toDouble() ?? 0.0,
-      balances: (json['balances'] as List<dynamic>?)
-          ?.map((e) => ParticipantBalanceModel.fromJson(e))
+      participants: (json['participants'] as List<dynamic>?)
+          ?.map((e) => DashboardParticipantModel.fromJson(e))
           .toList() ?? [],
       expenses: (json['expenseDtoList'] as List<dynamic>?)
           ?.map((e) => ExpenseModel.fromJson(e))

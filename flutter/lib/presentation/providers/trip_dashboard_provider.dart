@@ -1,42 +1,51 @@
-//TODO do expense provider for responding to changes in expenses and update dashboard accordingly 
-//TODO do UI for adding and editing expenses
+
 
 import 'package:flutter/material.dart';
+import 'package:money_manager/domain/entities/dashboard_participant.dart';
 import 'package:money_manager/domain/entities/expense.dart';
+import 'package:money_manager/domain/entities/trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
-import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
+import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 
-class ExpensesProvider extends ChangeNotifier { 
+class TripDashboardProvider extends ChangeNotifier { 
   final AddExpenseUseCase addExpenseUseCase;
   final UpdateExpenseUseCase updateExpenseUseCase;
-  final ListExpensesUseCase listExpensesUseCase;
+  final GetTripDashboardUseCase getTripDashboardUseCase;
   final DeleteExpenseUseCase deleteExpenseUseCase;
   
 
-  ExpensesProvider({
+  TripDashboardProvider({
     required this.addExpenseUseCase,
     required this.updateExpenseUseCase,
-    required this.listExpensesUseCase, 
+    required this.getTripDashboardUseCase, 
     required this.deleteExpenseUseCase,
   });
 
-  List<Expense> _expenses = [];
+  TripDashboard? _dashboard;
+  TripDashboard? get dashboard => _dashboard;
+
+  // List<Expense> _expenses = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<Expense> get expenses => _expenses;
+  // List<Expense> get expenses => _expenses;
+  List<Expense> get expenses => _dashboard?.expenses ?? [];
+  List<DashboardParticipant> get participants => _dashboard?.participants ?? [];
+
+
+
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> loadExpenses(String tripId) async {
+  Future<void> loadDashboard(String tripId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try{
-      _expenses = await listExpensesUseCase(tripId);
+      _dashboard = await getTripDashboardUseCase(tripId);
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
     } finally {
@@ -58,7 +67,7 @@ class ExpensesProvider extends ChangeNotifier {
     notifyListeners();
 
     try{
-      final newExpense = await addExpenseUseCase(
+      await addExpenseUseCase(
         tripId: tripId,
         payerId: payerId,
         amount: amount,
@@ -66,7 +75,7 @@ class ExpensesProvider extends ChangeNotifier {
         participantIds: participantIds,
         description: description,
       );
-      _expenses.add(newExpense);
+      await loadDashboard(tripId);
       return true;
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -80,7 +89,7 @@ class ExpensesProvider extends ChangeNotifier {
   Future<void> deleteExpense(String tripId, String expenseId) async {
     try{
       await deleteExpenseUseCase(tripId: tripId, expenseId: expenseId);
-      _expenses.removeWhere((expense) => expense.id == expenseId);
+      await loadDashboard(tripId);
       notifyListeners();
     } catch(e) {
       _errorMessage = e.toString().replaceAll('Exception', '');

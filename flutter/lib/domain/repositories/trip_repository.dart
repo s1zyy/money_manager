@@ -1,7 +1,9 @@
-import 'package:money_manager/data/models/trip_dashboard_model.dart';
 import 'package:money_manager/domain/entities/trip.dart';
+import 'package:money_manager/domain/entities/trip_dashboard.dart';
+
 
 abstract class TripRepository {
+
   Future<List<Trip>> getUserTrips();
 
   Future<void> createTrip({
@@ -14,5 +16,5 @@ abstract class TripRepository {
 
   Future<Trip> joinTripByCode(String joinCode);
 
-  Future<TripDashboardModel> getTripDashboard(String tripId);
+  Future<TripDashboard> getTripDashboard(String tripId);
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
 import 'package:money_manager/presentation/pages/trip_details_page.dart';
-import 'package:money_manager/presentation/providers/expense_provider.dart';
+import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -62,11 +62,10 @@ class _TripsPageState extends State<TripsPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                        create: (_) => sl<ExpensesProvider>(),
+                        create: (_) => sl<TripDashboardProvider>(),
                         child: TripDetailsPage(
                         tripId: trip.id,
                         tripName: trip.name,
-                        joinCode: trip.joinCode,
                         ),
                       ),
                     ),

@@ -6,8 +6,6 @@ class Trip {
   final DateTime endDate;
   final double totalBudget;
   final double prepaidExpenses;
-  // final List<String> participantIds;
-  // final List<String> expenseIds;
   final String joinCode;
   final TripStatus status;
 
@@ -19,8 +17,6 @@ class Trip {
     required this.endDate,
     required this.totalBudget,
     required this.prepaidExpenses,
-    // required this.participantIds,
-    // required this.expenseIds,
     required this.joinCode,
     required this.status,
   });

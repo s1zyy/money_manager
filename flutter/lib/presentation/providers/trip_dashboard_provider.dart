@@ -8,12 +8,14 @@ import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
+import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
 
 class TripDashboardProvider extends ChangeNotifier { 
   final AddExpenseUseCase addExpenseUseCase;
   final UpdateExpenseUseCase updateExpenseUseCase;
   final GetTripDashboardUseCase getTripDashboardUseCase;
   final DeleteExpenseUseCase deleteExpenseUseCase;
+  final GetParticipantsMapUseCase getParticipantsMapUseCase;
   
 
   TripDashboardProvider({
@@ -21,6 +23,7 @@ class TripDashboardProvider extends ChangeNotifier {
     required this.updateExpenseUseCase,
     required this.getTripDashboardUseCase, 
     required this.deleteExpenseUseCase,
+    required this.getParticipantsMapUseCase,
   });
 
   TripDashboard? _dashboard;
@@ -34,6 +37,10 @@ class TripDashboardProvider extends ChangeNotifier {
   List<Expense> get expenses => _dashboard?.expenses ?? [];
   List<DashboardParticipant> get participants => _dashboard?.participants ?? [];
 
+  Map<String, String> _participantsMap = {};
+
+  Map<String, String> get participantsMap => _participantsMap;
+
 
 
   bool get isLoading => _isLoading;
@@ -45,7 +52,13 @@ class TripDashboardProvider extends ChangeNotifier {
     notifyListeners();
 
     try{
-      _dashboard = await getTripDashboardUseCase(tripId);
+      final results = await Future.wait([
+        getTripDashboardUseCase(tripId),
+        getParticipantsMapUseCase(tripId)
+      ]);
+      _dashboard = results[0] as TripDashboard;
+      _participantsMap = results[1] as Map<String, String>;
+
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
     } finally {
@@ -53,6 +66,7 @@ class TripDashboardProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  String getParticipantName(String id) => _participantsMap[id] ?? "Unknown";
 
   Future<bool> addExpense({
     required String tripId,

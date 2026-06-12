@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_manager/domain/entities/dashboard_participant.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:provider/provider.dart';
@@ -209,11 +208,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       itemBuilder: (context, index) {
         final expense = provider.expenses[index];
 
-        final payerObj = provider.dashboard?.participants.firstWhere(
-          (p) => p.participantId == expense.payerId,
-          orElse: () => DashboardParticipant(participantId: '', name: 'Unknown', balance: 0),
-        );
-        final String payerName = payerObj?.name ?? 'Unknown';
+        final String payerName = provider.participantsMap[expense.payerId] ?? "Unknown";
 
         return Dismissible(
           key: Key(expense.id),

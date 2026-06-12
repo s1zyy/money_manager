@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/presentation/pages/register_page.dart';
-import 'package:money_manager/presentation/pages/trips_page.dart';
+import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 

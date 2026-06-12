@@ -5,18 +5,22 @@ import 'package:money_manager/core/dio_client.dart';
 import 'package:money_manager/data/datasources/auth_local_data_source.dart';
 import 'package:money_manager/data/datasources/auth_remote_data_source.dart';
 import 'package:money_manager/data/datasources/expense_remote_data_source.dart';
+import 'package:money_manager/data/datasources/participant_remote_data_source.dart';
 import 'package:money_manager/data/datasources/trip_remote_data_source.dart';
 import 'package:money_manager/data/repositories/auth_repository_impl.dart';
 import 'package:money_manager/data/repositories/expense_repository_impl.dart';
+import 'package:money_manager/data/repositories/participant_repository_impl.dart';
 import 'package:money_manager/data/repositories/trip_repository_impl.dart';
 import 'package:money_manager/domain/repositories/auth_repository.dart';
 import 'package:money_manager/domain/repositories/expense_repository.dart';
+import 'package:money_manager/domain/repositories/participant_repository.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
+import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
 import 'package:money_manager/domain/usecases/trip/create_trip.dart';
 import 'package:money_manager/domain/usecases/trip/get_user_trips.dart';
 import 'package:money_manager/core/auth_interceptor.dart';
@@ -86,9 +90,25 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => TripDashboardProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), getTripDashboardUseCase: sl(), updateExpenseUseCase: sl()),
+    () => TripDashboardProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), getTripDashboardUseCase: sl(), updateExpenseUseCase: sl(), getParticipantsMapUseCase: sl()),
   );
 
+  //-------
+
+
+  //Participant 
+
+  sl.registerLazySingleton<ParticipantRemoteDataSource>(
+    () => ParticipantRemoteDataSourceImpl(dio: sl()),
+  );
+
+  sl.registerLazySingleton<ParticipantRepository>(
+    () => ParticipantRepositoryImpl(participantRemoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => GetParticipantsMapUseCase(repository: sl()),
+  );
 
   //-----
 

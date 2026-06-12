@@ -5,7 +5,7 @@ abstract class ExpenseRepository {
   Future<List<Expense>> getExpenses(String tripId);
 
 
-  Future<Expense> addExpense({
+  Future<bool> addExpense({
     required String tripId,
     required double amount,
     required DateTime date,

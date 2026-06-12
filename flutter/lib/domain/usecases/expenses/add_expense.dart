@@ -1,4 +1,3 @@
-import 'package:money_manager/domain/entities/expense.dart';
 import 'package:money_manager/domain/repositories/expense_repository.dart';
 
 class AddExpenseUseCase {
@@ -6,7 +5,7 @@ class AddExpenseUseCase {
   final ExpenseRepository repository;
   AddExpenseUseCase({required this.repository});
 
-  Future<Expense> call({
+  Future<bool> call({
     required String tripId,
     required String payerId,
     required double amount,

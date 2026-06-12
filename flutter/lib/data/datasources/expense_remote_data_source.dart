@@ -5,7 +5,7 @@ import 'package:money_manager/domain/entities/expense.dart';
 
 abstract class ExpenseRemoteDataSource {
   Future<List<Expense>> getExpenses(String tripId);
-  Future<Expense> addExpense({
+  Future<bool> addExpense({
     required String tripId,
     required double amount,
     required DateTime date,
@@ -43,7 +43,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   }
 
   @override
-  Future<Expense> addExpense({
+  Future<bool> addExpense({
     required String tripId,
     required double amount,
     required DateTime date,
@@ -59,8 +59,8 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
         'date': date.toIso8601String().split('T')[0],
         'participantIds': participantIds,
       };
-      final response = await dio.post('/trips/$tripId/expenses', data: body);
-      return ExpenseModel.fromJson(response.data);
+      await dio.post('/trips/$tripId/expenses', data: body);
+      return true;
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Failed to add expense');
     }

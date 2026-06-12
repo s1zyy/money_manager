@@ -13,7 +13,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<Expense> addExpense({
+  Future<bool> addExpense({
     required String tripId,
     required double amount,
     required DateTime date,

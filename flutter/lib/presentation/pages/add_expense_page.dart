@@ -23,22 +23,21 @@ class _AddExpensePageState extends State<AddExpensePage> {
   String? _selectedPayerId;
   final List<String> _selectedParticipantIds = [];
 
-  @override
-  void initState() {// TODO check why we should change init state on didChangeDependencies
-    super.initState();
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<TripDashboardProvider>();
-      print("Participants: ${provider.participants.length}");
-      if (provider.participants.isNotEmpty) {
-        setState(() {
-          //base case 
-          _selectedPayerId = provider.participants.first.participantId;
-          _selectedParticipantIds.addAll(provider.participants.map((p) => p.participantId));
-        });
-      }
-    });
 
+
+  @override
+  void didChangeDependencies() {//TODO жемини говорит обратно поменять на init state но у тебя были проблемы с init state потому что он не успевал подгрузить с provider expenses.
+    super.didChangeDependencies();
+
+    final provider = context.read<TripDashboardProvider>();
+
+    if(_selectedPayerId == null && provider.participantsMap.isNotEmpty) {
+      setState(() {
+        _selectedPayerId = provider.participantsMap.keys.first;
+      _selectedParticipantIds.addAll(provider.participantsMap.keys);
+      });
+      
+    }    
   }
 
   @override
@@ -149,11 +148,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: _selectedPayerId,
-                    items: provider.participants.map((p) {
+                    key: ValueKey(_selectedPayerId),
+                    value: provider.participantsMap.containsKey(_selectedPayerId)
+                      ? _selectedPayerId
+                      : null,
+                    items: provider.participantsMap.entries.map((entry) {
                       return DropdownMenuItem<String>(
-                        value: p.participantId,
-                        child: Text(p.name),
+                        value: entry.key,
+                        child: Text(entry.value),
                       );
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedPayerId = val),
@@ -175,15 +177,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       TextButton(
                         onPressed: () {
                           setState(() {
-                            if (_selectedParticipantIds.length == provider.participants.length) {
+                            if (_selectedParticipantIds.length == provider.participantsMap.length) {
                               _selectedParticipantIds.clear();
                             } else {
                               _selectedParticipantIds.clear();
-                              _selectedParticipantIds.addAll(provider.participants.map((p) => p.participantId));
+                              _selectedParticipantIds.addAll(provider.participantsMap.keys);
                             }
                           });
                         },
-                        child: Text(_selectedParticipantIds.length == provider.participants.length 
+                        child: Text(_selectedParticipantIds.length == provider.participantsMap.length
                             ? 'Deselect All' 
                             : 'Select All'),
                       ),
@@ -201,21 +203,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     child: ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: provider.participants.length,
+                      itemCount: provider.participantsMap.length,
                       separatorBuilder: (_, __) => const Divider(height: 1),
                       itemBuilder: (context, index) {
-                        final participant = provider.participants[index];
-                        final isSelected = _selectedParticipantIds.contains(participant.participantId);
+                        final participantId = provider.participantsMap.keys.elementAt(index);
+                        final participantName = provider.participantsMap[participantId] ?? "Unknown";
+                        final isSelected = _selectedParticipantIds.contains(participantId);
 
                         return CheckboxListTile(
-                          title: Text(participant.name),
+                          title: Text(participantName),
                           value: isSelected,
                           onChanged: (bool? checked) {
                             setState(() {
                               if (checked == true) {
-                                _selectedParticipantIds.add(participant.participantId);
+                                _selectedParticipantIds.add(participantId);
                               } else {
-                                _selectedParticipantIds.remove(participant.participantId);
+                                _selectedParticipantIds.remove(participantId);
                               }
                             });
                           },
@@ -240,95 +243,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
             ),
     );
   }
-  // Widget build(BuildContext context) {
-  //   final colorScheme = Theme.of(context).colorScheme;
-  //   final isLoading = context.watch<TripDashboardProvider>().isLoading;
-
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text('Add new Expense'),
-  //     ),
-  //     body: GestureDetector(
-  //       onTap: () => FocusScope.of(context).unfocus(), 
-  //       child: SingleChildScrollView(
-  //         padding: const EdgeInsets.all(24.0),
-  //         child: Form(
-  //           key: _formKey,
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text(
-  //                 'Enter expense details',
-  //                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-  //               ),
-  //               const SizedBox(height: 24),
-
-  //               TextFormField(
-  //                 controller: _descriptionController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Description',
-  //                   prefixIcon: Icon(Icons.description_outlined),
-  //                   border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-  //                   hintText: 'e.g., Dinner, Gasoline, Hotel',
-  //                 ),
-  //                 validator: (value) {
-  //                   if (value == null || value.trim().isEmpty) {
-  //                     return 'Please enter a description';
-  //                   }
-  //                   return null;
-  //                 },
-  //               ),
-  //               const SizedBox(height: 20),
-
-  //               // --- ПОЛЕ СУММЫ ---
-  //               TextFormField(
-  //                 controller: _amountController,
-  //                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Amount',
-  //                   prefixIcon: Icon(Icons.euro_outlined),
-  //                   border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-  //                   hintText: '0.00',
-  //                 ),
-  //                 validator: (value) {
-  //                   if (value == null || value.trim().isEmpty) {
-  //                     return 'Please enter an amount';
-  //                   }
-  //                   if (double.tryParse(value) == null) {
-  //                     return 'Please enter a valid number';
-  //                   }
-  //                   if (double.parse(value) <= 0) {
-  //                     return 'Amount must be greater than zero';
-  //                   }
-  //                   return null;
-  //                 },
-  //               ),
-  //               const SizedBox(height: 40),
-
-  //               // --- КНОПКА ОТПРАВКИ ---
-  //               SizedBox(
-  //                 width: double.infinity,
-  //                 height: 54,
-  //                 child: FilledButton(
-  //                   onPressed: isLoading ? null : _submitData,
-  //                   style: FilledButton.styleFrom(
-  //                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  //                   ),
-  //                   child: isLoading
-  //                       ? const SizedBox(
-  //                           width: 24,
-  //                           height: 24,
-  //                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-  //                         )
-  //                       : const Text('Save Expense', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  
 
 }

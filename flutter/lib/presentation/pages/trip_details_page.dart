@@ -242,7 +242,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               subtitle: Text(
-                'Paid by ID: $payerName ... • ${expense.date.toIso8601String().split('T')[0]}',
+                'Paid by : $payerName • ${expense.date.toIso8601String().split('T')[0]}',
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Text(

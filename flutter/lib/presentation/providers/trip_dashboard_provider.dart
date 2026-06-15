@@ -29,11 +29,9 @@ class TripDashboardProvider extends ChangeNotifier {
   TripDashboard? _dashboard;
   TripDashboard? get dashboard => _dashboard;
 
-  // List<Expense> _expenses = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  // List<Expense> get expenses => _expenses;
   List<Expense> get expenses => _dashboard?.expenses ?? [];
   List<DashboardParticipant> get participants => _dashboard?.participants ?? [];
 
@@ -101,10 +99,25 @@ class TripDashboardProvider extends ChangeNotifier {
   }
 
   Future<void> deleteExpense(String tripId, String expenseId) async {
+
+    if (_dashboard == null) return;
+
+
+  final tempExpenses = List<Expense>.from(_dashboard!.expenses)
+    ..removeWhere((e) => e.id == expenseId);
+
+  _dashboard = TripDashboard(
+    trip: _dashboard!.trip,
+    dailyLimit: _dashboard!.dailyLimit,
+    participants: _dashboard!.participants,
+    expenses: tempExpenses, 
+  );
+  
+  notifyListeners();
+
     try{
       await deleteExpenseUseCase(tripId: tripId, expenseId: expenseId);
       await loadDashboard(tripId);
-      notifyListeners();
     } catch(e) {
       _errorMessage = e.toString().replaceAll('Exception', '');
       notifyListeners();

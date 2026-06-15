@@ -21,12 +21,17 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final _amountController = TextEditingController();
 
   String? _selectedPayerId;
+  DateTime? _startDate;
   final List<String> _selectedParticipantIds = [];
+
+  DateTime _selectedDate = DateTime.now();
+
+  
 
 
 
   @override
-  void didChangeDependencies() {//TODO жемини говорит обратно поменять на init state но у тебя были проблемы с init state потому что он не успевал подгрузить с provider expenses.
+  void didChangeDependencies() {
     super.didChangeDependencies();
 
     final provider = context.read<TripDashboardProvider>();
@@ -34,7 +39,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
     if(_selectedPayerId == null && provider.participantsMap.isNotEmpty) {
       setState(() {
         _selectedPayerId = provider.participantsMap.keys.first;
-      _selectedParticipantIds.addAll(provider.participantsMap.keys);
+        _selectedParticipantIds.addAll(provider.participantsMap.keys);
+        _startDate = provider.dashboard?.trip.startDate;
+        
       });
       
     }    
@@ -72,7 +79,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
       payerId: _selectedPayerId!,
       amount: amount,
       description: _descriptionController.text.trim(),
-      date: DateTime.now(),//TODO change it so the end user can choose date he did his transaction
+      date: _selectedDate,
       participantIds: _selectedParticipantIds,
     );
 
@@ -86,6 +93,35 @@ class _AddExpensePageState extends State<AddExpensePage> {
         SnackBar(content: Text(provider.errorMessage!), backgroundColor: Colors.red),
       );
     }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+
+    final DateTime tripStart = _startDate ?? today;
+    if(tripStart.isAfter(today)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This trip has not started yet! You can only log expenses once it begins. ')),
+      );
+      return;
+    }
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate.isAfter(today) ? today : _selectedDate,
+      firstDate: tripStart,
+      lastDate: today,
+    );
+    if(picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  String _formalDate(DateTime date) {
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return "${date.day} ${months[date.month - 1]} ${date.year}";
   }
 
 
@@ -139,7 +175,23 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     ),
                     validator: (val) => (val == null || val.isEmpty) ? 'Enter description' : null,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+
+                  Card(
+                    margin: EdgeInsets.zero,
+                    shape: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[400]!)),
+                    child: ListTile(
+                      leading: const Icon(Icons.calendar_month),
+                      title: const Text('Transaction Date'),
+                      subtitle: Text(_formalDate(_selectedDate)),
+                      trailing: TextButton(
+                        onPressed: () => _selectDate(context),
+                        child:const Text('CHOOSE'),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
 
                   // Payer
                   Text(

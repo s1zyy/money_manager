@@ -17,10 +17,10 @@ class _CreateTripPageState extends State<CreateTripPage> {
   DateTime? _endDate;
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    DateTime minimumDate = isStartDate ? DateTime.now() : (_startDate ?? DateTime.now());
+    DateTime minimumDate = isStartDate ? DateTime(2025) : (_startDate ?? DateTime.now());
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: minimumDate,
+      initialDate: minimumDate.isAfter(DateTime.now()) ? minimumDate : DateTime.now(),
       firstDate: minimumDate,
       lastDate: DateTime(2100),
     );

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_manager/core/date_time_extentions.dart';
 import 'package:provider/provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 
@@ -22,9 +23,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   String? _selectedPayerId;
   DateTime? _startDate;
+  DateTime? _endDate;
   final List<String> _selectedParticipantIds = [];
 
   DateTime _selectedDate = DateTime.now();
+  
+  
 
   
 
@@ -41,7 +45,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
         _selectedPayerId = provider.participantsMap.keys.first;
         _selectedParticipantIds.addAll(provider.participantsMap.keys);
         _startDate = provider.dashboard?.trip.startDate;
-        
+        _endDate = provider.dashboard?.trip.endDate;  
+        if(_selectedDate.isAfter(_endDate!)) _selectedDate = _endDate!;   
       });
       
     }    
@@ -96,21 +101,30 @@ class _AddExpensePageState extends State<AddExpensePage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime now = DateTime.now();
-    final DateTime today = DateTime(now.year, now.month, now.day);
+    final DateTime today = DateTime.now().dateOnly;
 
-    final DateTime tripStart = _startDate ?? today;
-    if(tripStart.isAfter(today)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This trip has not started yet! You can only log expenses once it begins. ')),
-      );
-      return;
+    final DateTime tripStart = _startDate?.dateOnly ?? today;
+      
+
+    final DateTime tripEnd = _endDate?.dateOnly ?? today;
+      
+
+    final DateTime maxCalendarDate = tripEnd.isBefore(today) ? tripEnd : today;
+    
+
+    DateTime initialCalendatDate = _selectedDate.dateOnly;
+    if(initialCalendatDate.isAfter(tripEnd)) {
+      initialCalendatDate = tripEnd;
+    } else if(initialCalendatDate.isBefore(tripStart)) {
+      initialCalendatDate = tripStart;
     }
+
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate.isAfter(today) ? today : _selectedDate,
+      initialDate: initialCalendatDate,
       firstDate: tripStart,
-      lastDate: today,
+      lastDate: maxCalendarDate,
     );
     if(picked != null && picked != _selectedDate) {
       setState(() {

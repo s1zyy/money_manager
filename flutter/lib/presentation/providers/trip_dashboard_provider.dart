@@ -123,4 +123,26 @@ class TripDashboardProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  double get todaySpent {
+    if(_dashboard == null || _dashboard!.expenses.isEmpty) return 0.0;
+
+    final today = DateTime.now();
+
+    return _dashboard!.expenses
+      .where((expense) => 
+        expense.date.year == today.year &&
+        expense.date.month == today.month &&
+        expense.date.day == today.day)
+        .map((expense) => expense.amount)
+        .fold(0.0, (sum, amount) => sum + amount);
+  }
+
+  double get limitProgress {
+    final limit = _dashboard?.dailyLimit ?? 0.0;
+    if(limit == 0.0) return 0.0;
+    final progress = todaySpent / limit;
+    return progress > 1.0 ? 1.0 : progress;
+
+  }
 }

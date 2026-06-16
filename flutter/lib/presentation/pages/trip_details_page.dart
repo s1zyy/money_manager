@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_manager/core/date_time_extentions.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:provider/provider.dart';
@@ -33,8 +34,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     final tripDashboardProvider = context.watch<TripDashboardProvider>();
-
-    final double totalSpent = tripDashboardProvider.expenses.fold(0, (sum, item) => sum + item.amount);
     
     return Scaffold(
       appBar: AppBar(
@@ -56,81 +55,48 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () => tripDashboardProvider.loadDashboard(widget.tripId),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                elevation: 0,
-                color: colorScheme.primaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                            Text(
-                              'Total Budget',
-                              style: TextStyle(
-                                color: colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            // card -> padding -> column -> row -> text
-                            Text(
-                              '\$1200.0',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const Divider(height: 24),
+            
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildMiniStat(
-                            context,
-                            title: 'Spent',
-                            value: '${totalSpent.toStringAsFixed(2)} ',
-                            valueColor: colorScheme.primary,
-                          ),
-                          _buildMiniStat(
-                            context,
-                            title: 'Your balance',
-                            value: '+\$25.0',
-                            valueColor: Colors.green,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
+              _buildDashboardHeader(context, tripDashboardProvider),
+              const SizedBox(height: 12,),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
                 'Expenses',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12,),
+              ),
+              const SizedBox(height: 8),
+              
 
-              _buildExpensesContent(tripDashboardProvider, colorScheme),
+              Expanded(
+                child: _buildExpensesContent(tripDashboardProvider, colorScheme),
+              ),
+              
             ],
           ),
-        ),
-      ),
+        
+      
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          //TODO: Handle add expense button pressed DOING THIS RIGHT NOW
           final tripDashboardProvider = context.read<TripDashboardProvider>();
+          final DateTime? startDate = tripDashboardProvider.dashboard?.trip.startDate;
+
+          if(startDate != null) {
+            final DateTime today = DateTime.now().dateOnly;
+            final DateTime cleanStart = startDate.dateOnly;
+            if(cleanStart.isAfter(today)){
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('This trip has not started yet! You can only log expenses once it begins. ')),
+              );
+              return;
+            }
+
+          }
 
           Navigator.push(
             context,
@@ -152,6 +118,126 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       
       
   }
+  Widget _buildDashboardHeader(BuildContext context, TripDashboardProvider provider) {
+
+  final limit = provider.dashboard?.dailyLimit ?? 0.0;
+  final spentToday = provider.todaySpent;
+  final remaining = limit - spentToday;
+  final progress = provider.limitProgress;
+
+  final colorScheme = Theme.of(context).colorScheme;
+  final isOverspent = remaining < 0;
+
+  return Column(
+    children: [
+      Card(
+        margin: const EdgeInsets.all(16.0),
+        color: colorScheme.primaryContainer.withOpacity(0.4),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Daily Limit',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.primary),
+                  ),
+                  Text(
+                    '${spentToday.toStringAsFixed(2)} / ${limit.toStringAsFixed(2)} \$',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 12,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(isOverspent ? Colors.red : Colors.deepPurple),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isOverspent ? 'Overspent today:' : 'Remaining for today:',
+                    style: TextStyle(color: isOverspent ? Colors.red : Colors.grey[700]),
+                  ),
+                  Text(
+                    '${remaining.abs().toStringAsFixed(2)} \$',
+                    style: TextStyle(
+                      fontSize: 16, 
+                      fontWeight: FontWeight.bold, 
+                      color: isOverspent ? Colors.red : Colors.green
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text('Participant Balances', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ),
+      ),
+      Container(
+        height: 85,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: provider.participants.isEmpty
+            ? const Center(child: Text('No participants'))
+            : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: provider.participants.length,
+                itemBuilder: (context, index) {
+                  final participant = provider.participants[index];
+                  final name = provider.getParticipantName(participant.participantId);
+                  final balanceValue = participant.balance;
+
+                  final isPositive = balanceValue >= 0;
+
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${isPositive ? '+' : ''}${balanceValue.toStringAsFixed(2)} \$",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isPositive ? Colors.green : Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ),
+      const Divider(indent: 16, endIndent: 16),
+    ],
+  );
+}
 
   Widget _buildExpensesContent(TripDashboardProvider provider, ColorScheme colorScheme) {
     if(provider.isLoading && provider.expenses.isEmpty) {
@@ -202,8 +288,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     }
 
     return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
       itemCount: provider.expenses.length,
       itemBuilder: (context, index) {
         final expense = provider.expenses[index];
@@ -253,22 +337,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
             ),
           );
       },
-    );
-  }
-
-  Widget _buildMiniStat(BuildContext context, {required String title, required String value, required Color valueColor}) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: valueColor),
-        ),
-      ],
     );
   }
 

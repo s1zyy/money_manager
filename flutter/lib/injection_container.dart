@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:money_manager/core/dio_client.dart';
@@ -27,13 +28,14 @@ import 'package:money_manager/core/auth_interceptor.dart';
 import 'package:money_manager/domain/usecases/trip/join_trip_by_code.dart';
 import 'package:money_manager/domain/usecases/login.dart';
 import 'package:money_manager/domain/usecases/register.dart';
+import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 
 final sl = GetIt.instance;
 
-Future<void> init() async {
+Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   sl.registerLazySingleton(() => GetUserTrips(sl())
   );
   //Trip
@@ -138,7 +140,12 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton(
-    () => AuthInterceptor(localDataSource: sl()),
+    () => AuthInterceptor(localDataSource: sl(), onUnauthorized: () {
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
+    }),
   );
 
   //-----
@@ -155,7 +162,7 @@ Future<void> init() async {
     
     dio.interceptors.add(sl<AuthInterceptor>());
 
-    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    dio.interceptors.add(LogInterceptor(requestBody: false, responseBody: true));
     return dio;
   });
 

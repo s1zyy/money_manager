@@ -8,8 +8,11 @@ import 'package:provider/provider.dart';
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+  final navigatorKey = GlobalKey<NavigatorState>();
 
-  await di.init();
+  
+
+  await di.init(navigatorKey: navigatorKey);
 
   runApp(
     MultiProvider(
@@ -17,17 +20,21 @@ void main() async {
         ChangeNotifierProvider(create: (_) => di.sl<AuthProvider>()),
         ChangeNotifierProvider(create: (_) => di.sl<TripsProvider>()),
       ],
-      child: const MoneyManagerApp(),
+      child: MoneyManagerApp(navigatorKey: navigatorKey),
     ),
   );
 }
 
 class MoneyManagerApp extends StatelessWidget {
-  const MoneyManagerApp({super.key});
+  
+  
+  final GlobalKey<NavigatorState> navigatorKey;
+  const MoneyManagerApp({super.key, required this.navigatorKey});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Money Manager',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const LoginPage(),

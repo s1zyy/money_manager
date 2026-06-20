@@ -1,10 +1,13 @@
+import 'dart:ui';
+
 import 'package:dio/dio.dart';
 import 'package:money_manager/data/datasources/auth_local_data_source.dart';
 
 class AuthInterceptor extends Interceptor {
   final AuthLocalDataSource localDataSource;
+  final VoidCallback onUnauthorized;
 
-  AuthInterceptor({required this.localDataSource});
+  AuthInterceptor({required this.localDataSource, required this.onUnauthorized});
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
@@ -16,9 +19,10 @@ class AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async{
     if (err.response?.statusCode == 401) {
-      print('Unauthorized! Deleting token.');
+      await localDataSource.deleteToken();
+      onUnauthorized();
     }
     return handler.next(err);
   }

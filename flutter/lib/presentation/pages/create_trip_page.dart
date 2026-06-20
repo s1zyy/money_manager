@@ -8,6 +8,8 @@ class CreateTripPage extends StatefulWidget{
 }
 
 class _CreateTripPageState extends State<CreateTripPage> {
+
+  final _formKey = GlobalKey<FormState>();
   
   final _nameController = TextEditingController();
   final _budgetController = TextEditingController();
@@ -15,6 +17,20 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
   DateTime? _startDate;
   DateTime? _endDate;
+
+  double get _totalBudget => double.tryParse(_budgetController.text) ?? 0.0;
+  double get _prepaidExpenses => double.tryParse(_prepaidController.text) ?? 0.0;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _budgetController.addListener(_updateState);
+    _prepaidController.addListener(_updateState);
+  }
+
+  void _updateState() => setState(() {});
+
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     DateTime minimumDate = isStartDate ? DateTime(2025) : (_startDate ?? DateTime.now());
@@ -44,24 +60,44 @@ class _CreateTripPageState extends State<CreateTripPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
         child: Column(
           children: [
-            TextField(
+            TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Trip Name', border: OutlineInputBorder()),
+              validator: (value) => value == null || value.isEmpty ? 'Please enter trip name' : null,
             ),
             const SizedBox(height: 16),
             
-            TextField(
+            TextFormField(
               controller: _budgetController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'Total Budget', border: OutlineInputBorder()),
+              validator: (value) => value == null || value.isEmpty ? 'Please enter total budget' : null,
             ),
             const SizedBox(height: 16),
-            TextField(
+            TextFormField(
               controller: _prepaidController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Prepaid Amount', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                labelText: 'Prepaid Amount',
+                border: OutlineInputBorder()
+                ),
+                validator: (value) {
+                  if(value == null || value.isEmpty) {
+                    return 'Please enter prepaid amount';
+                  } 
+
+                  if(_prepaidExpenses > _totalBudget) {
+                    return 'Prepaid amount cannot exceed total budget';
+                  }
+                  return null;
+                }
+
+                
+                
             ),
             const SizedBox(height: 16),
 
@@ -90,12 +126,16 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
             ElevatedButton(
               onPressed: () async {
-                if(_nameController.text.isEmpty || _budgetController.text.isEmpty || _prepaidController.text.isEmpty || _startDate == null || _endDate == null) {
+                if(_startDate == null || _endDate == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill all fields')),
+                    const SnackBar(content: Text('Please select dates')),
                     );
                   return;
                 }
+                if(_formKey.currentState!.validate()) {
+                  
+
+                
                 final provider = context.read<TripsProvider>();
                 final success = await provider.addTrip(
                   name: _nameController.text,
@@ -104,6 +144,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   startDate: _startDate!,
                   endDate: _endDate!,
                 );
+                
                 if (success) {
                   if(mounted) {
                     Navigator.pop(context);
@@ -113,12 +154,14 @@ class _CreateTripPageState extends State<CreateTripPage> {
                     SnackBar(content: Text(provider.errorMessage ?? 'Failed to create trip')),
                   );
                 }
+                }
               },
               style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
               child: const Text('Create Trip'),
             )
           ]
-        )
+        ),
+      ),
       ),
     );
   }

@@ -24,4 +24,19 @@ class Trip {
 
 }
 
-enum TripStatus { active, archived}
+enum TripStatus { upcoming, active, archived}
+
+extension TripStatusExtension on TripStatus {
+  static TripStatus fromString(String status) {
+    switch(status.toUpperCase()) {
+      case 'ACTIVE' :
+        return TripStatus.active;
+      case 'UPCOMING':
+        return TripStatus.upcoming;
+      case 'ARCHIVED':
+        return TripStatus.archived;
+      default:
+        return TripStatus.active;
+    }
+  }
+}

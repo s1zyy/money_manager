@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
 import 'package:money_manager/presentation/pages/trip_details_page.dart';
@@ -25,10 +26,23 @@ class _TripsPageState extends State<TripsPage> {
 
   @override
   Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
 
-    return Scaffold(
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Trips'),
+
+        bottom: const TabBar(
+          tabs: [
+            Tab(icon: Icon(Icons.flight_takeoff), text: 'Active'),
+            Tab(icon: Icon(Icons.calendar_month), text: 'Upcoming'),
+            Tab(icon: Icon(Icons.archive), text: 'Archived'),
+          ],
+          indicatorColor: Colors.blue,
+          labelColor: Colors.blue,
+          unselectedLabelColor: Colors.grey,
+        )
         
       ),
       floatingActionButton: FloatingActionButton(
@@ -49,10 +63,37 @@ class _TripsPageState extends State<TripsPage> {
             return const Center(child: Text('No trips here yet!'));
           }
 
-          return ListView.builder(
-            itemCount: provider.trips.length,
+          final activeTrips = provider.trips.where((t) => t.status == TripStatus.active).toList();
+          final upcomingTrips = provider.trips.where((t) => t.status == TripStatus.upcoming).toList();
+          final archivedTrips = provider.trips.where((t) => t.status == TripStatus.archived).toList();
+
+          return TabBarView(
+            children: [
+              _buildTripsList(activeTrips, "No active trips right now"),
+              _buildTripsList(upcomingTrips, "No upcoming trips planned"),
+              _buildTripsList(archivedTrips, "Your archive is empty"),
+            ],
+          );
+        },
+      ),
+    ),
+    );
+  }
+
+  Widget _buildTripsList(List<Trip> trips, String emptyMessage) {
+    if(trips.isEmpty) {
+      return Center (
+        child: Text(
+          emptyMessage,
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+      );
+    }
+
+    return ListView.builder(
+            itemCount: trips.length,
             itemBuilder: (context, index) {
-              final trip = provider.trips[index];
+              final trip = trips[index];
               return ListTile(
                 title: Text(trip.name),
                 subtitle: Text("Budget: \$${trip.totalBudget}"),
@@ -74,9 +115,6 @@ class _TripsPageState extends State<TripsPage> {
               );
             }
           );
-        }
-      )
-    );
   }
 
   void _showAddOrJoinTripModal(BuildContext pageContext) {

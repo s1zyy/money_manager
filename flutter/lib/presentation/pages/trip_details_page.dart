@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/date_time_extentions.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
+import 'package:money_manager/presentation/pages/trip_settings_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +49,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
-              // Handle settings button press
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider.value(
+                    value: tripDashboardProvider,
+                    child: TripSettingsPage(tripId: widget.tripId),
+                  ),
+                ),
+              ).then((_) {
+                tripDashboardProvider.loadDashboard(widget.tripId);
+              });
             },
           ),
         ],

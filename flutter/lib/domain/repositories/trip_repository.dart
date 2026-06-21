@@ -12,6 +12,7 @@ abstract class TripRepository {
     required double prepaidExpenses,
     required DateTime startDate,
     required DateTime endDate,
+    required String currency,
   });
 
   Future<Trip> joinTripByCode(String joinCode);

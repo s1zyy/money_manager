@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/date_time_extentions.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
 import 'package:money_manager/presentation/pages/trip_settings_page.dart';
@@ -131,6 +132,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   }
   Widget _buildDashboardHeader(BuildContext context, TripDashboardProvider provider) {
 
+  final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
   final limit = provider.dashboard?.dailyLimit ?? 0.0;
   final spentToday = provider.todaySpent;
   final remaining = limit - spentToday;
@@ -159,7 +161,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.primary),
                   ),
                   Text(
-                    '${spentToday.toStringAsFixed(2)} / ${limit.toStringAsFixed(2)} \$',
+                    '${spentToday.toStringAsFixed(2)} / ${limit.toStringAsFixed(2)} $cs',
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -183,7 +185,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     style: TextStyle(color: isOverspent ? Colors.red : Colors.grey[700]),
                   ),
                   Text(
-                    '${remaining.abs().toStringAsFixed(2)} \$',
+                    '${remaining.abs().toStringAsFixed(2)} $cs',
                     style: TextStyle(
                       fontSize: 16, 
                       fontWeight: FontWeight.bold, 
@@ -232,7 +234,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                           const SizedBox(height: 4),
                           Text(
-                            "${isPositive ? '+' : ''}${balanceValue.toStringAsFixed(2)} \$",
+                            "${isPositive ? '+' : ''}${balanceValue.toStringAsFixed(2)} $cs",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: isPositive ? Colors.green : Colors.red,
@@ -251,6 +253,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 }
 
   Widget _buildExpensesContent(TripDashboardProvider provider, ColorScheme colorScheme) {
+    final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
     if(provider.isLoading && provider.expenses.isEmpty) {
       return const Center(
         child: Padding(
@@ -341,7 +344,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 style: const TextStyle(fontSize: 12),
               ),
               trailing: Text(
-                '${expense.amount.toStringAsFixed(2)} €',
+                '${expense.amount.toStringAsFixed(2)} $cs',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),

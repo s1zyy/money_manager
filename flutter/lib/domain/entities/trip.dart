@@ -8,6 +8,7 @@ class Trip {
   final double prepaidExpenses;
   final String joinCode;
   final TripStatus status;
+  final String currency;
 
   Trip({
     required this.id,
@@ -19,6 +20,7 @@ class Trip {
     required this.prepaidExpenses,
     required this.joinCode,
     required this.status,
+    required this.currency
   });
 
 

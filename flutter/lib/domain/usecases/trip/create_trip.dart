@@ -10,6 +10,7 @@ class CreateTripUseCase {
     required double prepaidExpenses,
     required DateTime startDate,
     required DateTime endDate,
+    required String currency,
   }) async {
     return await tripRepository.createTrip(
       name: name,
@@ -17,6 +18,7 @@ class CreateTripUseCase {
       prepaidExpenses: prepaidExpenses,
       startDate: startDate,
       endDate: endDate,
+      currency: currency,
     );
   }
 }

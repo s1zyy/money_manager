@@ -10,7 +10,7 @@ class TripsProvider extends ChangeNotifier {
   final JoinTripByCode joinTripByCodeUseCase;
 
 
-  TripsProvider({required this.getUserTrips, required this.createTripUseCase, required this.joinTripByCodeUseCase});
+  TripsProvider({required this.getUserTrips, required this.createTripUseCase, required this.joinTripByCodeUseCase,});
 
   List<Trip> _trips = [];
   List<Trip> get trips => _trips;
@@ -41,6 +41,7 @@ class TripsProvider extends ChangeNotifier {
     required double prepaidExpenses,
     required DateTime startDate,
     required DateTime endDate,
+    required String currency,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -54,6 +55,7 @@ class TripsProvider extends ChangeNotifier {
         prepaidExpenses: prepaidExpenses,
         startDate: startDate,
         endDate: endDate,
+        currency: currency,
       );
       await loadTrips();
       return true;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 class CreateTripPage extends StatefulWidget{
@@ -14,6 +15,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
   final _nameController = TextEditingController();
   final _budgetController = TextEditingController();
   final _prepaidController = TextEditingController();
+
+  String _selectedCurrency = "EUR";
 
   DateTime? _startDate;
   DateTime? _endDate;
@@ -70,6 +73,27 @@ class _CreateTripPageState extends State<CreateTripPage> {
               validator: (value) => value == null || value.isEmpty ? 'Please enter trip name' : null,
             ),
             const SizedBox(height: 16),
+
+            DropdownButtonFormField<String>(
+              value: _selectedCurrency,
+              decoration: const InputDecoration(
+                labelText: 'Currency',
+                border: OutlineInputBorder(),
+              ),
+              menuMaxHeight: 300,
+              items: supportedCurrencies
+                .map((c) => DropdownMenuItem(
+                  value: c.code,
+                  child: Text('${c.symbol} ${c.code}'),
+                )).toList(),
+              onChanged: (val) {
+                if(val != null) setState(() => _selectedCurrency = val);
+              },
+            ),
+
+
+            const SizedBox(height:16),
+
             
             TextFormField(
               controller: _budgetController,
@@ -143,6 +167,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   prepaidExpenses: double.tryParse(_prepaidController.text) ?? 0.0,
                   startDate: _startDate!,
                   endDate: _endDate!,
+                  currency: _selectedCurrency,
                 );
                 
                 if (success) {

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
@@ -96,7 +97,7 @@ class _TripsPageState extends State<TripsPage> {
               final trip = trips[index];
               return ListTile(
                 title: Text(trip.name),
-                subtitle: Text("Budget: \$${trip.totalBudget}"),
+                subtitle: Text("Budget: ${currencySymbol(trip.currency)}${trip.totalBudget}"),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   Navigator.push(

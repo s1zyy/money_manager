@@ -11,6 +11,7 @@ class TripModel extends Trip {
     required super.prepaidExpenses,
     required super.joinCode,
     required super.status,
+    required super.currency
   });
 
   factory TripModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +25,7 @@ class TripModel extends Trip {
       prepaidExpenses: (json['prepaidExpenses'] as num?)?.toDouble() ?? 0.0,
       joinCode: json['joinCode'] as String,
       status: TripStatusExtension.fromString(json['status'] as String),
+      currency: json['currency'] as String,
     );
   }
 }

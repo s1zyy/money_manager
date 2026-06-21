@@ -20,6 +20,7 @@ class TripRepositoryImpl implements TripRepository{
     required double prepaidExpenses,
     required DateTime startDate,
     required DateTime endDate,
+    required String currency,
   }) async {
     
       final Map<String, dynamic> tripData = {
@@ -28,6 +29,7 @@ class TripRepositoryImpl implements TripRepository{
         'prepaidExpenses': prepaidExpenses,
         'startDate': startDate.toIso8601String().split('T')[0], // Format as YYYY-MM-DD
         'endDate': endDate.toIso8601String().split('T')[0], // Format as YYYY-MM-DD
+        'currency' : currency,
       };
       await remoteDataSource.createTrip(tripData);
     

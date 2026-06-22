@@ -39,7 +39,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.tripName),
+        title: Text(tripDashboardProvider.dashboard?.trip.name ?? "Unknown"),
         actions: [
           IconButton(
             icon:const Icon(Icons.group_add_outlined),

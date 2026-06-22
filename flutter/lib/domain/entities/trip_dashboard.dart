@@ -7,6 +7,8 @@ class TripDashboard {
   final double dailyLimit;
   final List<Expense> expenses;
   final List<DashboardParticipant> participants;
+  final bool isOwner;
+  final bool canLeave;
   
 
   TripDashboard({
@@ -14,5 +16,7 @@ class TripDashboard {
     required this.dailyLimit,
     required this.expenses,
     required this.participants,
+    required this.isOwner,
+    required this.canLeave,
   });
 }

@@ -9,6 +9,8 @@ class TripDashboardModel extends TripDashboard {
     required super.dailyLimit,
     required super.expenses,
     required super.participants,
+    required super.isOwner,
+    required super.canLeave,
   });
   
   factory TripDashboardModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,8 @@ class TripDashboardModel extends TripDashboard {
       expenses: (json['expenseDtoList'] as List<dynamic>?)
           ?.map((e) => ExpenseModel.fromJson(e))
           .toList() ?? [],
+      isOwner: json['isOwner'] as bool,
+      canLeave: json['canLeave'] as bool,
     );
   }
 }

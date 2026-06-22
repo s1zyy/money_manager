@@ -99,8 +99,8 @@ class _TripsPageState extends State<TripsPage> {
                 title: Text(trip.name),
                 subtitle: Text("Budget: ${currencySymbol(trip.currency)}${trip.totalBudget}"),
                 trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
@@ -112,6 +112,9 @@ class _TripsPageState extends State<TripsPage> {
                       ),
                     ),
                   );
+                  if(mounted) {
+                    context.read<TripsProvider>().loadTrips();
+                  }
                 },
               );
             }

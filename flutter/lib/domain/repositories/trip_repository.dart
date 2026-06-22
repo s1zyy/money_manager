@@ -18,4 +18,13 @@ abstract class TripRepository {
   Future<Trip> joinTripByCode(String joinCode);
 
   Future<TripDashboard> getTripDashboard(String tripId);
+
+  Future<void> updateTrip({
+    required String tripId,
+    required String name,
+    required double totalBudget,
+    required double prepaidExpenses,
+    required String currency,
+    DateTime? endDate,
+  });
 }

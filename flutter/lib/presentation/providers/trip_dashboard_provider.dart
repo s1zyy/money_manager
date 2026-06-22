@@ -9,21 +9,24 @@ import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 
-class TripDashboardProvider extends ChangeNotifier { 
+class TripDashboardProvider extends ChangeNotifier {
   final AddExpenseUseCase addExpenseUseCase;
   final UpdateExpenseUseCase updateExpenseUseCase;
   final GetTripDashboardUseCase getTripDashboardUseCase;
   final DeleteExpenseUseCase deleteExpenseUseCase;
   final GetParticipantsMapUseCase getParticipantsMapUseCase;
+  final UpdateTripUseCase updateTripUseCase;
   
 
   TripDashboardProvider({
     required this.addExpenseUseCase,
     required this.updateExpenseUseCase,
-    required this.getTripDashboardUseCase, 
+    required this.getTripDashboardUseCase,
     required this.deleteExpenseUseCase,
     required this.getParticipantsMapUseCase,
+    required this.updateTripUseCase,
   });
 
   TripDashboard? _dashboard;
@@ -110,7 +113,9 @@ class TripDashboardProvider extends ChangeNotifier {
     trip: _dashboard!.trip,
     dailyLimit: _dashboard!.dailyLimit,
     participants: _dashboard!.participants,
-    expenses: tempExpenses, 
+    expenses: tempExpenses,
+    isOwner: _dashboard!.isOwner,
+    canLeave: _dashboard!.canLeave
   );
   
   notifyListeners();
@@ -124,13 +129,45 @@ class TripDashboardProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateTrip({
+    required String tripId,
+    required String name,
+    required double totalBudget,
+    required double prepaidExpenses,
+    required String currency,
+    DateTime? endDate,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try{
+      await updateTripUseCase(
+        tripId: tripId,
+        name: name,
+        totalBudget: totalBudget,
+        prepaidExpenses: prepaidExpenses,
+        currency: currency,
+        endDate: endDate,
+      );
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   double get todaySpent {
     if(_dashboard == null || _dashboard!.expenses.isEmpty) return 0.0;
 
     final today = DateTime.now();
 
     return _dashboard!.expenses
-      .where((expense) => 
+      .where((expense) =>
         expense.date.year == today.year &&
         expense.date.month == today.month &&
         expense.date.day == today.day)

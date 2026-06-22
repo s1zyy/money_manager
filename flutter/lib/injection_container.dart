@@ -28,6 +28,7 @@ import 'package:money_manager/core/auth_interceptor.dart';
 import 'package:money_manager/domain/usecases/trip/join_trip_by_code.dart';
 import 'package:money_manager/domain/usecases/login.dart';
 import 'package:money_manager/domain/usecases/register.dart';
+import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
@@ -91,14 +92,18 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     () => ListExpensesUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => UpdateTripUseCase(tripRepository: sl()),
+  );
+
   sl.registerFactory(
-    () => TripDashboardProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), getTripDashboardUseCase: sl(), updateExpenseUseCase: sl(), getParticipantsMapUseCase: sl()),
+    () => TripDashboardProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), getTripDashboardUseCase: sl(), updateExpenseUseCase: sl(), getParticipantsMapUseCase: sl(), updateTripUseCase: sl()),
   );
 
   //-------
 
 
-  //Participant 
+  //Participant
 
   sl.registerLazySingleton<ParticipantRemoteDataSource>(
     () => ParticipantRemoteDataSourceImpl(dio: sl()),

@@ -7,6 +7,7 @@ abstract class TripRemoteDataSource {
   Future<void> createTrip(Map<String, dynamic> tripData);
   Future<TripDashboardModel> getTripDashboard(String tripId);
   Future<TripModel> joinTripByCode(String joinCode);
+  Future<void> updateTrip(String tripId, Map<String, dynamic> data);
 }
 
 class TripRemoteDataSourceImpl implements TripRemoteDataSource {
@@ -68,6 +69,17 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
       throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
     }
   }
+  
+  @override
+  Future<void> updateTrip(String tripId, Map<String, dynamic> data) async{
+    try{
+      await dio.put("/trips/$tripId", data: data);
+    } on DioException catch (e) {
+      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+    }
+  }
+
+  
 
   
   }

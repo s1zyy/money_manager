@@ -45,4 +45,29 @@ class TripRepositoryImpl implements TripRepository{
       return await remoteDataSource.joinTripByCode(joinCode);
     
   }
+  
+  @override
+  Future<void> updateTrip({
+    required String tripId,
+    required String name,
+    required double totalBudget,
+    required double prepaidExpenses,
+    required String currency,
+    DateTime? endDate
+    }) async{
+      final Map<String, dynamic> data = {
+        'name' : name,
+        'budget': totalBudget,
+        'prepaidExpenses' : prepaidExpenses,
+        'currency' : currency,
+      };
+      if(endDate != null) {
+        data['endDate'] = endDate.toIso8601String().split('T')[0];
+      }
+
+      await remoteDataSource.updateTrip(tripId, data);
+      
+  }
+  
+  
 }

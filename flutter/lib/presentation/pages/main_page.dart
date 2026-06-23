@@ -4,8 +4,10 @@ import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
+import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/pages/trip_details_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
+import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -32,8 +34,12 @@ class _TripsPageState extends State<TripsPage> {
 
       child: Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.logout, color: Colors.red),
+          onPressed: () => _showLogoutDialog(context),
+        ),
         title: const Text('Trips'),
-
+        
         bottom: const TabBar(
           tabs: [
             Tab(icon: Icon(Icons.flight_takeoff), text: 'Active'),
@@ -82,43 +88,53 @@ class _TripsPageState extends State<TripsPage> {
   }
 
   Widget _buildTripsList(List<Trip> trips, String emptyMessage) {
-    if(trips.isEmpty) {
-      return Center (
-        child: Text(
-          emptyMessage,
-          style: const TextStyle(color: Colors.grey, fontSize: 16),
-        ),
-      );
-    }
-
-    return ListView.builder(
-            itemCount: trips.length,
-            itemBuilder: (context, index) {
-              final trip = trips[index];
-              return ListTile(
-                title: Text(trip.name),
-                subtitle: Text("Budget: ${currencySymbol(trip.currency)}${trip.totalBudget}"),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider(
-                        create: (_) => sl<TripDashboardProvider>(),
-                        child: TripDetailsPage(
-                        tripId: trip.id,
-                        tripName: trip.name,
+    return RefreshIndicator(
+      onRefresh: () => context.read<TripsProvider>().loadTrips(),
+      child: trips.isEmpty
+          ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Center(
+                    child: Text(
+                      emptyMessage,
+                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: trips.length,
+              itemBuilder: (context, index) {
+                final trip = trips[index];
+                return ListTile(
+                  title: Text(trip.name),
+                  subtitle: Text("Budget: ${currencySymbol(trip.currency)}${trip.totalBudget}"),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (_) => sl<TripDashboardProvider>(),
+                          child: TripDetailsPage(
+                            tripId: trip.id,
+                            tripName: trip.name,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                  if(mounted) {
-                    context.read<TripsProvider>().loadTrips();
-                  }
-                },
-              );
-            }
-          );
+                    );
+                    if (mounted) {
+                      context.read<TripsProvider>().loadTrips();
+                    }
+                  },
+                );
+              },
+            ),
+    );
   }
 
   void _showAddOrJoinTripModal(BuildContext pageContext) {
@@ -181,6 +197,37 @@ class _TripsPageState extends State<TripsPage> {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+                await context.read<AuthProvider>().logout();
+                if (!context.mounted) return;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
         );
       },
     );

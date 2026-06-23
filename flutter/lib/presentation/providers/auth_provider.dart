@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:money_manager/domain/usecases/login.dart';
-import 'package:money_manager/domain/usecases/register.dart';
+import 'package:money_manager/domain/usecases/auth/login.dart';
+import 'package:money_manager/domain/usecases/auth/logout.dart';
+import 'package:money_manager/domain/usecases/auth/register.dart';
 class AuthProvider extends ChangeNotifier{
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
-  AuthProvider({required this.loginUseCase, required this.registerUseCase});
+  final LogoutUseCase logoutUseCase;
+
+  AuthProvider({required this.loginUseCase, required this.registerUseCase, required this.logoutUseCase});
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -46,5 +49,23 @@ class AuthProvider extends ChangeNotifier{
       return false;
     }
       
+  }
+
+  Future<bool> logout() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try{
+      await logoutUseCase.call();
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+
   }
 }

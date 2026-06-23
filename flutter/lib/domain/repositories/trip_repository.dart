@@ -27,4 +27,8 @@ abstract class TripRepository {
     required String currency,
     DateTime? endDate,
   });
+
+  Future<void> archiveTrip(String tripId);
+  Future<void> leaveTrip(String tripId);
+  Future<void> deleteTrip(String tripId);
 }

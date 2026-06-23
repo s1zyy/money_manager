@@ -255,101 +255,147 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   Widget _buildExpensesContent(TripDashboardProvider provider, ColorScheme colorScheme) {
     final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
     if(provider.isLoading && provider.expenses.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32.0),
-          child: CircularProgressIndicator(),
-        ),
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: const [
+          Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ],
       );
     }
 
     if (provider.errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 40),
-              const SizedBox(height: 8),
-              Text(provider.errorMessage!, textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => provider.loadDashboard(widget.tripId),
-                child: const Text('Retry'),
-              ),
-            ],
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 40),
+                const SizedBox(height: 8),
+                Text(provider.errorMessage!, textAlign: TextAlign.center),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => provider.loadDashboard(widget.tripId),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       );
     }
 
     if (provider.expenses.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(40.0),
-          child: Column(
-            children: [
-              Icon(Icons.receipt_long_outlined, color: Colors.grey, size: 48),
-              SizedBox(height: 12),
-              Text(
-                'No expenses yet. Add your first check!',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: const [
+          Padding(
+            padding: EdgeInsets.all(40.0),
+            child: Column(
+              children: [
+                Icon(Icons.receipt_long_outlined, color: Colors.grey, size: 48),
+                SizedBox(height: 12),
+                Text(
+                  'No expenses yet. Add your first check!',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       );
     }
 
+    final grouped = provider.expensesByDay;
+    final days = grouped.keys.toList();
+
     return ListView.builder(
-      itemCount: provider.expenses.length,
-      itemBuilder: (context, index) {
-        final expense = provider.expenses[index];
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: days.length,
+      itemBuilder: (context, dayIndex) {
+        final day = days[dayIndex];
+        final dayExpenses = grouped[day]!;
+        final dayTotal = dayExpenses.fold(0.0, (sum, e) => sum + e.amount);
+        final dateStr = '${day.day.toString().padLeft(2, '0')}.${day.month.toString().padLeft(2, '0')}.${day.year}';
 
-        final String payerName = provider.participantsMap[expense.payerId] ?? "Unknown";
-
-        return Dismissible(
-          key: Key(expense.id),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            color: Colors.red,
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            child: const Icon(Icons.delete, color: Colors.white),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    dateStr,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                  Text(
+                    '${dayTotal.toStringAsFixed(2)} $cs',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            onDismissed: (direction) {
-              provider.deleteExpense(widget.tripId, expense.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Expense deleted')),
+            ...dayExpenses.map((expense) {
+              final payerName = provider.participantsMap[expense.payerId] ?? "Unknown";
+              return Dismissible(
+                key: Key(expense.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                onDismissed: (direction) {
+                  provider.deleteExpense(widget.tripId, expense.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Expense deleted')),
+                  );
+                },
+                child: Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6.0),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: colorScheme.outlineVariant),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      child: Icon(Icons.attach_money, color: colorScheme.primary),
+                    ),
+                    title: Text(
+                      expense.description,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text(
+                      'Paid by: $payerName',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    trailing: Text(
+                      '${expense.amount.toStringAsFixed(2)} $cs',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               );
-            },
-            child: Card(
-              margin: const EdgeInsets.symmetric(vertical: 6.0),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: colorScheme.outlineVariant),
-                borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: colorScheme.surfaceContainerHighest,
-                child: Icon(Icons.attach_money, color: colorScheme.primary),
-              ),
-              title: Text(
-                expense.description,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                'Paid by : $payerName • ${expense.date.toIso8601String().split('T')[0]}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              trailing: Text(
-                '${expense.amount.toStringAsFixed(2)} $cs',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            ),
-          );
+            }),
+          ],
+        );
       },
     );
   }

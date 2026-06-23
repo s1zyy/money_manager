@@ -16,18 +16,22 @@ import 'package:money_manager/domain/repositories/auth_repository.dart';
 import 'package:money_manager/domain/repositories/expense_repository.dart';
 import 'package:money_manager/domain/repositories/participant_repository.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
+import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/create_trip.dart';
+import 'package:money_manager/domain/usecases/trip/delete_trip.dart';
 import 'package:money_manager/domain/usecases/trip/get_user_trips.dart';
 import 'package:money_manager/core/auth_interceptor.dart';
 import 'package:money_manager/domain/usecases/trip/join_trip_by_code.dart';
-import 'package:money_manager/domain/usecases/login.dart';
-import 'package:money_manager/domain/usecases/register.dart';
+import 'package:money_manager/domain/usecases/auth/login.dart';
+import 'package:money_manager/domain/usecases/auth/register.dart';
+import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
@@ -67,7 +71,7 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
 
   //----
 
-  //Expense 
+  //Expense
 
   sl.registerLazySingleton<ExpenseRemoteDataSource>(
     () => ExpenseRemoteDataSourceImpl(dio: sl()),
@@ -93,11 +97,35 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   );
 
   sl.registerLazySingleton(
-    () => UpdateTripUseCase(tripRepository: sl()),
+    () => UpdateTripUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => ArchiveTripUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => LeaveTripUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteTripUseCase(repository: sl()),
+  );
+
+
   sl.registerFactory(
-    () => TripDashboardProvider(addExpenseUseCase: sl(), deleteExpenseUseCase: sl(), getTripDashboardUseCase: sl(), updateExpenseUseCase: sl(), getParticipantsMapUseCase: sl(), updateTripUseCase: sl()),
+    () => TripDashboardProvider(
+      addExpenseUseCase: sl(),
+      deleteExpenseUseCase: sl(),
+      getTripDashboardUseCase: sl(),
+      updateExpenseUseCase: sl(),
+      getParticipantsMapUseCase: sl(),
+      updateTripUseCase: sl(),
+      archiveTripUseCase: sl(),
+      leaveTripUseCase: sl(),
+      deleteTripUseCase: sl(),
+      
+      ),
+      
   );
 
   //-------
@@ -125,8 +153,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     () => AuthLocalDataSourceImpl(secureStorage: sl())
   );
 
+  
+
   sl.registerLazySingleton(
-    () => AuthProvider(loginUseCase: sl(), registerUseCase: sl()),
+    () => AuthProvider(loginUseCase: sl(), registerUseCase: sl(), logoutUseCase: sl()),
   );
 
   sl.registerLazySingleton(
@@ -135,6 +165,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
 
   sl.registerLazySingleton(
     () => LoginUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => LogoutUseCase(repository: sl()),
   );
 
   sl.registerLazySingleton<AuthRepository>(

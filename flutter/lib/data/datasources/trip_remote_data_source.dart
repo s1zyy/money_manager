@@ -8,6 +8,9 @@ abstract class TripRemoteDataSource {
   Future<TripDashboardModel> getTripDashboard(String tripId);
   Future<TripModel> joinTripByCode(String joinCode);
   Future<void> updateTrip(String tripId, Map<String, dynamic> data);
+  Future<void> archiveTrip(String tripId);
+  Future<void> leaveTrip(String tripId);
+  Future<void> deleteTrip(String tripId);
 }
 
 class TripRemoteDataSourceImpl implements TripRemoteDataSource {
@@ -77,6 +80,34 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
     } on DioException catch (e) {
       throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
     }
+  }
+  
+  @override
+  Future<void> archiveTrip(String tripId) async{
+    try {
+      await dio.post('/trips/$tripId/archive');
+    } on DioException catch (e) {
+      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+    }
+  }
+
+  @override
+  Future<void> leaveTrip(String tripId) async{
+    try {
+      await dio.post('/trips/$tripId/leave');
+    } on DioException catch (e) {
+      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+    }
+  }
+  
+  @override
+  Future<void> deleteTrip(String tripId) async{
+    try {
+      await dio.delete('/trips/$tripId');
+    } on DioException catch (e) {
+      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+    }
+    
   }
 
   

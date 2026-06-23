@@ -9,6 +9,9 @@ import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
+import 'package:money_manager/domain/usecases/trip/delete_trip.dart';
+import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 
 class TripDashboardProvider extends ChangeNotifier {
@@ -18,6 +21,9 @@ class TripDashboardProvider extends ChangeNotifier {
   final DeleteExpenseUseCase deleteExpenseUseCase;
   final GetParticipantsMapUseCase getParticipantsMapUseCase;
   final UpdateTripUseCase updateTripUseCase;
+  final ArchiveTripUseCase archiveTripUseCase;
+  final LeaveTripUseCase leaveTripUseCase;
+  final DeleteTripUseCase deleteTripUseCase;
   
 
   TripDashboardProvider({
@@ -27,6 +33,9 @@ class TripDashboardProvider extends ChangeNotifier {
     required this.deleteExpenseUseCase,
     required this.getParticipantsMapUseCase,
     required this.updateTripUseCase,
+    required this.archiveTripUseCase,
+    required this.leaveTripUseCase,
+    required this.deleteTripUseCase,
   });
 
   TripDashboard? _dashboard;
@@ -159,6 +168,69 @@ class TripDashboardProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<bool> archiveTrip(String tripId) async{
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await archiveTripUseCase(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    
+  }
+
+  Future<bool> leaveTrip(String tripId) async{
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await leaveTripUseCase(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    
+  }
+  Future<bool> deleteTrip(String tripId) async{
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await deleteTripUseCase(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    
+  }
+
+
+  Map<DateTime, List<Expense>> get expensesByDay {
+    final map = <DateTime, List<Expense>>{};
+    for (final expense in expenses) {
+      final day = DateTime(expense.date.year, expense.date.month, expense.date.day);
+      map.putIfAbsent(day, () => []).add(expense);
+    }
+    final sorted = Map.fromEntries(
+      map.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
+    );
+    return sorted;
   }
 
   double get todaySpent {

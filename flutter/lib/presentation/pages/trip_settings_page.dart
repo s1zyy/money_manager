@@ -54,10 +54,13 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       appBar: AppBar(
         title: const Text('Trip Settings'),
         actions: [
-          TextButton(
-            onPressed: _saveSettings,
-            child: const Text('Save', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          )
+          if(dashboardProvider.dashboard!.isOwner)...[
+            TextButton(
+              onPressed: _saveSettings,
+              child: const Text('Save', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            )
+          ]
+          
         ],
       ),
       body: SingleChildScrollView(
@@ -160,11 +163,22 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                 label: const Text('Delete Trip Permanently'),
               ),
             ],
-            if(dashboardProvider.dashboard!.canLeave)...[
+              if(dashboardProvider.dashboard!.canLeave)...[
+              const Divider(),
+              const SizedBox(height: 16),
               Text('Danger Zone', style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              //todo leave trip button
-            ]
+              OutlinedButton.icon(
+                onPressed: _leaveTrip,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  side: BorderSide(color: colorScheme.error),
+                  foregroundColor: colorScheme.error,
+                ),
+                icon: const Icon(Icons.exit_to_app),
+                label: const Text('Leave Trip'),
+              ),
+            ],
             ],
           ),
         ),
@@ -208,10 +222,43 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       confirmLabel: 'Archive',
     );
     if (confirm == true) {
-      
-      Navigator.pop(context);
+      final provider = context.read<TripDashboardProvider>();
+      final success = await provider.archiveTrip(widget.tripId);
+      if(mounted) {
+        if(success) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(provider.errorMessage ?? 'Failed to archive')),
+        );
+        }
+      }
     }
   }
+
+  void _leaveTrip() async {
+  final confirm = await _showConfirmDialog(
+    title: 'Leave Trip?',
+    content: 'You will no longer have access to this trip.',
+    confirmLabel: 'Leave',
+    isDangerous: true,
+  );
+  if (confirm == true) {
+    final provider = context.read<TripDashboardProvider>();
+    final success = await provider.leaveTrip(widget.tripId);
+    if (mounted) {
+      if (success) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(provider.errorMessage ?? 'Failed to leave')),
+        );
+      }
+    }
+  }
+}
 
   void _deleteTrip() async {
     final confirm = await _showConfirmDialog(
@@ -221,8 +268,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       isDangerous: true,
     );
     if (confirm == true) {
-      // Удаляем трип через TripsProvider
-      // await context.read<TripsProvider>().deleteTrip(widget.tripId);
+      await context.read<TripDashboardProvider>().deleteTrip(widget.tripId);
       Navigator.pop(context);
       Navigator.pop(context);
     }

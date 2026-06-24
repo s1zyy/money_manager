@@ -1,3 +1,4 @@
+import 'package:money_manager/domain/entities/participant_info.dart';
 import 'package:money_manager/domain/repositories/participant_repository.dart';
 
 class GetParticipantsMapUseCase {
@@ -5,7 +6,7 @@ class GetParticipantsMapUseCase {
 
   GetParticipantsMapUseCase({required this.repository});
 
-  Future<Map<String, String>> call(String tripId) {
-    return repository.getParticipantsMap(tripId);
+  Future<List<ParticipantInfo>> call(String tripId) {
+    return repository.getParticipants(tripId);
   }
 }

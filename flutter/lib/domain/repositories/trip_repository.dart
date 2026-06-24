@@ -31,4 +31,6 @@ abstract class TripRepository {
   Future<void> archiveTrip(String tripId);
   Future<void> leaveTrip(String tripId);
   Future<void> deleteTrip(String tripId);
+  Future<void> removeParticipant(String tripId, String participantId);
+  Future<void> addVirtualParticipant(String tripId, String name);
 }

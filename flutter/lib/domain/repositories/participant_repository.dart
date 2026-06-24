@@ -1,4 +1,6 @@
+import 'package:money_manager/domain/entities/participant_info.dart';
+
 abstract class ParticipantRepository {
 
-  Future<Map<String, String>> getParticipantsMap(String tripId);
+  Future<List<ParticipantInfo>> getParticipants(String tripId);
   }

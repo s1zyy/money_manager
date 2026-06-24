@@ -42,9 +42,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         title: Text(tripDashboardProvider.dashboard?.trip.name ?? "Unknown"),
         actions: [
           IconButton(
-            icon:const Icon(Icons.group_add_outlined),
+            icon:const Icon(Icons.group),
             onPressed: () {
-              _showAddParticipantModal(context, tripDashboardProvider);
+              _showMembersModal(context, tripDashboardProvider);
             },
           ),
           IconButton(
@@ -187,8 +187,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   Text(
                     '${remaining.abs().toStringAsFixed(2)} $cs',
                     style: TextStyle(
-                      fontSize: 16, 
-                      fontWeight: FontWeight.bold, 
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                       color: isOverspent ? Colors.red : Colors.green
                     ),
                   ),
@@ -350,7 +350,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               ),
             ),
             ...dayExpenses.map((expense) {
-              final payerName = provider.participantsMap[expense.payerId] ?? "Unknown";
+              final payerName = provider.getParticipantName(expense.payerId);
               return Dismissible(
                 key: Key(expense.id),
                 direction: DismissDirection.endToStart,
@@ -400,22 +400,20 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
   }
 
-  void _showAddParticipantModal(BuildContext context, TripDashboardProvider provider) {
+  void _showMembersModal(BuildContext context, TripDashboardProvider provider) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    String joinCode = provider.dashboard?.trip.joinCode ?? '------';
-
-    
+    final joinCode = provider.dashboard?.trip.joinCode ?? '------';
+    final isOwner = provider.dashboard?.isOwner ?? false;
+    final ownerId = provider.dashboard?.trip.ownerId ?? '';
 
     showModalBottomSheet(
       context: context,
-      
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
+      builder: (modalContext) {
         return Padding(
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -428,62 +426,193 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              Text('Invite Participants',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-
-
-              const SizedBox(height: 8),
-
-
               Text(
-                'Share the code below to invite others to join this trip',
-                style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
+                'Members',
+                style: Theme.of(modalContext).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 24),
-
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colorScheme.outlineVariant),
-                ),
-                child: Text(
-                  joinCode,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                    color: colorScheme.onSecondaryContainer,
+              const SizedBox(height: 16),
+              ...provider.participantsMap.entries.map((entry) {
+                final id = entry.key;
+                final name = entry.value.name;
+                final isEntryOwner = id == ownerId;
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: colorScheme.primaryContainer,
+                    child: Icon(
+                      provider.isVirtualParticipant(id) ? Icons.person_outline : Icons.person,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  title: Text(
+                    isEntryOwner
+                        ? '$name (owner)'
+                        : provider.isVirtualParticipant(id)
+                            ? '$name (virtual)'
+                            : name,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  trailing: isOwner && !isEntryOwner
+                      ? IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red),
+                          onPressed: () => _confirmRemoveParticipant(
+                            context, provider, widget.tripId, id, name, modalContext,
+                          ),
+                        )
+                      : null,
+                );
+              }),
+              if (isOwner)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: OutlinedButton.icon(
+                    onPressed: () => _showAddVirtualParticipantDialog(context, provider, widget.tripId, modalContext),
+                    icon: const Icon(Icons.person_add_alt_1),
+                    label: const Text('Add without account'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 44),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: joinCode));
-
-                    Navigator.pop(context);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Join code copied to clipboard!'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    
-                    );
-                  },
-                  icon: const Icon(Icons.copy),
-                  label: const Text('Copy Code', style: TextStyle(fontSize: 16)),
+              const Divider(height: 32),
+              Text(
+                'Invite Code',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurfaceVariant,
                 ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      joinCode,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    icon: const Icon(Icons.copy),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: joinCode));
+                      Navigator.pop(modalContext);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Join code copied to clipboard!'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showAddVirtualParticipantDialog(
+    BuildContext context,
+    TripDashboardProvider provider,
+    String tripId,
+    BuildContext modalContext,
+  ) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Add Virtual Participant'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: 'Name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final name = controller.text.trim();
+                if (name.isEmpty) return;
+                Navigator.pop(dialogContext);
+                Navigator.pop(modalContext);
+                final success = await provider.addVirtualParticipant(tripId, name);
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success ? '$name added' : provider.errorMessage ?? 'Failed to add'),
+                    backgroundColor: success ? Colors.green : Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmRemoveParticipant(
+    BuildContext context,
+    TripDashboardProvider provider,
+    String tripId,
+    String participantId,
+    String name,
+    BuildContext modalContext,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Remove Member'),
+          content: Text('Remove $name from this trip?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+                Navigator.pop(modalContext);
+                final success = await provider.removeParticipant(tripId, participantId);
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success
+                        ? '$name removed from trip'
+                        : provider.errorMessage ?? 'Failed to remove participant'),
+                    backgroundColor: success ? Colors.green : Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              child: const Text('Remove'),
+            ),
+          ],
         );
       },
     );

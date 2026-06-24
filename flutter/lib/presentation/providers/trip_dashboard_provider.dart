@@ -3,15 +3,18 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/domain/entities/dashboard_participant.dart';
 import 'package:money_manager/domain/entities/expense.dart';
+import 'package:money_manager/domain/entities/participant_info.dart';
 import 'package:money_manager/domain/entities/trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/delete_trip.dart';
 import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
+import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 
 class TripDashboardProvider extends ChangeNotifier {
@@ -24,7 +27,8 @@ class TripDashboardProvider extends ChangeNotifier {
   final ArchiveTripUseCase archiveTripUseCase;
   final LeaveTripUseCase leaveTripUseCase;
   final DeleteTripUseCase deleteTripUseCase;
-  
+  final RemoveParticipantUseCase removeParticipantUseCase;
+  final AddVirtualParticipantUseCase addVirtualParticipantUseCase;
 
   TripDashboardProvider({
     required this.addExpenseUseCase,
@@ -36,6 +40,8 @@ class TripDashboardProvider extends ChangeNotifier {
     required this.archiveTripUseCase,
     required this.leaveTripUseCase,
     required this.deleteTripUseCase,
+    required this.removeParticipantUseCase,
+    required this.addVirtualParticipantUseCase,
   });
 
   TripDashboard? _dashboard;
@@ -47,9 +53,9 @@ class TripDashboardProvider extends ChangeNotifier {
   List<Expense> get expenses => _dashboard?.expenses ?? [];
   List<DashboardParticipant> get participants => _dashboard?.participants ?? [];
 
-  Map<String, String> _participantsMap = {};
+  Map<String, ParticipantInfo> _participantsMap = {};
 
-  Map<String, String> get participantsMap => _participantsMap;
+  Map<String, ParticipantInfo> get participantsMap => _participantsMap;
 
 
 
@@ -66,8 +72,9 @@ class TripDashboardProvider extends ChangeNotifier {
         getTripDashboardUseCase(tripId),
         getParticipantsMapUseCase(tripId)
       ]);
+      final participants = results[1] as List<ParticipantInfo>;
       _dashboard = results[0] as TripDashboard;
-      _participantsMap = results[1] as Map<String, String>;
+      _participantsMap = {for (var p in participants) p.id: p};
 
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -76,7 +83,8 @@ class TripDashboardProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  String getParticipantName(String id) => _participantsMap[id] ?? "Unknown";
+  String getParticipantName(String id) => _participantsMap[id]?.name ?? "Unknown";
+  bool isVirtualParticipant(String id) => _participantsMap[id]?.isVirtual ?? false;
 
   Future<bool> addExpense({
     required String tripId,
@@ -220,6 +228,30 @@ class TripDashboardProvider extends ChangeNotifier {
     
   }
 
+
+  Future<bool> removeParticipant(String tripId, String participantId) async {
+    try {
+      await removeParticipantUseCase(tripId, participantId);
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception', '');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> addVirtualParticipant(String tripId, String name) async {
+    try {
+      await addVirtualParticipantUseCase(tripId, name);
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception', '');
+      notifyListeners();
+      return false;
+    }
+  }
 
   Map<DateTime, List<Expense>> get expensesByDay {
     final map = <DateTime, List<Expense>>{};

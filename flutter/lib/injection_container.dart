@@ -23,6 +23,7 @@ import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/create_trip.dart';
 import 'package:money_manager/domain/usecases/trip/delete_trip.dart';
@@ -32,6 +33,7 @@ import 'package:money_manager/domain/usecases/trip/join_trip_by_code.dart';
 import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
 import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
+import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
@@ -107,8 +109,17 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   sl.registerLazySingleton(
     () => LeaveTripUseCase(repository: sl()),
   );
+
+  sl.registerLazySingleton(
+    () => RemoveParticipantUseCase(repository: sl()),
+  );
+  
   sl.registerLazySingleton(
     () => DeleteTripUseCase(repository: sl()),
+  );
+  
+  sl.registerLazySingleton(
+    () => AddVirtualParticipantUseCase(repository: sl()),
   );
 
 
@@ -123,7 +134,8 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       archiveTripUseCase: sl(),
       leaveTripUseCase: sl(),
       deleteTripUseCase: sl(),
-      
+      removeParticipantUseCase: sl(),
+      addVirtualParticipantUseCase: sl(),
       ),
       
   );

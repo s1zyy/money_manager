@@ -11,6 +11,8 @@ abstract class TripRemoteDataSource {
   Future<void> archiveTrip(String tripId);
   Future<void> leaveTrip(String tripId);
   Future<void> deleteTrip(String tripId);
+  Future<void> removeParticipant(String tripId, String participantId);
+  Future<void> addVirtualParticipant(String tripId, String name);
 }
 
 class TripRemoteDataSourceImpl implements TripRemoteDataSource {
@@ -108,6 +110,20 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
       throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
     }
     
+  }
+  
+  @override
+  Future<void> removeParticipant(String tripId, String participantId) async{
+    try {
+      await dio.delete('/trips/$tripId/participants/$participantId');
+    } on DioException catch (e) {
+      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+    }
+  }
+  
+  @override
+  Future<void> addVirtualParticipant(String tripId, String name) async{
+    await dio.post('/trips/$tripId/participants/virtual', data: {'name': name});
   }
 
   

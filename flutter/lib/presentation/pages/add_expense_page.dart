@@ -221,7 +221,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     items: provider.participantsMap.entries.map((entry) {
                       return DropdownMenuItem<String>(
                         value: entry.key,
-                        child: Text(entry.value),
+                        child: Text(entry.value.name),
                       );
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedPayerId = val),
@@ -273,7 +273,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       separatorBuilder: (_, __) => const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final participantId = provider.participantsMap.keys.elementAt(index);
-                        final participantName = provider.participantsMap[participantId] ?? "Unknown";
+                        final participantName = provider.getParticipantName(participantId);
                         final isSelected = _selectedParticipantIds.contains(participantId);
 
                         return CheckboxListTile(

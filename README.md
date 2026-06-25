@@ -36,10 +36,10 @@ Think Splitwise, but built from scratch with a clean Flutter architecture and a 
   </tr>
   <tr>
     <td align="center">
-      <img src="assets/demo.gif" width="360" alt="App walkthrough"/>
+      <img src="flutter/assets/demo.gif" width="360" alt="App walkthrough"/>
     </td>
     <td align="center">
-      <img src="assets/add_expense.gif" width="360" alt="Adding an expense"/>
+      <img src="flutter/assets/add_expense.gif" width="360" alt="Adding an expense"/>
     </td>
   </tr>
 </table>
@@ -50,10 +50,10 @@ Think Splitwise, but built from scratch with a clean Flutter architecture and a 
 
 <table align="center">
   <tr>
-    <td align="center"><img src="assets/screenshots/login.png" width="210" alt="Login"/><br/><sub>Login</sub></td>
-    <td align="center"><img src="assets/screenshots/list_trips.png" width="210" alt="My Trips"/><br/><sub>My Trips</sub></td>
-    <td align="center"><img src="assets/screenshots/trip_details.png" width="210" alt="Trip Details"/><br/><sub>Trip Details</sub></td>
-    <td align="center"><img src="assets/screenshots/add_expense.png" width="210" alt="Add Expense"/><br/><sub>Add Expense</sub></td>
+    <td align="center"><img src="flutter/assets/screenshots/login.png" width="210" alt="Login"/><br/><sub>Login</sub></td>
+    <td align="center"><img src="flutter/assets/screenshots/list_trips.png" width="210" alt="My Trips"/><br/><sub>My Trips</sub></td>
+    <td align="center"><img src="flutter/assets/screenshots/trip_details.png" width="210" alt="Trip Details"/><br/><sub>Trip Details</sub></td>
+    <td align="center"><img src="flutter/assets/screenshots/add_expense.png" width="210" alt="Add Expense"/><br/><sub>Add Expense</sub></td>
   </tr>
 </table>
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/register_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
@@ -30,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body:Consumer<AuthProvider>(
         builder: (context, auth, child) {
@@ -38,16 +40,16 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Money Manager", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                  Text(l10n.appTitle, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 40),
                   TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
+                    decoration: InputDecoration(labelText: l10n.email, border: OutlineInputBorder()),
                   ),
                   const SizedBox(height: 16),
                   TextField(controller: passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+                    decoration: InputDecoration(labelText: l10n.password, border: OutlineInputBorder()),
                   ),
                   const SizedBox(height: 24),
                   if(auth.errorMessage != null)
@@ -60,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () => _onLoginPressed(auth),
-                        child: const Text('Login'),
+                        child: Text(l10n.login),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -72,8 +74,8 @@ class _LoginPageState extends State<LoginPage> {
                             MaterialPageRoute(builder: (context) => const RegisterPage()),
                           );
                         },
-                        child: const Text(
-                          "Don't have an account? Register",
+                        child: Text(
+                          l10n.noAccountRegister,
                           style: TextStyle(color: Colors.blue),
                       ),
                       ),

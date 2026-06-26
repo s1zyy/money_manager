@@ -1,0 +1,166 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Money Manager",
+
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "name": "Name",
+  "logout": "Logout",
+  "logoutConfirm": "Are you sure you want to log out?",
+  "cancel": "Cancel",
+  "save": "Save",
+  "add": "Add",
+  "remove": "Remove",
+  "retry": "Retry",
+  "delete": "Delete",
+  "join": "Join",
+
+  "trips": "Trips",
+  "createTrip": "Create Trip",
+  "createNewTrip": "Create New Trip",
+  "tripName": "Trip Name",
+  "tripSettings": "Trip Settings",
+  "tripCurrency": "Trip Currency",
+  "totalBudget": "Total Budget",
+  "prepaidExpenses": "Prepaid Expenses",
+  "noTripsYet": "No trips here yet!",
+  "youWillBeOwner": "You will become the owner and set the budget",
+  "selectDates": "Please select dates",
+  "currency": "Currency",
+  "general": "General",
+  "finance": "Finance",
+  "dates": "Dates",
+  "endDate": "End Date: {date}",
+  "@endDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "tripHasEnded": "Trip has already ended",
+  "tripNotStarted": "This trip has not started yet! You can only log expenses once it begins.",
+  "settingsSaved": "Settings saved!",
+  "failedToSave": "Failed to save",
+  "failedToCreateTrip": "Failed to create trip",
+
+  "joinTrip": "Join Trip",
+  "joinTripByCode": "Join Trip by Code",
+  "enterInviteCode": "Enter invite code from a friend",
+  "inviteCodeHint": "Enter invite code",
+  "joinedSuccessfully": "Successfully joined the trip!",
+  "errorJoiningTrip": "Error joining trip",
+  "joinCodeCopied": "Join code copied to clipboard!",
+  "inviteCode": "Invite Code",
+
+  "archiveTrip": "Archive Trip",
+  "archiveTripConfirm": "Archive Trip?",
+  "archiveTripMessage": "This will move the trip to the Archived tab.",
+  "failedToArchive": "Failed to archive",
+
+  "deleteTrip": "Delete Trip Permanently",
+  "deleteTripConfirm": "Delete Trip?",
+  "deleteTripMessage": "Are you absolutely sure? This action cannot be undone and all expense history will be lost.",
+
+  "leaveTrip": "Leave Trip",
+  "leaveTripConfirm": "Leave Trip?",
+  "leaveTripMessage": "You will no longer have access to this trip.",
+  "failedToLeave": "Failed to leave",
+
+  "dangerZone": "Danger Zone",
+
+  "members": "Members",
+  "owner": "owner",
+  "virtual": "virtual",
+  "addWithoutAccount": "Add without account",
+  "addVirtualParticipant": "Add Virtual Participant",
+  "removeMember": "Remove Member",
+  "removeMemberConfirm": "Remove {name} from this trip?",
+  "@removeMemberConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memberRemoved": "{name} removed from trip",
+  "@memberRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memberAdded": "{name} added",
+  "@memberAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "failedToAdd": "Failed to add",
+  "failedToRemove": "Failed to remove participant",
+  "noParticipants": "No participants",
+  "participantBalances": "Participant Balances",
+
+  "expenses": "Expenses",
+  "addExpense": "Add Expense",
+  "addNewExpense": "Add New Expense",
+  "saveExpense": "Save Expense",
+  "amount": "Amount",
+  "description": "Description",
+  "descriptionHint": "e.g., Dinner, Taxi, Tickets",
+  "transactionDate": "Transaction Date",
+  "paidBy": "Paid by: {name}",
+  "@paidBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "selectWhoPaid": "Please select who paid",
+  "selectParticipants": "Select at least one participant",
+  "expenseAdded": "Expense added successfully!",
+  "expenseDeleted": "Expense deleted",
+  "noExpensesYet": "No expenses yet. Add your first check!",
+
+  "dailyLimit": "Daily Limit",
+  "remainingToday": "Remaining for today:",
+  "overspentToday": "Overspent today:",
+  "notSet": "Not set",
+
+  "choose": "CHOOSE",
+  "enterName": "Enter name",
+  "enterBudget": "Enter budget",
+  "enterPrepaid": "Enter prepaid amount",
+  "prepaidExceedsBudget": "Prepaid cannot exceed total budget",
+
+  "noAccountRegister" : "Don't have an account? Register",
+  "registrationSuccessful": "Registration successful!",
+
+  "active": "Active",
+  "upcoming": "Upcoming",
+  "archived": "Archived",
+  "addTrip": "Add Trip",
+  "noActiveTrips": "No active trips right now",
+  "noUpcomingTrips": "No upcoming trips planned",
+  "noArchivedTrips": "Your archive is empty",
+  "budgetAmount": "Budget: {amount}",
+  "@budgetAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+
+  "startDateLabel": "Start Date",
+  "endDateLabel": "End Date",
+  "enterTripName": "Please enter trip name",
+  "enterTotalBudget": "Please enter total budget",
+  "enterPrepaidAmount": "Please enter prepaid amount",
+  "prepaidAmount": "Prepaid Amount",
+  "unknown": "Unknown",
+
+  "enterValidAmount": "Enter a valid amount",
+  "enterDescription": "Enter description",
+  "whoPaid": "Who Paid?",
+  "splitBetween": "Split Between",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect All",
+
+  "language": "Language"
+}

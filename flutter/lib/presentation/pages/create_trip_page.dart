@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/constants/currencies.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 class CreateTripPage extends StatefulWidget{
@@ -57,9 +58,10 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Trip'),
+        title: Text(l10n.createTrip),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -69,16 +71,16 @@ class _CreateTripPageState extends State<CreateTripPage> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Trip Name', border: OutlineInputBorder()),
-              validator: (value) => value == null || value.isEmpty ? 'Please enter trip name' : null,
+              decoration: InputDecoration(labelText: l10n.tripName, border: const OutlineInputBorder()),
+              validator: (value) => value == null || value.isEmpty ? l10n.enterTripName : null,
             ),
             const SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
               value: _selectedCurrency,
-              decoration: const InputDecoration(
-                labelText: 'Currency',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.currency,
+                border: const OutlineInputBorder(),
               ),
               menuMaxHeight: 300,
               items: supportedCurrencies
@@ -94,34 +96,31 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
             const SizedBox(height:16),
 
-            
+
             TextFormField(
               controller: _budgetController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Total Budget', border: OutlineInputBorder()),
-              validator: (value) => value == null || value.isEmpty ? 'Please enter total budget' : null,
+              decoration: InputDecoration(labelText: l10n.totalBudget, border: const OutlineInputBorder()),
+              validator: (value) => value == null || value.isEmpty ? l10n.enterTotalBudget : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _prepaidController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Prepaid Amount',
-                border: OutlineInputBorder()
+                labelText: l10n.prepaidAmount,
+                border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if(value == null || value.isEmpty) {
-                    return 'Please enter prepaid amount';
-                  } 
+                    return l10n.enterPrepaidAmount;
+                  }
 
                   if(_prepaidExpenses > _totalBudget) {
-                    return 'Prepaid amount cannot exceed total budget';
+                    return l10n.prepaidExceedsBudget;
                   }
                   return null;
                 }
-
-                
-                
             ),
             const SizedBox(height: 16),
 
@@ -129,8 +128,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
               children: [
                 Expanded(
                   child: ListTile(
-                    title: const Text("Start Date"),
-                    subtitle: Text(_startDate == null ? 'Not set' : _startDate!.toIso8601String().split('T')[0]),
+                    title: Text(l10n.startDateLabel),
+                    subtitle: Text(_startDate == null ? l10n.notSet : _startDate!.toIso8601String().split('T')[0]),
                     onTap: () => _selectDate(context, true),
                     tileColor: Colors.grey[200],
                   ),
@@ -138,8 +137,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ListTile(
-                    title: const Text("End Date"),
-                    subtitle: Text(_endDate == null ? 'Not set' : _endDate!.toIso8601String().split('T')[0]),
+                    title: Text(l10n.endDateLabel),
+                    subtitle: Text(_endDate == null ? l10n.notSet : _endDate!.toIso8601String().split('T')[0]),
                     onTap: () => _selectDate(context, false),
                     tileColor: Colors.grey[200],
                   ),
@@ -152,14 +151,13 @@ class _CreateTripPageState extends State<CreateTripPage> {
               onPressed: () async {
                 if(_startDate == null || _endDate == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please select dates')),
+                    SnackBar(content: Text(l10n.selectDates)),
                     );
                   return;
                 }
                 if(_formKey.currentState!.validate()) {
-                  
 
-                
+
                 final provider = context.read<TripsProvider>();
                 final success = await provider.addTrip(
                   name: _nameController.text,
@@ -169,20 +167,20 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   endDate: _endDate!,
                   currency: _selectedCurrency,
                 );
-                
+
                 if (success) {
                   if(mounted) {
                     Navigator.pop(context);
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(provider.errorMessage ?? 'Failed to create trip')),
+                    SnackBar(content: Text(provider.errorMessage ?? l10n.failedToCreateTrip)),
                   );
                 }
                 }
               },
               style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
-              child: const Text('Create Trip'),
+              child: Text(l10n.createTrip),
             )
           ]
         ),

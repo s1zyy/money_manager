@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money_manager/core/dio_client.dart';
 import 'package:money_manager/data/datasources/auth_local_data_source.dart';
 import 'package:money_manager/data/datasources/auth_remote_data_source.dart';
@@ -37,6 +38,7 @@ import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
+import 'package:money_manager/presentation/providers/locale_provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 
@@ -204,6 +206,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   sl.registerLazySingleton(
     () => const FlutterSecureStorage()
   );
+
+  final prefs = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => prefs);
+  sl.registerLazySingleton(() => LocaleProvider(prefs));
 
   sl.registerLazySingleton(() => DioClient());
 

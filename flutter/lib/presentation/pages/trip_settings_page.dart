@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/constants/currencies.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 
@@ -48,19 +49,20 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final dashboardProvider = context.watch<TripDashboardProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trip Settings'),
+        title: Text(l10n.tripSettings),
         actions: [
           if(dashboardProvider.dashboard!.isOwner)...[
             TextButton(
               onPressed: _saveSettings,
-              child: const Text('Save', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Text(l10n.save, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             )
           ]
-          
+
         ],
       ),
       body: SingleChildScrollView(
@@ -71,41 +73,41 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if(dashboardProvider.dashboard!.isOwner)...[
-              Text('General', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+              Text(l10n.general, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Trip Name', border: OutlineInputBorder()),
-                validator: (value) => value == null || value.isEmpty ? 'Enter name' : null,
+                decoration: InputDecoration(labelText: l10n.tripName, border: const OutlineInputBorder()),
+                validator: (value) => value == null || value.isEmpty ? l10n.enterName : null,
               ),
               const SizedBox(height: 20),
 
-              Text('Finance', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+              Text(l10n.finance, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _budgetController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Total Budget', border: OutlineInputBorder()),
-                validator: (value) => value == null || value.isEmpty ? 'Enter budget' : null,
+                decoration: InputDecoration(labelText: l10n.totalBudget, border: const OutlineInputBorder()),
+                validator: (value) => value == null || value.isEmpty ? l10n.enterBudget : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _prepaidController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Prepaid Expenses', border: OutlineInputBorder()),
+                decoration: InputDecoration(labelText: l10n.prepaidExpenses, border: const OutlineInputBorder()),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter prepaid amount';
+                  if (value == null || value.isEmpty) return l10n.enterPrepaid;
                   if (_prepaidExpenses > _totalBudget) {
-                    return 'Prepaid cannot exceed total budget';
+                    return l10n.prepaidExceedsBudget;
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-              
+
               DropdownButtonFormField<String>(
                 value: _selectedCurrency,
-                decoration: const InputDecoration(labelText: 'Trip Currency', border: OutlineInputBorder()),
+                decoration: InputDecoration(labelText: l10n.tripCurrency, border: const OutlineInputBorder()),
                 items: supportedCurrencies.map((c) => DropdownMenuItem(
                   value: c.code,
                   child: Text('${c.symbol}  ${c.name} (${c.code})'),
@@ -118,7 +120,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 
               const SizedBox(height: 16),
 
-              Text('Dates', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+              Text(l10n.dates, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
 
               OutlinedButton.icon(
@@ -127,15 +129,15 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 icon: const Icon(Icons.calendar_today),
-                label: Text('End Date: ${_currentEndDate.toIso8601String().split('T')[0]}'),
+                label: Text(l10n.endDate(_currentEndDate.toIso8601String().split('T')[0])),
                 ),
-              
+
               const SizedBox(height: 32),
 
               const Divider(),
-              
+
               const SizedBox(height: 16),
-              Text('Danger Zone', style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
+              Text(l10n.dangerZone, style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
 
               OutlinedButton.icon(
@@ -146,11 +148,10 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                   foregroundColor: colorScheme.error,
                 ),
                 icon: const Icon(Icons.archive_outlined),
-                label: const Text('Archive Trip'),
+                label: Text(l10n.archiveTrip),
               ),
               const SizedBox(height: 12),
 
-              // Кнопка Удаления
               ElevatedButton.icon(
                 onPressed: _deleteTrip,
                 style: ElevatedButton.styleFrom(
@@ -160,13 +161,13 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                   elevation: 0,
                 ),
                 icon: const Icon(Icons.delete_forever),
-                label: const Text('Delete Trip Permanently'),
+                label: Text(l10n.deleteTrip),
               ),
             ],
               if(dashboardProvider.dashboard!.canLeave)...[
               const Divider(),
               const SizedBox(height: 16),
-              Text('Danger Zone', style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
+              Text(l10n.dangerZone, style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: _leaveTrip,
@@ -176,7 +177,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                   foregroundColor: colorScheme.error,
                 ),
                 icon: const Icon(Icons.exit_to_app),
-                label: const Text('Leave Trip'),
+                label: Text(l10n.leaveTrip),
               ),
             ],
             ],
@@ -187,6 +188,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
   }
 
   void _saveSettings() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       final provider = context.read<TripDashboardProvider>();
       final success = await provider.updateTrip(
@@ -201,25 +203,26 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
         if(mounted) {
           if(success) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Settings saved!')),
+              SnackBar(content: Text(l10n.settingsSaved)),
             );
             Navigator.pop(context);
           } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(provider.errorMessage ?? 'Failed to save')),
+            SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave)),
           );
-          
-          
+
+
         }
       }
     }
   }
 
   void _archiveTrip() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await _showConfirmDialog(
-      title: 'Archive Trip?',
-      content: 'This will move the trip to the Archived tab.',
-      confirmLabel: 'Archive',
+      title: l10n.archiveTripConfirm,
+      content: l10n.archiveTripMessage,
+      confirmLabel: l10n.archiveTrip,
     );
     if (confirm == true) {
       final provider = context.read<TripDashboardProvider>();
@@ -230,7 +233,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.errorMessage ?? 'Failed to archive')),
+          SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive)),
         );
         }
       }
@@ -238,10 +241,11 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
   }
 
   void _leaveTrip() async {
+  final l10n = AppLocalizations.of(context)!;
   final confirm = await _showConfirmDialog(
-    title: 'Leave Trip?',
-    content: 'You will no longer have access to this trip.',
-    confirmLabel: 'Leave',
+    title: l10n.leaveTripConfirm,
+    content: l10n.leaveTripMessage,
+    confirmLabel: l10n.leaveTrip,
     isDangerous: true,
   );
   if (confirm == true) {
@@ -253,7 +257,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.errorMessage ?? 'Failed to leave')),
+          SnackBar(content: Text(provider.errorMessage ?? l10n.failedToLeave)),
         );
       }
     }
@@ -261,10 +265,11 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 }
 
   void _deleteTrip() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await _showConfirmDialog(
-      title: 'Delete Trip?',
-      content: 'Are you absolutely sure? This action cannot be undone and all expense history will be lost.',
-      confirmLabel: 'Delete',
+      title: l10n.deleteTripConfirm,
+      content: l10n.deleteTripMessage,
+      confirmLabel: l10n.deleteTrip,
       isDangerous: true,
     );
     if (confirm == true) {
@@ -280,13 +285,14 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
     required String confirmLabel,
     bool isDangerous = false,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(title),
         content: Text(content),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: isDangerous ? FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error) : null,
@@ -299,10 +305,11 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 
 
   void _extendTrip() async {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     if(now.isAfter(_currentEndDate)){
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Trip has already ended')),
+      SnackBar(content: Text(l10n.tripHasEnded)),
       );
 
       return;

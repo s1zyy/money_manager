@@ -1,0 +1,166 @@
+{
+  "@@locale": "zh",
+
+  "appTitle": "Money Manager",
+
+  "login": "登录",
+  "register": "注册",
+  "email": "邮箱",
+  "password": "密码",
+  "name": "姓名",
+  "logout": "退出登录",
+  "logoutConfirm": "确定要退出登录吗？",
+  "cancel": "取消",
+  "save": "保存",
+  "add": "添加",
+  "remove": "删除",
+  "retry": "重试",
+  "delete": "删除",
+  "join": "加入",
+
+  "trips": "旅行",
+  "createTrip": "创建旅行",
+  "createNewTrip": "新建旅行",
+  "tripName": "旅行名称",
+  "tripSettings": "旅行设置",
+  "tripCurrency": "旅行货币",
+  "totalBudget": "总预算",
+  "prepaidExpenses": "预付费用",
+  "noTripsYet": "暂无旅行！",
+  "youWillBeOwner": "您将成为所有者并设置预算",
+  "selectDates": "请选择日期",
+  "currency": "货币",
+  "general": "常规",
+  "finance": "财务",
+  "dates": "日期",
+  "endDate": "结束日期：{date}",
+  "@endDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "tripHasEnded": "旅行已结束",
+  "tripNotStarted": "旅行尚未开始！开始后您才能记录费用。",
+  "settingsSaved": "设置已保存！",
+  "failedToSave": "保存失败",
+  "failedToCreateTrip": "创建旅行失败",
+
+  "joinTrip": "加入旅行",
+  "joinTripByCode": "使用邀请码加入",
+  "enterInviteCode": "输入朋友的邀请码",
+  "inviteCodeHint": "输入邀请码",
+  "joinedSuccessfully": "成功加入旅行！",
+  "errorJoiningTrip": "加入旅行时出错",
+  "joinCodeCopied": "邀请码已复制到剪贴板！",
+  "inviteCode": "邀请码",
+
+  "archiveTrip": "归档旅行",
+  "archiveTripConfirm": "归档旅行？",
+  "archiveTripMessage": "旅行将移至已归档标签页。",
+  "failedToArchive": "归档失败",
+
+  "deleteTrip": "永久删除旅行",
+  "deleteTripConfirm": "删除旅行？",
+  "deleteTripMessage": "您确定吗？此操作无法撤销，所有费用记录将丢失。",
+
+  "leaveTrip": "离开旅行",
+  "leaveTripConfirm": "离开旅行？",
+  "leaveTripMessage": "您将不再有权访问此旅行。",
+  "failedToLeave": "离开失败",
+
+  "dangerZone": "危险区域",
+
+  "members": "成员",
+  "owner": "所有者",
+  "virtual": "虚拟",
+  "addWithoutAccount": "无账号添加",
+  "addVirtualParticipant": "添加虚拟参与者",
+  "removeMember": "移除成员",
+  "removeMemberConfirm": "从此旅行中移除 {name}？",
+  "@removeMemberConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memberRemoved": "{name} 已从旅行中移除",
+  "@memberRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memberAdded": "{name} 已添加",
+  "@memberAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "failedToAdd": "添加失败",
+  "failedToRemove": "移除参与者失败",
+  "noParticipants": "暂无参与者",
+  "participantBalances": "参与者余额",
+
+  "expenses": "费用",
+  "addExpense": "添加费用",
+  "addNewExpense": "新增费用",
+  "saveExpense": "保存费用",
+  "amount": "金额",
+  "description": "描述",
+  "descriptionHint": "例如：晚餐、出租车、门票",
+  "transactionDate": "交易日期",
+  "paidBy": "付款人：{name}",
+  "@paidBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "selectWhoPaid": "请选择付款人",
+  "selectParticipants": "请至少选择一位参与者",
+  "expenseAdded": "费用添加成功！",
+  "expenseDeleted": "费用已删除",
+  "noExpensesYet": "暂无费用。添加第一笔吧！",
+
+  "dailyLimit": "每日限额",
+  "remainingToday": "今日剩余：",
+  "overspentToday": "今日超支：",
+  "notSet": "未设置",
+
+  "choose": "选择",
+  "enterName": "输入姓名",
+  "enterBudget": "输入预算",
+  "enterPrepaid": "输入预付金额",
+  "prepaidExceedsBudget": "预付金额不能超过总预算",
+
+  "noAccountRegister": "没有账号？注册",
+  "registrationSuccessful": "注册成功！",
+
+  "active": "进行中",
+  "upcoming": "即将开始",
+  "archived": "已归档",
+  "addTrip": "添加旅行",
+  "noActiveTrips": "暂无进行中的旅行",
+  "noUpcomingTrips": "暂无计划中的旅行",
+  "noArchivedTrips": "归档为空",
+  "budgetAmount": "预算：{amount}",
+  "@budgetAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+
+  "startDateLabel": "开始日期",
+  "endDateLabel": "结束日期",
+  "enterTripName": "请输入旅行名称",
+  "enterTotalBudget": "请输入总预算",
+  "enterPrepaidAmount": "请输入预付金额",
+  "prepaidAmount": "预付金额",
+  "unknown": "未知",
+
+  "enterValidAmount": "请输入有效金额",
+  "enterDescription": "请输入描述",
+  "whoPaid": "谁付款了？",
+  "splitBetween": "分摊给",
+  "selectAll": "全选",
+  "deselectAll": "取消全选",
+
+  "language": "语言"
+}

@@ -1,8 +1,7 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/date_time_extentions.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 
@@ -60,17 +59,18 @@ class _AddExpensePageState extends State<AddExpensePage> {
   }
 
   void _submitData() async {
+    final l10n = AppLocalizations.of(context)!;
     if(!_formKey.currentState!.validate()) return;
     if(_selectedPayerId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select who paid')),
+        SnackBar(content: Text(l10n.selectWhoPaid)),
       );
       return;
     }
 
     if(_selectedParticipantIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select at least one participant')),
+        SnackBar(content: Text(l10n.selectParticipants)),
       );
       return;
 
@@ -90,7 +90,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense added successfully!')),
+        SnackBar(content: Text(l10n.expenseAdded)),
       );
       Navigator.pop(context);
     } else if (mounted && provider.errorMessage != null) {
@@ -146,19 +146,19 @@ class _AddExpensePageState extends State<AddExpensePage> {
   Widget build(BuildContext context) {
     final provider = context.watch<TripDashboardProvider>();
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Expense'),
+        title: Text(l10n.addNewExpense),
       ),
-      body: provider.isLoading 
+      body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : Form(
               key: _formKey,
               child: ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
-                  //Amount
                   TextFormField(
                     controller: _amountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -167,27 +167,25 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     ],
                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
-                      labelText: 'Amount',
+                      labelText: l10n.amount,
                       prefixIcon: const Icon(Icons.attach_money),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     validator: (val) => (val == null || val.isEmpty || double.tryParse(val) == 0)
-                        ? 'Enter a valid amount'
+                        ? l10n.enterValidAmount
                         : null,
                   ),
                   const SizedBox(height: 16),
 
-                  // Description
                   TextFormField(
                     controller: _descriptionController,
                     decoration: InputDecoration(
-                      labelText: 'Description',
-                      
-                      hintText: 'e.g., Dinner, Taxi, Tickets',
+                      labelText: l10n.description,
+                      hintText: l10n.descriptionHint,
                       prefixIcon: const Icon(Icons.description_outlined),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    validator: (val) => (val == null || val.isEmpty) ? 'Enter description' : null,
+                    validator: (val) => (val == null || val.isEmpty) ? l10n.enterDescription : null,
                   ),
                   const SizedBox(height: 16),
 
@@ -196,20 +194,19 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     shape: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[400]!)),
                     child: ListTile(
                       leading: const Icon(Icons.calendar_month),
-                      title: const Text('Transaction Date'),
+                      title: Text(l10n.transactionDate),
                       subtitle: Text(_formalDate(_selectedDate)),
                       trailing: TextButton(
                         onPressed: () => _selectDate(context),
-                        child:const Text('CHOOSE'),
+                        child: Text(l10n.choose),
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
-                  // Payer
                   Text(
-                    'Who Paid?',
+                    l10n.whoPaid,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -232,12 +229,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Participants
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Split Between',
+                        l10n.splitBetween,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       TextButton(
@@ -252,14 +248,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           });
                         },
                         child: Text(_selectedParticipantIds.length == provider.participantsMap.length
-                            ? 'Deselect All' 
-                            : 'Select All'),
+                            ? l10n.deselectAll
+                            : l10n.selectAll),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  // Checkboxes
                   Card(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -294,14 +289,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                   const SizedBox(height: 32),
 
-                  
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: FilledButton.icon(
                       onPressed: _submitData,
                       icon: const Icon(Icons.save),
-                      label: const Text('Save Expense', style: TextStyle(fontSize: 16)),
+                      label: Text(l10n.saveExpense, style: const TextStyle(fontSize: 16)),
                     ),
                   ),
                 ],

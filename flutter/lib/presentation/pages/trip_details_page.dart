@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/date_time_extentions.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
 import 'package:money_manager/presentation/pages/trip_settings_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
@@ -34,12 +35,12 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
+    final l10n = AppLocalizations.of(context)!;
     final tripDashboardProvider = context.watch<TripDashboardProvider>();
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(tripDashboardProvider.dashboard?.trip.name ?? "Unknown"),
+        title: Text(tripDashboardProvider.dashboard?.trip.name ?? l10n.unknown),
         actions: [
           IconButton(
             icon:const Icon(Icons.group),
@@ -74,11 +75,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
               _buildDashboardHeader(context, tripDashboardProvider),
               const SizedBox(height: 12,),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                'Expenses',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                l10n.expenses,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               ),
               const SizedBox(height: 8),
@@ -103,7 +104,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
             final DateTime cleanStart = startDate.dateOnly;
             if(cleanStart.isAfter(today)){
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('This trip has not started yet! You can only log expenses once it begins. ')),
+                SnackBar(content: Text(l10n.tripNotStarted)),
               );
               return;
             }
@@ -122,7 +123,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
             ),
           );
         },
-        label: const Text('Add Expense'),
+        label: Text(l10n.addExpense),
         icon: const Icon(Icons.add_card),
       ),
     );
@@ -131,7 +132,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       
   }
   Widget _buildDashboardHeader(BuildContext context, TripDashboardProvider provider) {
-
+  final l10n = AppLocalizations.of(context)!;
   final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
   final limit = provider.dashboard?.dailyLimit ?? 0.0;
   final spentToday = provider.todaySpent;
@@ -157,7 +158,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Daily Limit',
+                    l10n.dailyLimit,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.primary),
                   ),
                   Text(
@@ -181,7 +182,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isOverspent ? 'Overspent today:' : 'Remaining for today:',
+                    isOverspent ? l10n.overspentToday : l10n.remainingToday,
                     style: TextStyle(color: isOverspent ? Colors.red : Colors.grey[700]),
                   ),
                   Text(
@@ -199,18 +200,18 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         ),
       ),
 
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Align(
           alignment: Alignment.centerLeft,
-          child: Text('Participant Balances', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          child: Text(l10n.participantBalances, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ),
       ),
       Container(
         height: 85,
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: provider.participants.isEmpty
-            ? const Center(child: Text('No participants'))
+            ? Center(child: Text(l10n.noParticipants))
             : ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -253,6 +254,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 }
 
   Widget _buildExpensesContent(TripDashboardProvider provider, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
     if(provider.isLoading && provider.expenses.isEmpty) {
       return ListView(
@@ -280,7 +282,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => provider.loadDashboard(widget.tripId),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),
@@ -292,16 +294,16 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     if (provider.expenses.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
+        children: [
           Padding(
-            padding: EdgeInsets.all(40.0),
+            padding: const EdgeInsets.all(40.0),
             child: Column(
               children: [
-                Icon(Icons.receipt_long_outlined, color: Colors.grey, size: 48),
-                SizedBox(height: 12),
+                const Icon(Icons.receipt_long_outlined, color: Colors.grey, size: 48),
+                const SizedBox(height: 12),
                 Text(
-                  'No expenses yet. Add your first check!',
-                  style: TextStyle(color: Colors.grey),
+                  l10n.noExpensesYet,
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
@@ -363,7 +365,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 onDismissed: (direction) {
                   provider.deleteExpense(widget.tripId, expense.id);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Expense deleted')),
+                    SnackBar(content: Text(l10n.expenseDeleted)),
                   );
                 },
                 child: Card(
@@ -383,7 +385,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text(
-                      'Paid by: $payerName',
+                      l10n.paidBy(payerName),
                       style: const TextStyle(fontSize: 12),
                     ),
                     trailing: Text(
@@ -402,6 +404,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   void _showMembersModal(BuildContext context, TripDashboardProvider provider) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final joinCode = provider.dashboard?.trip.joinCode ?? '------';
     final isOwner = provider.dashboard?.isOwner ?? false;
     final ownerId = provider.dashboard?.trip.ownerId ?? '';
@@ -427,7 +430,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 ),
               ),
               Text(
-                'Members',
+                l10n.members,
                 style: Theme.of(modalContext).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -445,9 +448,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   ),
                   title: Text(
                     isEntryOwner
-                        ? '$name (owner)'
+                        ? '$name (${l10n.owner})'
                         : provider.isVirtualParticipant(id)
-                            ? '$name (virtual)'
+                            ? '$name (${l10n.virtual})'
                             : name,
                     style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
@@ -467,7 +470,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   child: OutlinedButton.icon(
                     onPressed: () => _showAddVirtualParticipantDialog(context, provider, widget.tripId, modalContext),
                     icon: const Icon(Icons.person_add_alt_1),
-                    label: const Text('Add without account'),
+                    label: Text(l10n.addWithoutAccount),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 44),
                     ),
@@ -475,7 +478,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 ),
               const Divider(height: 32),
               Text(
-                'Invite Code',
+                l10n.inviteCode,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -509,8 +512,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       Clipboard.setData(ClipboardData(text: joinCode));
                       Navigator.pop(modalContext);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Join code copied to clipboard!'),
+                        SnackBar(
+                          content: Text(l10n.joinCodeCopied),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -532,23 +535,24 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     BuildContext modalContext,
   ) {
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Add Virtual Participant'),
+          title: Text(l10n.addVirtualParticipant),
           content: TextField(
             controller: controller,
             autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Name',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: l10n.name,
+              border: const OutlineInputBorder(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () async {
@@ -560,13 +564,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(success ? '$name added' : provider.errorMessage ?? 'Failed to add'),
+                    content: Text(success ? l10n.memberAdded(name) : provider.errorMessage ?? l10n.failedToAdd),
                     backgroundColor: success ? Colors.green : Colors.red,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
               },
-              child: const Text('Add'),
+              child: Text(l10n.add),
             ),
           ],
         );
@@ -582,16 +586,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     String name,
     BuildContext modalContext,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Remove Member'),
-          content: Text('Remove $name from this trip?'),
+          title: Text(l10n.removeMember),
+          content: Text(l10n.removeMemberConfirm(name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: Colors.red),
@@ -603,14 +608,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(success
-                        ? '$name removed from trip'
-                        : provider.errorMessage ?? 'Failed to remove participant'),
+                        ? l10n.memberRemoved(name)
+                        : provider.errorMessage ?? l10n.failedToRemove),
                     backgroundColor: success ? Colors.green : Colors.red,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
               },
-              child: const Text('Remove'),
+              child: Text(l10n.remove),
             ),
           ],
         );

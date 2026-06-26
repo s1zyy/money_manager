@@ -1,0 +1,166 @@
+{
+  "@@locale": "pt",
+
+  "appTitle": "Money Manager",
+
+  "login": "Entrar",
+  "register": "Cadastrar",
+  "email": "E-mail",
+  "password": "Senha",
+  "name": "Nome",
+  "logout": "Sair",
+  "logoutConfirm": "Tem certeza que deseja sair?",
+  "cancel": "Cancelar",
+  "save": "Salvar",
+  "add": "Adicionar",
+  "remove": "Remover",
+  "retry": "Tentar novamente",
+  "delete": "Excluir",
+  "join": "Entrar",
+
+  "trips": "Viagens",
+  "createTrip": "Criar viagem",
+  "createNewTrip": "Nova viagem",
+  "tripName": "Nome da viagem",
+  "tripSettings": "Configurações da viagem",
+  "tripCurrency": "Moeda da viagem",
+  "totalBudget": "Orçamento total",
+  "prepaidExpenses": "Despesas pré-pagas",
+  "noTripsYet": "Ainda não há viagens!",
+  "youWillBeOwner": "Você será o proprietário e definirá o orçamento",
+  "selectDates": "Selecione as datas",
+  "currency": "Moeda",
+  "general": "Geral",
+  "finance": "Finanças",
+  "dates": "Datas",
+  "endDate": "Data de término: {date}",
+  "@endDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "tripHasEnded": "A viagem já terminou",
+  "tripNotStarted": "Esta viagem ainda não começou! Você poderá registrar despesas quando ela começar.",
+  "settingsSaved": "Configurações salvas!",
+  "failedToSave": "Falha ao salvar",
+  "failedToCreateTrip": "Falha ao criar viagem",
+
+  "joinTrip": "Entrar na viagem",
+  "joinTripByCode": "Entrar com código",
+  "enterInviteCode": "Digite o código de convite de um amigo",
+  "inviteCodeHint": "Digite o código",
+  "joinedSuccessfully": "Entrou na viagem com sucesso!",
+  "errorJoiningTrip": "Erro ao entrar na viagem",
+  "joinCodeCopied": "Código copiado para a área de transferência!",
+  "inviteCode": "Código de convite",
+
+  "archiveTrip": "Arquivar viagem",
+  "archiveTripConfirm": "Arquivar viagem?",
+  "archiveTripMessage": "A viagem será movida para a aba Arquivadas.",
+  "failedToArchive": "Falha ao arquivar",
+
+  "deleteTrip": "Excluir viagem permanentemente",
+  "deleteTripConfirm": "Excluir viagem?",
+  "deleteTripMessage": "Tem absolutamente certeza? Esta ação não pode ser desfeita e todo o histórico de despesas será perdido.",
+
+  "leaveTrip": "Sair da viagem",
+  "leaveTripConfirm": "Sair da viagem?",
+  "leaveTripMessage": "Você não terá mais acesso a esta viagem.",
+  "failedToLeave": "Falha ao sair",
+
+  "dangerZone": "Zona de perigo",
+
+  "members": "Membros",
+  "owner": "proprietário",
+  "virtual": "virtual",
+  "addWithoutAccount": "Adicionar sem conta",
+  "addVirtualParticipant": "Adicionar participante virtual",
+  "removeMember": "Remover membro",
+  "removeMemberConfirm": "Remover {name} desta viagem?",
+  "@removeMemberConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memberRemoved": "{name} removido da viagem",
+  "@memberRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memberAdded": "{name} adicionado",
+  "@memberAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "failedToAdd": "Falha ao adicionar",
+  "failedToRemove": "Falha ao remover participante",
+  "noParticipants": "Sem participantes",
+  "participantBalances": "Saldos dos participantes",
+
+  "expenses": "Despesas",
+  "addExpense": "Adicionar despesa",
+  "addNewExpense": "Nova despesa",
+  "saveExpense": "Salvar despesa",
+  "amount": "Valor",
+  "description": "Descrição",
+  "descriptionHint": "ex., Jantar, Táxi, Ingressos",
+  "transactionDate": "Data da transação",
+  "paidBy": "Pago por: {name}",
+  "@paidBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "selectWhoPaid": "Selecione quem pagou",
+  "selectParticipants": "Selecione pelo menos um participante",
+  "expenseAdded": "Despesa adicionada com sucesso!",
+  "expenseDeleted": "Despesa excluída",
+  "noExpensesYet": "Ainda não há despesas. Adicione a primeira!",
+
+  "dailyLimit": "Limite diário",
+  "remainingToday": "Restante para hoje:",
+  "overspentToday": "Excedido hoje:",
+  "notSet": "Não definido",
+
+  "choose": "ESCOLHER",
+  "enterName": "Digite o nome",
+  "enterBudget": "Digite o orçamento",
+  "enterPrepaid": "Digite o valor pré-pago",
+  "prepaidExceedsBudget": "O pré-pago não pode exceder o orçamento total",
+
+  "noAccountRegister": "Não tem conta? Cadastre-se",
+  "registrationSuccessful": "Cadastro realizado com sucesso!",
+
+  "active": "Ativas",
+  "upcoming": "Próximas",
+  "archived": "Arquivadas",
+  "addTrip": "Adicionar viagem",
+  "noActiveTrips": "Sem viagens ativas",
+  "noUpcomingTrips": "Sem viagens planejadas",
+  "noArchivedTrips": "O arquivo está vazio",
+  "budgetAmount": "Orçamento: {amount}",
+  "@budgetAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+
+  "startDateLabel": "Data de início",
+  "endDateLabel": "Data de término",
+  "enterTripName": "Digite o nome da viagem",
+  "enterTotalBudget": "Digite o orçamento total",
+  "enterPrepaidAmount": "Digite o valor pré-pago",
+  "prepaidAmount": "Valor pré-pago",
+  "unknown": "Desconhecido",
+
+  "enterValidAmount": "Digite um valor válido",
+  "enterDescription": "Digite uma descrição",
+  "whoPaid": "Quem pagou?",
+  "splitBetween": "Dividir entre",
+  "selectAll": "Selecionar todos",
+  "deselectAll": "Desmarcar todos",
+
+  "language": "Idioma"
+}

@@ -19,8 +19,9 @@ class AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async{
-    if (err.response?.statusCode == 401) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final path = err.requestOptions.path;
+    if (err.response?.statusCode == 401 && !path.contains('/auth/')) {
       await localDataSource.deleteToken();
       onUnauthorized();
     }

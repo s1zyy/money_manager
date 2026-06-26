@@ -162,5 +162,12 @@
   "selectAll": "Select All",
   "deselectAll": "Deselect All",
 
-  "language": "Language"
+  "language": "Language",
+
+  "enterEmail": "Please enter email",
+  "enterValidEmail": "Enter a valid email address",
+  "enterPassword": "Please enter password",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "confirmPassword": "Confirm Password",
+  "passwordsDoNotMatch": "Passwords do not match"
 }

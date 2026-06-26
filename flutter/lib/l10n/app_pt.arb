@@ -162,5 +162,12 @@
   "selectAll": "Selecionar todos",
   "deselectAll": "Desmarcar todos",
 
-  "language": "Idioma"
+  "language": "Idioma",
+
+  "enterEmail": "Insira o e-mail",
+  "enterValidEmail": "Insira um endereço de e-mail válido",
+  "enterPassword": "Insira a senha",
+  "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
+  "confirmPassword": "Confirmar senha",
+  "passwordsDoNotMatch": "As senhas não coincidem"
 }

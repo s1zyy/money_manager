@@ -161,5 +161,12 @@
   "selectAll": "Alle auswählen",
   "deselectAll": "Alle abwählen",
 
-  "language": "Sprache"
+  "language": "Sprache",
+
+  "enterEmail": "Bitte E-Mail eingeben",
+  "enterValidEmail": "Gültige E-Mail-Adresse eingeben",
+  "enterPassword": "Bitte Passwort eingeben",
+  "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein",
+  "confirmPassword": "Passwort bestätigen",
+  "passwordsDoNotMatch": "Passwörter stimmen nicht überein"
 }

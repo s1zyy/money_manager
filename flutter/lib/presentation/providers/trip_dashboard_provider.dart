@@ -77,7 +77,7 @@ class TripDashboardProvider extends ChangeNotifier {
       _participantsMap = {for (var p in participants) p.id: p};
 
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -110,7 +110,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await loadDashboard(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       return false;
     } finally {
       _isLoading = false;
@@ -141,7 +141,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await deleteExpenseUseCase(tripId: tripId, expenseId: expenseId);
       await loadDashboard(tripId);
     } catch(e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
     }
   }
@@ -170,7 +170,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await loadDashboard(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       return false;
     } finally {
       _isLoading = false;
@@ -186,7 +186,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await archiveTripUseCase(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       return false;
     } finally {
       _isLoading = false;
@@ -203,7 +203,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await leaveTripUseCase(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       return false;
     } finally {
       _isLoading = false;
@@ -219,7 +219,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await deleteTripUseCase(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       return false;
     } finally {
       _isLoading = false;
@@ -235,7 +235,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await loadDashboard(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     }
@@ -247,7 +247,7 @@ class TripDashboardProvider extends ChangeNotifier {
       await loadDashboard(tripId);
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception', '');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     }

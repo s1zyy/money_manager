@@ -28,7 +28,7 @@ class TripsProvider extends ChangeNotifier {
     try {
       _trips = await getUserTrips();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -60,7 +60,7 @@ class TripsProvider extends ChangeNotifier {
       await loadTrips();
       return true;
     } catch(e) {
-      _errorMessage = e.toString();
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     } finally {
@@ -81,7 +81,7 @@ class TripsProvider extends ChangeNotifier {
       _trips.add(trip);
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     } finally {

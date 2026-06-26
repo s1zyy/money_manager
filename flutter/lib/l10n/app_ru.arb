@@ -136,5 +136,12 @@
   "selectAll": "Выбрать всех",
   "deselectAll": "Снять выбор",
 
-  "language": "Язык"
+  "language": "Язык",
+
+  "enterEmail": "Введите email",
+  "enterValidEmail": "Введите корректный email адрес",
+  "enterPassword": "Введите пароль",
+  "passwordTooShort": "Пароль должен содержать не менее 6 символов",
+  "confirmPassword": "Подтвердите пароль",
+  "passwordsDoNotMatch": "Пароли не совпадают"
 }

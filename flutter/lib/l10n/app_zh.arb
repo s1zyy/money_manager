@@ -162,5 +162,10 @@
   "selectAll": "全选",
   "deselectAll": "取消全选",
 
-  "language": "语言"
+  "language": "语言",
+
+  "enterEmail": "请输入电子邮箱",
+  "enterValidEmail": "请输入有效的电子邮箱地址",
+  "enterPassword": "请输入密码",
+  "passwordTooShort": "密码长度至少为6个字符"
 }

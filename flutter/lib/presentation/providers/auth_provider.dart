@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
+String _clean(Object e) => e.toString().replaceFirst('Exception: ', '');
+
 class AuthProvider extends ChangeNotifier{
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
@@ -25,7 +27,7 @@ class AuthProvider extends ChangeNotifier{
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString();
+      _errorMessage = _clean(e);
       notifyListeners();
       return false;
     }
@@ -44,11 +46,11 @@ class AuthProvider extends ChangeNotifier{
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString();
+      _errorMessage = _clean(e);
       notifyListeners();
       return false;
     }
-      
+
   }
 
   Future<bool> logout() async {
@@ -62,7 +64,7 @@ class AuthProvider extends ChangeNotifier{
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString();
+      _errorMessage = _clean(e);
       notifyListeners();
       return false;
     }

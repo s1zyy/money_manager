@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:money_manager/core/dio_error_message.dart';
 import 'package:money_manager/data/models/trip_dashboard_model.dart';
 import 'package:money_manager/data/models/trip_model.dart';
 
@@ -21,112 +22,95 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
 
   @override
   Future<List<TripModel>> getUserTrips() async {
-    try{
-
-    
-    final response = await dio.get('/trips');
-    if (response.statusCode == 200) {
+    try {
+      final response = await dio.get('/trips');
       final List data = response.data as List;
       return data.map((json) => TripModel.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load trips');
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
     }
-  } on DioException catch (e) {
-    throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
   }
-  }
-
-  
 
   @override
   Future<void> createTrip(Map<String, dynamic> tripData) async {
     try {
       await dio.post('/trips', data: tripData);
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
-  
+
   @override
   Future<TripDashboardModel> getTripDashboard(String tripId) async {
     try {
       final response = await dio.get('/trips/$tripId/dashboard');
-      if (response.statusCode == 200) {
-        return TripDashboardModel.fromJson(response.data);
-      } else {
-        throw Exception('Failed to load trip dashboard');
-      }
+      return TripDashboardModel.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
-  
+
   @override
   Future<TripModel> joinTripByCode(String joinCode) async {
     try {
       final response = await dio.post('/trips/join', data: {'joinCode': joinCode});
-      if(response.statusCode == 200) {
-        return TripModel.fromJson(response.data);
-      } else {
-        throw Exception('Failed to join trip');
-      }
+      return TripModel.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
-  
+
   @override
-  Future<void> updateTrip(String tripId, Map<String, dynamic> data) async{
-    try{
-      await dio.put("/trips/$tripId", data: data);
+  Future<void> updateTrip(String tripId, Map<String, dynamic> data) async {
+    try {
+      await dio.put('/trips/$tripId', data: data);
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
-  
+
   @override
-  Future<void> archiveTrip(String tripId) async{
+  Future<void> archiveTrip(String tripId) async {
     try {
       await dio.post('/trips/$tripId/archive');
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
 
   @override
-  Future<void> leaveTrip(String tripId) async{
+  Future<void> leaveTrip(String tripId) async {
     try {
       await dio.post('/trips/$tripId/leave');
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
-  
+
   @override
-  Future<void> deleteTrip(String tripId) async{
+  Future<void> deleteTrip(String tripId) async {
     try {
       await dio.delete('/trips/$tripId');
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
-    
   }
-  
+
   @override
-  Future<void> removeParticipant(String tripId, String participantId) async{
+  Future<void> removeParticipant(String tripId, String participantId) async {
     try {
       await dio.delete('/trips/$tripId/participants/$participantId');
     } on DioException catch (e) {
-      throw Exception("Server error: ${e.response?.data['message'] ?? e.message}");
+      throw Exception(dioErrorMessage(e));
     }
   }
-  
+
   @override
-  Future<void> addVirtualParticipant(String tripId, String name) async{
-    await dio.post('/trips/$tripId/participants/virtual', data: {'name': name});
+  Future<void> addVirtualParticipant(String tripId, String name) async {
+    try {
+      await dio.post('/trips/$tripId/participants/virtual', data: {'name': name});
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
   }
-
-  
-
-  
-  }
+}

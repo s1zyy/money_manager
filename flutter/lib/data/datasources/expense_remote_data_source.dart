@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:money_manager/core/dio_error_message.dart';
 import 'package:money_manager/data/models/expense_model.dart';
 import 'package:money_manager/domain/entities/expense.dart';
 
@@ -14,12 +15,12 @@ abstract class ExpenseRemoteDataSource {
     required String description
   });
   Future<Expense> updateExpense({
-    required String tripId, 
-    required String expenseId, 
-    required String payerId, 
-    required DateTime date, 
-    required double amount, 
-    required List<String> newParticipantIds, 
+    required String tripId,
+    required String expenseId,
+    required String payerId,
+    required DateTime date,
+    required double amount,
+    required List<String> newParticipantIds,
     required String description
   });
   Future<void> deleteExpense(String tripId, String expenseId);
@@ -38,7 +39,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
       final List<dynamic> data = response.data;
       return data.map((json) => ExpenseModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to load expenses');
+      throw Exception(dioErrorMessage(e));
     }
   }
 
@@ -62,18 +63,18 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
       await dio.post('/trips/$tripId/expenses', data: body);
       return true;
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to add expense');
+      throw Exception(dioErrorMessage(e));
     }
   }
 
   @override
   Future<Expense> updateExpense({
-    required String tripId, 
-    required String expenseId, 
-    required String payerId, 
-    required DateTime date, 
-    required double amount, 
-    required List<String> newParticipantIds, 
+    required String tripId,
+    required String expenseId,
+    required String payerId,
+    required DateTime date,
+    required double amount,
+    required List<String> newParticipantIds,
     required String description
   }) async{
     try{
@@ -87,7 +88,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
       final response = await dio.put('/trips/$tripId/expenses/$expenseId', data: body);
       return ExpenseModel.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to update expense');
+      throw Exception(dioErrorMessage(e));
     }
   }
 
@@ -100,7 +101,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     try{
       await dio.delete('/trips/$tripId/expenses/$expenseId');
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to delete expense');
+      throw Exception(dioErrorMessage(e));
     }
   }
 

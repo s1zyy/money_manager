@@ -33,4 +33,10 @@ class AuthRepositoryImpl implements AuthRepository{
     await localDataSource.deleteToken();
   }
 
+  @override
+  Future<bool> hasToken() async {
+    final token = await localDataSource.getToken();
+    return token != null && token.isNotEmpty;
+  }
+
 }

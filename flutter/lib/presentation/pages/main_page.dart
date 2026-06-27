@@ -218,6 +218,7 @@ class _TripsPageState extends State<TripsPage> {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
           title: Text(l10n.logout),
@@ -252,6 +253,7 @@ class _TripsPageState extends State<TripsPage> {
 
     showDialog(
       context: pageContext,
+      
       builder: (dialogContext) {
         return AlertDialog(
           title: Text(l10n.joinTrip),
@@ -313,6 +315,7 @@ class _TripsPageState extends State<TripsPage> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) {
         final colorScheme = Theme.of(ctx).colorScheme;
         return AlertDialog(

@@ -167,5 +167,7 @@
   "enterEmail": "请输入电子邮箱",
   "enterValidEmail": "请输入有效的电子邮箱地址",
   "enterPassword": "请输入密码",
-  "passwordTooShort": "密码长度至少为6个字符"
+  "passwordTooShort": "密码长度至少为6个字符",
+  "confirmPassword": "确认密码",
+  "passwordsDoNotMatch": "两次密码不一致"
 }

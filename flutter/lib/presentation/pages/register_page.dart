@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
@@ -15,12 +16,14 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -36,10 +39,11 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.registrationSuccessful)),
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const TripsPage()),
+        (route) => false,
       );
-      Navigator.pop(context);
     } else if (auth.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -98,6 +102,20 @@ class _RegisterPageState extends State<RegisterPage> {
                     validator: (value) {
                       if (value == null || value.isEmpty) return l10n.enterPassword;
                       if (value.length < 6) return l10n.passwordTooShort;
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.confirmPassword,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return l10n.enterPassword;
+                      if (value != _passwordController.text) return l10n.passwordsDoNotMatch;
                       return null;
                     },
                   ),

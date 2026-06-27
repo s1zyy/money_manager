@@ -17,6 +17,7 @@ import 'package:money_manager/domain/repositories/auth_repository.dart';
 import 'package:money_manager/domain/repositories/expense_repository.dart';
 import 'package:money_manager/domain/repositories/participant_repository.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
+import 'package:money_manager/domain/usecases/auth/check_auth.dart';
 import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
@@ -183,6 +184,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
 
   sl.registerLazySingleton(
     () => LogoutUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => CheckAuthUseCase(repository: sl()),
   );
 
   sl.registerLazySingleton<AuthRepository>(

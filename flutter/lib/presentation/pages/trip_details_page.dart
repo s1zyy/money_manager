@@ -23,6 +23,25 @@ class TripDetailsPage extends StatefulWidget {
   State<TripDetailsPage> createState() => _TripDetailsPageState();
 }
 class _TripDetailsPageState extends State<TripDetailsPage> {
+  final Map<String, bool> _expandedOverrides = {};
+
+  String _dayKey(DateTime day) =>
+      '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
+
+  bool _isExpanded(DateTime day) {
+    final key = _dayKey(day);
+    if (_expandedOverrides.containsKey(key)) return _expandedOverrides[key]!;
+    final today = DateTime.now();
+    return day.year == today.year && day.month == today.month && day.day == today.day;
+  }
+
+  void _toggleDay(DateTime day) {
+    setState(() {
+      final key = _dayKey(day);
+      _expandedOverrides[key] = !_isExpanded(day);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -323,79 +342,103 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         final dayExpenses = grouped[day]!;
         final dayTotal = dayExpenses.fold(0.0, (sum, e) => sum + e.amount);
         final dateStr = '${day.day.toString().padLeft(2, '0')}.${day.month.toString().padLeft(2, '0')}.${day.year}';
+        final expanded = _isExpanded(day);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    dateStr,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
+            InkWell(
+              onTap: () => _toggleDay(day),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        AnimatedRotation(
+                          turns: expanded ? 0.25 : 0.0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(Icons.chevron_right, size: 18, color: colorScheme.primary),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          dateStr,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    '${dayTotal.toStringAsFixed(2)} $cs',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurfaceVariant,
+                    Text(
+                      '${dayTotal.toStringAsFixed(2)} $cs',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            ...dayExpenses.map((expense) {
-              final payerName = provider.getParticipantName(expense.payerId);
-              return Dismissible(
-                key: Key(expense.id),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
-                onDismissed: (direction) {
-                  provider.deleteExpense(widget.tripId, expense.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.expenseDeleted)),
-                  );
-                },
-                child: Card(
-                  margin: const EdgeInsets.symmetric(vertical: 6.0),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: colorScheme.outlineVariant),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: colorScheme.surfaceContainerHighest,
-                      child: Icon(Icons.attach_money, color: colorScheme.primary),
-                    ),
-                    title: Text(
-                      expense.description,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text(
-                      l10n.paidBy(payerName),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    trailing: Text(
-                      '${expense.amount.toStringAsFixed(2)} $cs',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              );
-            }),
+            ClipRect(
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                child: expanded
+                    ? Column(
+                        children: dayExpenses.map((expense) {
+                          final payerName = provider.getParticipantName(expense.payerId);
+                          return Dismissible(
+                            key: Key(expense.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            onDismissed: (direction) {
+                              provider.deleteExpense(widget.tripId, expense.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.expenseDeleted)),
+                              );
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(vertical: 6.0),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(color: colorScheme.outlineVariant),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: colorScheme.surfaceContainerHighest,
+                                  child: Icon(Icons.attach_money, color: colorScheme.primary),
+                                ),
+                                title: Text(
+                                  expense.description,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                subtitle: Text(
+                                  l10n.paidBy(payerName),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                trailing: Text(
+                                  '${expense.amount.toStringAsFixed(2)} $cs',
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+            ),
           ],
         );
       },

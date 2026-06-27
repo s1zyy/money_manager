@@ -1,6 +1,5 @@
 <p align="center">
   <h1 align="center">💸 Money Manager</h1>
-  <p align="center">Мобильное приложение для учёта совместных расходов в поездках</p>
 </p>
 
 <p align="center">

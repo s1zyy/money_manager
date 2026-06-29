@@ -10,7 +10,8 @@ class UpdateTripUseCase {
     required double totalBudget,
     required double prepaidExpenses,
     required String currency,
-    DateTime? endDate
+    DateTime? startDate,
+    DateTime? endDate,
   }) async {
     return await repository.updateTrip(
       tripId: tripId,
@@ -18,6 +19,7 @@ class UpdateTripUseCase {
       totalBudget: totalBudget,
       prepaidExpenses: prepaidExpenses,
       currency: currency,
+      startDate: startDate,
       endDate: endDate,
     );
   }

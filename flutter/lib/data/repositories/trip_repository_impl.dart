@@ -53,20 +53,22 @@ class TripRepositoryImpl implements TripRepository{
     required double totalBudget,
     required double prepaidExpenses,
     required String currency,
-    DateTime? endDate
-    }) async{
-      final Map<String, dynamic> data = {
-        'name' : name,
-        'budget': totalBudget,
-        'prepaidExpenses' : prepaidExpenses,
-        'currency' : currency,
-      };
-      if(endDate != null) {
-        data['endDate'] = endDate.toIso8601String().split('T')[0];
-      }
-
-      await remoteDataSource.updateTrip(tripId, data);
-      
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final Map<String, dynamic> data = {
+      'name': name,
+      'budget': totalBudget,
+      'prepaidExpenses': prepaidExpenses,
+      'currency': currency,
+    };
+    if (startDate != null) {
+      data['startDate'] = startDate.toIso8601String().split('T')[0];
+    }
+    if (endDate != null) {
+      data['endDate'] = endDate.toIso8601String().split('T')[0];
+    }
+    await remoteDataSource.updateTrip(tripId, data);
   }
   
   @override

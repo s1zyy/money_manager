@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/constants/currencies.dart';
+import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
@@ -22,8 +23,8 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 
   double get _totalBudget => double.tryParse(_budgetController.text) ?? 0.0;
   double get _prepaidExpenses => double.tryParse(_prepaidController.text) ?? 0.0;
+  late DateTime _currentStartDate;
   late DateTime _currentEndDate;
-  late DateTime _initialEndDate;
 
   @override
   void initState() {
@@ -34,8 +35,8 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
     _budgetController = TextEditingController(text: dashboard?.trip.totalBudget.toString() ?? '0.0');
     _prepaidController = TextEditingController(text: dashboard?.trip.prepaidExpenses.toString() ?? '0.0');
     _selectedCurrency = dashboard?.trip.currency ?? 'EUR';
+    _currentStartDate = dashboard?.trip.startDate ?? DateTime.now();
     _currentEndDate = dashboard?.trip.endDate ?? DateTime.now();
-    _initialEndDate = dashboard?.trip.endDate ?? DateTime.now();
   }
 
   @override
@@ -123,14 +124,22 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
               Text(l10n.dates, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
 
-              OutlinedButton.icon(
-                onPressed: _extendTrip,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
+              if (dashboardProvider.dashboard!.trip.status == TripStatus.upcoming) ...[
+                OutlinedButton.icon(
+                  onPressed: _pickStartDate,
+                  style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text(l10n.startDate(_currentStartDate.toIso8601String().split('T')[0])),
                 ),
+                const SizedBox(height: 12),
+              ],
+
+              OutlinedButton.icon(
+                onPressed: _pickEndDate,
+                style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
                 icon: const Icon(Icons.calendar_today),
                 label: Text(l10n.endDate(_currentEndDate.toIso8601String().split('T')[0])),
-                ),
+              ),
 
               const SizedBox(height: 32),
 
@@ -191,27 +200,24 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       final provider = context.read<TripDashboardProvider>();
+      final messenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
+      final isUpcoming = provider.dashboard?.trip.status == TripStatus.upcoming;
       final success = await provider.updateTrip(
         tripId: widget.tripId,
         name: _nameController.text.trim(),
         totalBudget: _totalBudget,
         prepaidExpenses: _prepaidExpenses,
         currency: _selectedCurrency,
+        startDate: isUpcoming ? _currentStartDate : null,
         endDate: _currentEndDate,
-        );
-
-        if(mounted) {
-          if(success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.settingsSaved)),
-            );
-            Navigator.pop(context);
-          } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave)),
-          );
-
-
+      );
+      if (mounted) {
+        if (success) {
+          messenger.showSnackBar(SnackBar(content: Text(l10n.settingsSaved)));
+          navigator.pop();
+        } else {
+          messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave)));
         }
       }
     }
@@ -219,53 +225,55 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 
   void _archiveTrip() async {
     final l10n = AppLocalizations.of(context)!;
+    final provider = context.read<TripDashboardProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final confirm = await _showConfirmDialog(
       title: l10n.archiveTripConfirm,
       content: l10n.archiveTripMessage,
       confirmLabel: l10n.archiveTrip,
     );
     if (confirm == true) {
-      final provider = context.read<TripDashboardProvider>();
       final success = await provider.archiveTrip(widget.tripId);
-      if(mounted) {
-        if(success) {
-          Navigator.pop(context);
-          Navigator.pop(context);
+      if (mounted) {
+        if (success) {
+          navigator.pop();
+          navigator.pop();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive)),
-        );
+          messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive)));
         }
       }
     }
   }
 
   void _leaveTrip() async {
-  final l10n = AppLocalizations.of(context)!;
-  final confirm = await _showConfirmDialog(
-    title: l10n.leaveTripConfirm,
-    content: l10n.leaveTripMessage,
-    confirmLabel: l10n.leaveTrip,
-    isDangerous: true,
-  );
-  if (confirm == true) {
+    final l10n = AppLocalizations.of(context)!;
     final provider = context.read<TripDashboardProvider>();
-    final success = await provider.leaveTrip(widget.tripId);
-    if (mounted) {
-      if (success) {
-        Navigator.pop(context);
-        Navigator.pop(context);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.errorMessage ?? l10n.failedToLeave)),
-        );
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final confirm = await _showConfirmDialog(
+      title: l10n.leaveTripConfirm,
+      content: l10n.leaveTripMessage,
+      confirmLabel: l10n.leaveTrip,
+      isDangerous: true,
+    );
+    if (confirm == true) {
+      final success = await provider.leaveTrip(widget.tripId);
+      if (mounted) {
+        if (success) {
+          navigator.pop();
+          navigator.pop();
+        } else {
+          messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToLeave)));
+        }
       }
     }
   }
-}
 
   void _deleteTrip() async {
     final l10n = AppLocalizations.of(context)!;
+    final provider = context.read<TripDashboardProvider>();
+    final navigator = Navigator.of(context);
     final confirm = await _showConfirmDialog(
       title: l10n.deleteTripConfirm,
       content: l10n.deleteTripMessage,
@@ -273,9 +281,11 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       isDangerous: true,
     );
     if (confirm == true) {
-      await context.read<TripDashboardProvider>().deleteTrip(widget.tripId);
-      Navigator.pop(context);
-      Navigator.pop(context);
+      await provider.deleteTrip(widget.tripId);
+      if (mounted) {
+        navigator.pop();
+        navigator.pop();
+      }
     }
   }
 
@@ -304,24 +314,35 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
   }
 
 
-  void _extendTrip() async {
-    final l10n = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    if(now.isAfter(_currentEndDate)){
-      ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.tripHasEnded)),
-      );
-
-      return;
-    }
+  void _pickStartDate() async {
     final picked = await showDatePicker(
-    context: context,
-    initialDate: _currentEndDate,
-    firstDate: _initialEndDate,
-    lastDate: _currentEndDate.add(const Duration(days: 365)),
+      context: context,
+      initialDate: _currentStartDate,
+      firstDate: DateTime(2020),
+      lastDate: _currentEndDate.subtract(const Duration(days: 1)),
+    );
+    if (picked != null) {
+      setState(() => _currentStartDate = picked);
+    }
+  }
+
+  void _pickEndDate() async {
+    final isActive = context.read<TripDashboardProvider>().dashboard?.trip.status == TripStatus.active;
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final minEndDate = isActive
+        ? tomorrow
+        : (_currentStartDate.add(const Duration(days: 1)).isAfter(tomorrow)
+            ? _currentStartDate.add(const Duration(days: 1))
+            : tomorrow);
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _currentEndDate.isBefore(minEndDate) ? minEndDate : _currentEndDate,
+      firstDate: minEndDate,
+      lastDate: _currentEndDate.add(const Duration(days: 365)),
     );
 
-    if (picked != null && !picked.isBefore(_initialEndDate)) {
+    if (picked != null) {
       setState(() => _currentEndDate = picked);
     }
   }

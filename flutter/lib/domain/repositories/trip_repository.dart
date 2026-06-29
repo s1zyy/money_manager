@@ -25,6 +25,7 @@ abstract class TripRepository {
     required double totalBudget,
     required double prepaidExpenses,
     required String currency,
+    DateTime? startDate,
     DateTime? endDate,
   });
 

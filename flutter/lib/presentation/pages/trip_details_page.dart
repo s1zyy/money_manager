@@ -391,7 +391,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 child: expanded
                     ? Column(
                         children: dayExpenses.map((expense) {
-                          final payerName = provider.getParticipantName(expense.payerId);
+                          final payerName = expense.payerId != null
+                              ? provider.getParticipantName(expense.payerId!)
+                              : 'Each own'; //TODO change on l10n
                           return Dismissible(
                             key: Key(expense.id),
                             direction: DismissDirection.endToStart,

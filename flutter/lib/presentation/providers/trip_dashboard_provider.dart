@@ -88,23 +88,27 @@ class TripDashboardProvider extends ChangeNotifier {
 
   Future<bool> addExpense({
     required String tripId,
-    required String payerId,
     required double amount,
     required DateTime date,
-    required List<String> participantIds,
+    required String splitMode,
+    String? payerId,
+    List<String>? participantIds,
+    Map<String, double>? customShares,
     required String description,
   }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    try{
+    try {
       await addExpenseUseCase(
         tripId: tripId,
-        payerId: payerId,
         amount: amount,
         date: date,
+        splitMode: splitMode,
+        payerId: payerId,
         participantIds: participantIds,
+        customShares: customShares,
         description: description,
       );
       await loadDashboard(tripId);
@@ -152,6 +156,7 @@ class TripDashboardProvider extends ChangeNotifier {
     required double totalBudget,
     required double prepaidExpenses,
     required String currency,
+    DateTime? startDate,
     DateTime? endDate,
   }) async {
     _isLoading = true;
@@ -165,6 +170,7 @@ class TripDashboardProvider extends ChangeNotifier {
         totalBudget: totalBudget,
         prepaidExpenses: prepaidExpenses,
         currency: currency,
+        startDate: startDate,
         endDate: endDate,
       );
       await loadDashboard(tripId);

@@ -8,7 +8,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   ExpenseRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Expense>> getExpenses(String tripId) async{
+  Future<List<Expense>> getExpenses(String tripId) async {
     return await remoteDataSource.getExpenses(tripId);
   }
 
@@ -17,56 +17,49 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     required String tripId,
     required double amount,
     required DateTime date,
-    required List<String> participantIds,
-    required String payerId,
-    required String description
-  }) async{
-    
-        return await remoteDataSource.addExpense(
-        tripId: tripId,
-        amount: amount,
-        date: date,
-        participantIds: participantIds,
-        payerId: payerId,
-        description: description
-      );
-    
+    required String splitMode,
+    String? payerId,
+    List<String>? participantIds,
+    Map<String, double>? customShares,
+    required String description,
+  }) async {
+    return await remoteDataSource.addExpense(
+      tripId: tripId,
+      amount: amount,
+      date: date,
+      splitMode: splitMode,
+      payerId: payerId,
+      participantIds: participantIds,
+      customShares: customShares,
+      description: description,
+    );
   }
 
   @override
   Future<Expense> updateExpense({
-    required String tripId, 
-    required String expenseId, 
-    required String payerId, 
-    required DateTime date, 
-    required double amount, 
-    required List<String> newParticipantIds, 
-    required String description
-  }) async{
-    
-      return await remoteDataSource.updateExpense(
-        tripId: tripId,
-        expenseId: expenseId,
-        payerId: payerId,
-        date: date,
-        amount: amount,
-        newParticipantIds: newParticipantIds,
-        description: description
-      );
-    
+    required String tripId,
+    required String expenseId,
+    required DateTime date,
+    required double amount,
+    required String splitMode,
+    List<String>? newParticipantIds,
+    Map<String, double>? customShares,
+    required String description,
+  }) async {
+    return await remoteDataSource.updateExpense(
+      tripId: tripId,
+      expenseId: expenseId,
+      date: date,
+      amount: amount,
+      splitMode: splitMode,
+      newParticipantIds: newParticipantIds,
+      customShares: customShares,
+      description: description,
+    );
   }
 
   @override
-  Future<void> deleteExpense(
-    String tripId, 
-    String expenseId
-    ) async{
-      await remoteDataSource.deleteExpense(tripId, expenseId);
-    
+  Future<void> deleteExpense(String tripId, String expenseId) async {
+    await remoteDataSource.deleteExpense(tripId, expenseId);
   }
-
-  
-
-  
-  
 }

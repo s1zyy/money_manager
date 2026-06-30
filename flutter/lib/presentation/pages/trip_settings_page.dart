@@ -57,13 +57,12 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       appBar: AppBar(
         title: Text(l10n.tripSettings),
         actions: [
-          if(dashboardProvider.dashboard!.isOwner)...[
+          if (dashboardProvider.dashboard!.isOwner &&
+              dashboardProvider.dashboard!.trip.status != TripStatus.archived)
             TextButton(
               onPressed: _saveSettings,
               child: Text(l10n.save, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            )
-          ]
-
+            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -73,127 +72,150 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if(dashboardProvider.dashboard!.isOwner)...[
-              Text(l10n.general, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: l10n.tripName, border: const OutlineInputBorder()),
-                validator: (value) => value == null || value.isEmpty ? l10n.enterName : null,
-              ),
-              const SizedBox(height: 20),
 
-              Text(l10n.finance, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _budgetController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: l10n.totalBudget, border: const OutlineInputBorder()),
-                validator: (value) => value == null || value.isEmpty ? l10n.enterBudget : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _prepaidController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: l10n.prepaidExpenses, border: const OutlineInputBorder()),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return l10n.enterPrepaid;
-                  if (_prepaidExpenses > _totalBudget) {
-                    return l10n.prepaidExceedsBudget;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              DropdownButtonFormField<String>(
-                value: _selectedCurrency,
-                decoration: InputDecoration(labelText: l10n.tripCurrency, border: const OutlineInputBorder()),
-                items: supportedCurrencies.map((c) => DropdownMenuItem(
-                  value: c.code,
-                  child: Text('${c.symbol}  ${c.name} (${c.code})'),
+              if (dashboardProvider.dashboard!.isOwner &&
+                  dashboardProvider.dashboard!.trip.status != TripStatus.archived) ...[
+                Text(l10n.general, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: l10n.tripName, border: const OutlineInputBorder()),
+                  validator: (value) => value == null || value.isEmpty ? l10n.enterName : null,
+                ),
+                const SizedBox(height: 20),
+                Text(l10n.finance, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _budgetController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: l10n.totalBudget, border: const OutlineInputBorder()),
+                  validator: (value) => value == null || value.isEmpty ? l10n.enterBudget : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _prepaidController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: l10n.prepaidExpenses, border: const OutlineInputBorder()),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return l10n.enterPrepaid;
+                    if (_prepaidExpenses > _totalBudget) return l10n.prepaidExceedsBudget;
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedCurrency,
+                  decoration: InputDecoration(labelText: l10n.tripCurrency, border: const OutlineInputBorder()),
+                  items: supportedCurrencies.map((c) => DropdownMenuItem(
+                    value: c.code,
+                    child: Text('${c.symbol}  ${c.name} (${c.code})'),
                   )).toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _selectedCurrency = val);
-                },
-              ),
-
-
-              const SizedBox(height: 16),
-
-              Text(l10n.dates, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-
-              if (dashboardProvider.dashboard!.trip.status == TripStatus.upcoming) ...[
+                  onChanged: (val) {
+                    if (val != null) setState(() => _selectedCurrency = val);
+                  },
+                ),
+                const SizedBox(height: 16),
+                Text(l10n.dates, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                if (dashboardProvider.dashboard!.trip.status == TripStatus.upcoming) ...[
+                  OutlinedButton.icon(
+                    onPressed: _pickStartDate,
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+                    icon: const Icon(Icons.calendar_today),
+                    label: Text(l10n.startDate(_currentStartDate.toIso8601String().split('T')[0])),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 OutlinedButton.icon(
-                  onPressed: _pickStartDate,
+                  onPressed: _pickEndDate,
                   style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
                   icon: const Icon(Icons.calendar_today),
-                  label: Text(l10n.startDate(_currentStartDate.toIso8601String().split('T')[0])),
+                  label: Text(l10n.endDate(_currentEndDate.toIso8601String().split('T')[0])),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 32),
               ],
 
-              OutlinedButton.icon(
-                onPressed: _pickEndDate,
-                style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
-                icon: const Icon(Icons.calendar_today),
-                label: Text(l10n.endDate(_currentEndDate.toIso8601String().split('T')[0])),
-              ),
-
-              const SizedBox(height: 32),
-
-              const Divider(),
-
-              const SizedBox(height: 16),
-              Text(l10n.dangerZone, style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-
-              OutlinedButton.icon(
-                onPressed: _archiveTrip,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  side: BorderSide(color: colorScheme.error),
-                  foregroundColor: colorScheme.error,
-                ),
-                icon: const Icon(Icons.archive_outlined),
-                label: Text(l10n.archiveTrip),
-              ),
-              const SizedBox(height: 12),
-
-              ElevatedButton.icon(
-                onPressed: _deleteTrip,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: colorScheme.errorContainer,
-                  foregroundColor: colorScheme.onErrorContainer,
-                  elevation: 0,
-                ),
-                icon: const Icon(Icons.delete_forever),
-                label: Text(l10n.deleteTrip),
-              ),
-            ],
-              if(dashboardProvider.dashboard!.canLeave)...[
-              const Divider(),
-              const SizedBox(height: 16),
-              Text(l10n.dangerZone, style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: _leaveTrip,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  side: BorderSide(color: colorScheme.error),
-                  foregroundColor: colorScheme.error,
-                ),
-                icon: const Icon(Icons.exit_to_app),
-                label: Text(l10n.leaveTrip),
-              ),
-            ],
+              if (dashboardProvider.dashboard!.isOwner || dashboardProvider.dashboard!.canLeave) ...[
+                const Divider(),
+                const SizedBox(height: 16),
+                Text(l10n.dangerZone, style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                if (dashboardProvider.dashboard!.isOwner) ...[
+                  if (dashboardProvider.dashboard!.trip.status == TripStatus.archived)
+                    OutlinedButton.icon(
+                      onPressed: _unarchiveTrip,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        side: BorderSide(color: colorScheme.primary),
+                        foregroundColor: colorScheme.primary,
+                      ),
+                      icon: const Icon(Icons.unarchive_outlined),
+                      label: Text(l10n.unarchiveTrip),
+                    )
+                  else
+                    OutlinedButton.icon(
+                      onPressed: _archiveTrip,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        side: BorderSide(color: colorScheme.error),
+                        foregroundColor: colorScheme.error,
+                      ),
+                      icon: const Icon(Icons.archive_outlined),
+                      label: Text(l10n.archiveTrip),
+                    ),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: _deleteTrip,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: colorScheme.errorContainer,
+                      foregroundColor: colorScheme.onErrorContainer,
+                      elevation: 0,
+                    ),
+                    icon: const Icon(Icons.delete_forever),
+                    label: Text(l10n.deleteTrip),
+                  ),
+                ],
+                if (dashboardProvider.dashboard!.canLeave) ...[
+                  OutlinedButton.icon(
+                    onPressed: _leaveTrip,
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      side: BorderSide(color: colorScheme.error),
+                      foregroundColor: colorScheme.error,
+                    ),
+                    icon: const Icon(Icons.exit_to_app),
+                    label: Text(l10n.leaveTrip),
+                  ),
+                ],
+              ],
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _unarchiveTrip() async {
+    final l10n = AppLocalizations.of(context)!;
+    final provider = context.read<TripDashboardProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final confirm = await _showConfirmDialog(
+      title: l10n.unarchiveTripConfirm,
+      content: l10n.unarchiveTripMessage,
+      confirmLabel: l10n.unarchiveTrip,
+    );
+    if (confirm == true) {
+      final success = await provider.unarchiveTrip(widget.tripId);
+      if (mounted) {
+        if (success) {
+          navigator.pop();
+        } else {
+          messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToUnarchive)));
+        }
+      }
+    }
   }
 
   void _saveSettings() async {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/constants/currencies.dart';
-import 'package:money_manager/core/date_time_extentions.dart';
+import 'package:money_manager/core/date_time_extensions.dart';
+import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
+import 'package:money_manager/presentation/pages/settlement_page.dart';
 import 'package:money_manager/presentation/pages/trip_settings_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:provider/provider.dart';
@@ -104,6 +106,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               const SizedBox(height: 8),
               
 
+              if (_shouldShowSettlement(tripDashboardProvider))
+                _buildSettlementBanner(context, tripDashboardProvider, l10n, colorScheme),
+
               Expanded(
                 child: _buildExpensesContent(tripDashboardProvider, colorScheme),
               ),
@@ -113,7 +118,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         
       
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: tripDashboardProvider.dashboard?.trip.status == TripStatus.archived
+          ? null
+          : FloatingActionButton.extended(
         onPressed: () {
           final tripDashboardProvider = context.read<TripDashboardProvider>();
           final DateTime? startDate = tripDashboardProvider.dashboard?.trip.startDate;
@@ -146,10 +153,75 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         icon: const Icon(Icons.add_card),
       ),
     );
+
       
       
       
   }
+  bool _shouldShowSettlement(TripDashboardProvider provider) {
+    final trip = provider.dashboard?.trip;
+    if (trip == null) return false;
+    final today = DateTime.now().dateOnly;
+    return trip.status == TripStatus.active && !trip.endDate.dateOnly.isAfter(today);
+  }
+
+  Widget _buildSettlementBanner(
+    BuildContext context,
+    TripDashboardProvider provider,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Card(
+        elevation: 0,
+        color: colorScheme.secondaryContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            final trip = provider.dashboard!.trip;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChangeNotifierProvider.value(
+                  value: provider,
+                  child: SettlementPage(
+                    tripId: widget.tripId,
+                    currency: trip.currency,
+                  ),
+                ),
+              ),
+            ).then((archived) {
+              if (archived == true && context.mounted) {
+                Navigator.of(context).pop();
+              }
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Icon(Icons.handshake_outlined, color: colorScheme.onSecondaryContainer),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.tripEndedSettleUp,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: colorScheme.onSecondaryContainer),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDashboardHeader(BuildContext context, TripDashboardProvider provider) {
   final l10n = AppLocalizations.of(context)!;
   final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
@@ -393,7 +465,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         children: dayExpenses.map((expense) {
                           final payerName = expense.payerId != null
                               ? provider.getParticipantName(expense.payerId!)
-                              : 'Each own'; //TODO change on l10n
+                              : l10n.eachPaidOwn;
                           return Dismissible(
                             key: Key(expense.id),
                             direction: DismissDirection.endToStart,

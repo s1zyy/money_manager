@@ -1,3 +1,4 @@
+import 'package:money_manager/domain/entities/settlement_transfer.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/domain/entities/trip_dashboard.dart';
 
@@ -34,4 +35,6 @@ abstract class TripRepository {
   Future<void> deleteTrip(String tripId);
   Future<void> removeParticipant(String tripId, String participantId);
   Future<void> addVirtualParticipant(String tripId, String name);
+  Future<List<SettlementTransfer>> getSettlement(String tripId);
+  Future<void> unarchiveTrip(String tripId);
 }

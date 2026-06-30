@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:money_manager/core/dio_error_message.dart';
+import 'package:money_manager/data/models/settlement_transfer_model.dart';
 import 'package:money_manager/data/models/trip_dashboard_model.dart';
 import 'package:money_manager/data/models/trip_model.dart';
 
@@ -14,6 +15,8 @@ abstract class TripRemoteDataSource {
   Future<void> deleteTrip(String tripId);
   Future<void> removeParticipant(String tripId, String participantId);
   Future<void> addVirtualParticipant(String tripId, String name);
+  Future<List<SettlementTransferModel>> getSettlement(String tripId);
+  Future<void> unarchiveTrip(String tripId);
 }
 
 class TripRemoteDataSourceImpl implements TripRemoteDataSource {
@@ -109,6 +112,26 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
   Future<void> addVirtualParticipant(String tripId, String name) async {
     try {
       await dio.post('/trips/$tripId/participants/virtual', data: {'name': name});
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> unarchiveTrip(String tripId) async {
+    try {
+      await dio.post('/trips/$tripId/unarchive');
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<List<SettlementTransferModel>> getSettlement(String tripId) async {
+    try {
+      final response = await dio.get('/trips/$tripId/settlement');
+      final List data = response.data as List;
+      return data.map((json) => SettlementTransferModel.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }

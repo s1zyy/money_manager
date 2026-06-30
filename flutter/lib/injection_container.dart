@@ -36,6 +36,8 @@ import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
 import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
 import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
+import 'package:money_manager/domain/usecases/trip/get_trip_settlement.dart';
+import 'package:money_manager/domain/usecases/trip/unarchive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
@@ -125,6 +127,14 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     () => AddVirtualParticipantUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => GetTripSettlementUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => UnarchiveTripUseCase(repository: sl()),
+  );
+
 
   sl.registerFactory(
     () => TripDashboardProvider(
@@ -139,8 +149,9 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       deleteTripUseCase: sl(),
       removeParticipantUseCase: sl(),
       addVirtualParticipantUseCase: sl(),
-      ),
-      
+      getTripSettlementUseCase: sl(),
+      unarchiveTripUseCase: sl(),
+    ),
   );
 
   //-------

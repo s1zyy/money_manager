@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:money_manager/domain/entities/dashboard_participant.dart';
 import 'package:money_manager/domain/entities/expense.dart';
 import 'package:money_manager/domain/entities/participant_info.dart';
+import 'package:money_manager/domain/entities/settlement_transfer.dart';
 import 'package:money_manager/domain/entities/trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/add_expense.dart';
 import 'package:money_manager/domain/usecases/expenses/delete_expense.dart';
@@ -13,6 +14,8 @@ import 'package:money_manager/domain/usecases/participant/get_participants_map.d
 import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/delete_trip.dart';
+import 'package:money_manager/domain/usecases/trip/get_trip_settlement.dart';
+import 'package:money_manager/domain/usecases/trip/unarchive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
 import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
@@ -29,6 +32,8 @@ class TripDashboardProvider extends ChangeNotifier {
   final DeleteTripUseCase deleteTripUseCase;
   final RemoveParticipantUseCase removeParticipantUseCase;
   final AddVirtualParticipantUseCase addVirtualParticipantUseCase;
+  final GetTripSettlementUseCase getTripSettlementUseCase;
+  final UnarchiveTripUseCase unarchiveTripUseCase;
 
   TripDashboardProvider({
     required this.addExpenseUseCase,
@@ -42,10 +47,15 @@ class TripDashboardProvider extends ChangeNotifier {
     required this.deleteTripUseCase,
     required this.removeParticipantUseCase,
     required this.addVirtualParticipantUseCase,
+    required this.getTripSettlementUseCase,
+    required this.unarchiveTripUseCase,
   });
 
   TripDashboard? _dashboard;
   TripDashboard? get dashboard => _dashboard;
+
+  List<SettlementTransfer>? _settlement;
+  List<SettlementTransfer>? get settlement => _settlement;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -244,6 +254,37 @@ class TripDashboardProvider extends ChangeNotifier {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
+    }
+  }
+
+  Future<bool> unarchiveTrip(String tripId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await unarchiveTripUseCase(tripId);
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadSettlement(String tripId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      _settlement = await getTripSettlementUseCase(tripId);
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

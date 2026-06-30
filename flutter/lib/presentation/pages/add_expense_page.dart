@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_manager/core/date_time_extentions.dart';
+import 'package:money_manager/core/date_time_extensions.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
@@ -121,8 +121,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
       }
       if (_remainingCents != 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Shares must sum to total amount'),
+          SnackBar(
+            content: Text(l10n.sharesMustSumToTotal),
             backgroundColor: Colors.red,
           ),
         );
@@ -274,9 +274,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       ),
                       const Spacer(),
                       SegmentedButton<String>(
-                        segments: const [
-                          ButtonSegment(value: 'EQUAL', label: Text('Equal')),
-                          ButtonSegment(value: 'CUSTOM', label: Text('Custom')),
+                        segments: [
+                          ButtonSegment(value: 'EQUAL', label: Text(l10n.splitEqual)),
+                          ButtonSegment(value: 'CUSTOM', label: Text(l10n.splitCustom)),
                         ],
                         selected: {_splitMode},
                         onSelectionChanged: (val) => setState(() {
@@ -320,7 +320,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   if (isCustom)
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Each paid their own'),
+                      title: Text(l10n.eachPaidOwn),
                       value: _eachPaidOwn,
                       onChanged: (val) => setState(() => _eachPaidOwn = val),
                     ),

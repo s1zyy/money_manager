@@ -1,4 +1,5 @@
 import 'package:money_manager/data/models/trip_dashboard_model.dart';
+import 'package:money_manager/domain/entities/settlement_transfer.dart';
 import 'package:money_manager/domain/repositories/trip_repository.dart';
 import 'package:money_manager/data/datasources/trip_remote_data_source.dart';
 import 'package:money_manager/domain/entities/trip.dart';
@@ -95,6 +96,14 @@ class TripRepositoryImpl implements TripRepository{
   Future<void> addVirtualParticipant(String tripId, String name) async{
     await remoteDataSource.addVirtualParticipant(tripId, name);
   }
-  
-  
+
+  @override
+  Future<List<SettlementTransfer>> getSettlement(String tripId) async {
+    return await remoteDataSource.getSettlement(tripId);
+  }
+
+  @override
+  Future<void> unarchiveTrip(String tripId) async {
+    await remoteDataSource.unarchiveTrip(tripId);
+  }
 }

@@ -46,3 +46,5 @@ app.*.map.json
 
 
 lib/l10n/app_localizations*.dart
+
+.DS_Store

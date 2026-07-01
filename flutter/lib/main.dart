@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/usecases/auth/check_auth.dart';
 import 'package:money_manager/injection_container.dart' as di;
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -44,7 +45,7 @@ class MoneyManagerApp extends StatelessWidget {
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: AppTheme.light,
       home: SplashPage(checkAuthUseCase: di.sl<CheckAuthUseCase>()),
     );
   }

@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/constants/currencies.dart';
+import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -20,97 +21,173 @@ class TripsPage extends StatefulWidget {
   State<TripsPage> createState() => _TripsPageState();
 }
 
-class _TripsPageState extends State<TripsPage> {
+class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-      context.read<TripsProvider>().loadTrips());
+    _tabController = TabController(length: 3, vsync: this);
+    Future.microtask(() => context.read<TripsProvider>().loadTrips());
   }
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return DefaultTabController(
-      length: 3,
-
-      child: Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.logout, color: Colors.red),
-          onPressed: () => _showLogoutDialog(context),
-        ),
-        title: Text(l10n.trips),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.language),
-            onPressed: () => _showLanguageDialog(context),
+    final pageContext = context;
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            pinned: true,
+            toolbarHeight: 72,
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [AppTheme.primary, AppTheme.secondary],
+                ),
+              ),
+            ),
+            title: Row(
+              children: [
+                const Icon(Icons.airplanemode_active, color: Colors.white70, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.trips,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.language, color: Colors.white, size: 22),
+                onPressed: () => _showLanguageDialog(pageContext),
+              ),
+              IconButton(
+                icon: const Icon(Icons.account_circle, color: Colors.white, size: 26),
+                onPressed: () => _showProfileSheet(pageContext),
+              ),
+              const SizedBox(width: 4),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(52),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x18000000),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  labelColor: AppTheme.primary,
+                  unselectedLabelColor: AppTheme.textSecondary,
+                  indicatorColor: AppTheme.primary,
+                  indicatorWeight: 3,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                  tabs: [
+                    Tab(icon: const Icon(Icons.flight_takeoff, size: 18), text: l10n.active),
+                    Tab(icon: const Icon(Icons.calendar_month, size: 18), text: l10n.upcoming),
+                    Tab(icon: const Icon(Icons.archive, size: 18), text: l10n.archived),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
+        body: Consumer<TripsProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppTheme.primary),
+              );
+            }
 
-        bottom: TabBar(
-          tabs: [
-            Tab(icon: const Icon(Icons.flight_takeoff), text: l10n.active),
-            Tab(icon: const Icon(Icons.calendar_month), text: l10n.upcoming),
-            Tab(icon: const Icon(Icons.archive), text: l10n.archived),
-          ],
-          indicatorColor: Colors.blue,
-          labelColor: Colors.blue,
-          unselectedLabelColor: Colors.grey,
-        )
+            if (provider.errorMessage != null) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, color: AppTheme.textSecondary, size: 48),
+                    const SizedBox(height: 12),
+                    Text(provider.errorMessage!, style: const TextStyle(color: AppTheme.textSecondary)),
+                  ],
+                ),
+              );
+            }
 
+            final activeTrips = provider.trips.where((t) => t.status == TripStatus.active).toList();
+            final upcomingTrips = provider.trips.where((t) => t.status == TripStatus.upcoming).toList();
+            final archivedTrips = provider.trips.where((t) => t.status == TripStatus.archived).toList();
+
+            return TabBarView(
+              controller: _tabController,
+              children: [
+                _buildTripsList(activeTrips, l10n.noActiveTrips, TripStatus.active),
+                _buildTripsList(upcomingTrips, l10n.noUpcomingTrips, TripStatus.upcoming),
+                _buildTripsList(archivedTrips, l10n.noArchivedTrips, TripStatus.archived),
+              ],
+            );
+          },
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddOrJoinTripModal(context),
-        child: const Icon(Icons.add),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text('New Trip', style: TextStyle(fontWeight: FontWeight.w600)),
       ),
-      body: Consumer<TripsProvider>(
-        builder: (context, provider, child) {
-          if(provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if(provider.errorMessage != null) {
-            return Center(child: Text(provider.errorMessage!));
-          }
-
-          if(provider.trips.isEmpty) {
-            return Center(child: Text(l10n.noTripsYet));
-          }
-
-          final activeTrips = provider.trips.where((t) => t.status == TripStatus.active).toList();
-          final upcomingTrips = provider.trips.where((t) => t.status == TripStatus.upcoming).toList();
-          final archivedTrips = provider.trips.where((t) => t.status == TripStatus.archived).toList();
-
-          return TabBarView(
-            children: [
-              _buildTripsList(activeTrips, l10n.noActiveTrips),
-              _buildTripsList(upcomingTrips, l10n.noUpcomingTrips),
-              _buildTripsList(archivedTrips, l10n.noArchivedTrips),
-            ],
-          );
-        },
-      ),
-    ),
     );
   }
 
-  Widget _buildTripsList(List<Trip> trips, String emptyMessage) {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildTripsList(List<Trip> trips, String emptyMessage, TripStatus status) {
     return RefreshIndicator(
+      color: AppTheme.primary,
       onRefresh: () => context.read<TripsProvider>().loadTrips(),
       child: trips.isEmpty
           ? ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.4,
                   child: Center(
-                    child: Text(
-                      emptyMessage,
-                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _statusIcon(status),
+                          size: 56,
+                          color: AppTheme.textSecondary.withValues(alpha: 0.4),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          emptyMessage,
+                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -118,44 +195,46 @@ class _TripsPageState extends State<TripsPage> {
             )
           : ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
               itemCount: trips.length,
-              itemBuilder: (context, index) {
-                final trip = trips[index];
-                return ListTile(
-                  title: Text(trip.name),
-                  subtitle: Text(l10n.budgetAmount("${currencySymbol(trip.currency)}${trip.totalBudget}")),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider(
-                          create: (_) => sl<TripDashboardProvider>(),
-                          child: TripDetailsPage(
-                            tripId: trip.id,
-                            tripName: trip.name,
-                          ),
-                        ),
-                      ),
-                    );
-                    if (mounted) {
-                      context.read<TripsProvider>().loadTrips();
-                    }
-                  },
-                );
-              },
+              itemBuilder: (context, index) => _TripCard(
+                trip: trips[index],
+                onTap: () => _openTrip(trips[index]),
+              ),
             ),
     );
   }
 
-  void _showAddOrJoinTripModal(BuildContext pageContext) {
-    final colorScheme = Theme.of(pageContext).colorScheme;
-    final l10n = AppLocalizations.of(pageContext)!;
+  IconData _statusIcon(TripStatus status) {
+    switch (status) {
+      case TripStatus.active:
+        return Icons.flight_takeoff;
+      case TripStatus.upcoming:
+        return Icons.calendar_month;
+      case TripStatus.archived:
+        return Icons.archive;
+    }
+  }
 
+  Future<void> _openTrip(Trip trip) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => sl<TripDashboardProvider>(),
+          child: TripDetailsPage(tripId: trip.id, tripName: trip.name),
+        ),
+      ),
+    );
+    if (mounted) context.read<TripsProvider>().loadTrips();
+  }
+
+  void _showAddOrJoinTripModal(BuildContext pageContext) {
+    final l10n = AppLocalizations.of(pageContext)!;
     showModalBottomSheet(
       context: pageContext,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (modalContext) {
         return Padding(
@@ -166,47 +245,39 @@ class _TripsPageState extends State<TripsPage> {
               Container(
                 width: 40,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: 20),
+                margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
+                  color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               Text(
                 l10n.addTrip,
-                style: Theme.of(modalContext).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
               ),
               const SizedBox(height: 20),
-
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: colorScheme.primaryContainer,
-                  child: Icon(Icons.add, color: colorScheme.onPrimaryContainer),
-                ),
-                title: Text(l10n.createNewTrip, style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: Text(l10n.youWillBeOwner),
+              _ModalOption(
+                icon: Icons.add_circle_outline,
+                color: AppTheme.primary,
+                title: l10n.createNewTrip,
+                subtitle: l10n.youWillBeOwner,
                 onTap: () {
                   Navigator.pop(modalContext);
-                  Navigator.push(
-                    pageContext,
-                    MaterialPageRoute(builder: (context) => const CreateTripPage()),
-                  );
+                  Navigator.push(pageContext, MaterialPageRoute(builder: (_) => const CreateTripPage()));
                 },
               ),
-              const Divider(height: 20),
-
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: colorScheme.secondaryContainer,
-                  child: Icon(Icons.group_add, color: colorScheme.onSecondaryContainer),
-                ),
-                title: Text(l10n.joinTripByCode, style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: Text(l10n.enterInviteCode),
+              const SizedBox(height: 12),
+              _ModalOption(
+                icon: Icons.group_add_outlined,
+                color: AppTheme.secondary,
+                title: l10n.joinTripByCode,
+                subtitle: l10n.enterInviteCode,
                 onTap: () {
                   Navigator.pop(modalContext);
                   _showJoinTripDialog(pageContext);
                 },
               ),
+              const SizedBox(height: 8),
             ],
           ),
         );
@@ -214,97 +285,132 @@ class _TripsPageState extends State<TripsPage> {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showProfileSheet(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
+    final auth = context.read<AuthProvider>();
+    final name = auth.currentUserName;
+    final email = auth.currentUserEmail;
+
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(l10n.logout),
-          content: Text(l10n.logoutConfirm),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () async {
-                Navigator.pop(dialogContext);
-                await context.read<AuthProvider>().logout();
-                if (!context.mounted) return;
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
-                  (route) => false,
-                );
-              },
-              child: Text(l10n.logout),
-            ),
-          ],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 24),
+                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+              ),
+              // Аватар + имя
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
+                child: Text(
+                  name != null && name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.primary),
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (name != null && name.isNotEmpty)
+                Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+              if (email != null && email.isNotEmpty)
+                Text(email, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
+              const SizedBox(height: 24),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              // Logout
+              InkWell(
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (d) => AlertDialog(
+                      title: Text(l10n.logout),
+                      content: Text(l10n.logoutConfirm),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l10n.cancel)),
+                        FilledButton(
+                          style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                          onPressed: () => Navigator.pop(d, true),
+                          child: Text(l10n.logout),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    await auth.logout();
+                    if (!context.mounted) return;
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginPage()), (r) => false);
+                  }
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.15)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.logout, color: Colors.red, size: 20),
+                      const SizedBox(width: 12),
+                      Text(l10n.logout, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 15)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );
   }
 
   void _showJoinTripDialog(BuildContext pageContext) {
-    final TextEditingController codeController = TextEditingController();
+    final codeController = TextEditingController();
     final l10n = AppLocalizations.of(pageContext)!;
-
     showDialog(
       context: pageContext,
-      
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(l10n.joinTrip),
-          content: TextField(
-            controller: codeController,
-            autofocus: true,
-            textCapitalization: TextCapitalization.characters,
-            decoration: InputDecoration(
-              hintText: l10n.inviteCodeHint,
-            ),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.joinTrip),
+        content: TextField(
+          controller: codeController,
+          autofocus: true,
+          textCapitalization: TextCapitalization.characters,
+          decoration: InputDecoration(hintText: l10n.inviteCodeHint),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () async {
+              final code = codeController.text.trim();
+              if (code.isNotEmpty) {
+                Navigator.pop(dialogContext);
+                final provider = pageContext.read<TripsProvider>();
+                final success = await provider.joinTrip(code);
+                if (!pageContext.mounted) return;
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  SnackBar(
+                    content: Text(success ? l10n.joinedSuccessfully : (provider.errorMessage ?? l10n.errorJoiningTrip)),
+                    backgroundColor: success ? Colors.green : Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+            child: Text(l10n.join),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final code = codeController.text.trim();
-                if (code.isNotEmpty) {
-                  Navigator.pop(dialogContext);
-
-                  final provider = pageContext.read<TripsProvider>();
-                  final success = await provider.joinTrip(code);
-
-                  if (!pageContext.mounted) return;
-
-                  if (success) {
-                    ScaffoldMessenger.of(pageContext).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.joinedSuccessfully),
-                        backgroundColor: Colors.green,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(pageContext).showSnackBar(
-                      SnackBar(
-                        content: Text(provider.errorMessage ?? l10n.errorJoiningTrip),
-                        backgroundColor: Colors.red,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                }
-              },
-              child: Text(l10n.join),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -313,68 +419,234 @@ class _TripsPageState extends State<TripsPage> {
     final localeProvider = context.read<LocaleProvider>();
     final current = localeProvider.locale.languageCode;
 
-    showDialog(
+    const languages = [
+      ('en', 'English', '🇬🇧'),
+      ('ru', 'Русский', '🇷🇺'),
+      ('es', 'Español', '🇪🇸'),
+      ('de', 'Deutsch', '🇩🇪'),
+      ('fr', 'Français', '🇫🇷'),
+      ('pt', 'Português', '🇵🇹'),
+      ('zh', '中文', '🇨🇳'),
+    ];
+
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        final colorScheme = Theme.of(ctx).colorScheme;
-        return AlertDialog(
-          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.language,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Divider(height: 1),
-            ],
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 8),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final entry in [
-                  ('en', 'English'),
-                  ('ru', 'Русский'),
-                  ('es', 'Español'),
-                  ('de', 'Deutsch'),
-                  ('fr', 'Français'),
-                  ('pt', 'Português'),
-                  ('zh', '中文'),
-                ]) ...[
-                  ListTile(
-                    dense: true,
-                    title: Text(
-                      entry.$2,
-                      style: TextStyle(
-                        fontWeight: current == entry.$1 ? FontWeight.bold : FontWeight.normal,
-                        color: current == entry.$1 ? colorScheme.primary : null,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (_, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                  ),
+                  Text(
+                    l10n.language,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Column(
+                        children: languages.map((entry) {
+                          final isSelected = current == entry.$1;
+                          return GestureDetector(
+                            onTap: () async {
+                              Navigator.pop(sheetContext);
+                              await localeProvider.setLocale(Locale(entry.$1), sl<SharedPreferences>());
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: isSelected ? AppTheme.primary.withValues(alpha: 0.08) : Colors.grey.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected ? AppTheme.primary.withValues(alpha: 0.4) : Colors.grey.shade200,
+                                  width: isSelected ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(entry.$3, style: const TextStyle(fontSize: 22)),
+                                  const SizedBox(width: 14),
+                                  Text(
+                                    entry.$2,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                      color: isSelected ? AppTheme.primary : AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  if (isSelected)
+                                    Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 20),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
-                    trailing: current == entry.$1
-                        ? Icon(Icons.check_circle, color: colorScheme.primary)
-                        : const Icon(Icons.circle_outlined, color: Colors.grey),
-                    onTap: () async {
-                      Navigator.pop(ctx);
-                      await localeProvider.setLocale(Locale(entry.$1), sl<SharedPreferences>());
-                    },
                   ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
                 ],
-              ],
-            ),
-          ),
-          actionsPadding: EdgeInsets.zero,
+              ),
+            );
+          },
         );
       },
+    );
+  }
+}
+
+class _TripCard extends StatelessWidget {
+  final Trip trip;
+  final VoidCallback onTap;
+
+  const _TripCard({required this.trip, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final symbol = currencySymbol(trip.currency);
+    final statusColor = _statusColor(trip.status);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primary.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 5,
+              height: 72,
+              decoration: BoxDecoration(
+                color: statusColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      trip.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$symbol${trip.totalBudget}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppTheme.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _statusColor(TripStatus status) {
+    switch (status) {
+      case TripStatus.active:
+        return const Color(0xFF22C55E);
+      case TripStatus.upcoming:
+        return const Color(0xFFF59E0B);
+      case TripStatus.archived:
+        return AppTheme.textSecondary;
+    }
+  }
+}
+
+class _ModalOption extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _ModalOption({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.15)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.12), shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary)),
+                  Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

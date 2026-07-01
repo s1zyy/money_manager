@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/date_time_extensions.dart';
+import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:money_manager/core/utils/date_picker_helper.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 
 class AddExpensePage extends StatefulWidget {
   final String tripId;
-
   const AddExpensePage({Key? key, required this.tripId}) : super(key: key);
 
   @override
@@ -31,9 +32,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final Map<String, TextEditingController> _shareControllers = {};
 
   double get _totalAmount => double.tryParse(_amountController.text) ?? 0.0;
-
   int get _totalCents => (_totalAmount * 100).round();
-
   int get _distributedCents {
     int sum = 0;
     for (final id in _selectedParticipantIds) {
@@ -42,9 +41,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     }
     return sum;
   }
-
   int get _remainingCents => _totalCents - _distributedCents;
-
   double get _remaining => _remainingCents / 100.0;
 
   @override
@@ -67,12 +64,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
         _selectedParticipantIds.addAll(provider.participantsMap.keys);
         _startDate = provider.dashboard?.trip.startDate;
         _endDate = provider.dashboard?.trip.endDate;
-        if (_endDate != null && _selectedDate.isAfter(_endDate!)) {
-          _selectedDate = _endDate!;
-        }
+        if (_endDate != null && _selectedDate.isAfter(_endDate!)) _selectedDate = _endDate!;
         for (final id in provider.participantsMap.keys) {
-          _shareControllers[id] = TextEditingController()
-            ..addListener(() => setState(() {}));
+          _shareControllers[id] = TextEditingController()..addListener(() => setState(() {}));
         }
       });
     }
@@ -82,376 +76,393 @@ class _AddExpensePageState extends State<AddExpensePage> {
   void dispose() {
     _descriptionController.dispose();
     _amountController.dispose();
-    for (final c in _shareControllers.values) {
-      c.dispose();
-    }
+    for (final c in _shareControllers.values) c.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final today = DateTime.now().dateOnly;
+    final tripStart = _startDate?.dateOnly ?? today;
+    final tripEnd = _endDate?.dateOnly ?? today;
+    final maxDate = tripEnd.isBefore(today) ? tripEnd : today;
+    var initialDate = _selectedDate.dateOnly;
+    if (initialDate.isAfter(tripEnd)) initialDate = tripEnd;
+    else if (initialDate.isBefore(tripStart)) initialDate = tripStart;
+
+    final picked = await showStyledDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: tripStart,
+      lastDate: maxDate,
+    );
+    if (picked != null) setState(() => _selectedDate = picked);
+  }
+
+  String _formatDate(DateTime date) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
   void _submitData() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
-
-    if (_splitMode == 'EQUAL') {
-      if (!_eachPaidOwn && _selectedPayerId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.selectWhoPaid)),
-        );
-        return;
-      }
-      if (_selectedParticipantIds.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.selectParticipants)),
-        );
-        return;
-      }
-    } else {
-      // CUSTOM
-      if (!_eachPaidOwn && _selectedPayerId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.selectWhoPaid)),
-        );
-        return;
-      }
-      if (_selectedParticipantIds.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.selectParticipants)),
-        );
-        return;
-      }
-      if (_remainingCents != 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.sharesMustSumToTotal),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
+    if (!_eachPaidOwn && _selectedPayerId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectWhoPaid), behavior: SnackBarBehavior.floating));
+      return;
+    }
+    if (_selectedParticipantIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectParticipants), behavior: SnackBarBehavior.floating));
+      return;
+    }
+    if (_splitMode == 'CUSTOM' && _remainingCents != 0) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.sharesMustSumToTotal), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      return;
     }
 
     final provider = context.read<TripDashboardProvider>();
-    final amount = _totalAmount;
-
     bool success;
     if (_splitMode == 'EQUAL') {
-      success = await provider.addExpense(
-        tripId: widget.tripId,
-        payerId: _eachPaidOwn ? null : _selectedPayerId,
-        amount: amount,
-        date: _selectedDate,
-        splitMode: 'EQUAL',
-        participantIds: _selectedParticipantIds,
-        description: _descriptionController.text.trim(),
-      );
+      success = await provider.addExpense(tripId: widget.tripId, payerId: _eachPaidOwn ? null : _selectedPayerId, amount: _totalAmount, date: _selectedDate, splitMode: 'EQUAL', participantIds: _selectedParticipantIds, description: _descriptionController.text.trim());
     } else {
       final shares = <String, double>{};
-      for (final id in _selectedParticipantIds) {
-        shares[id] = double.tryParse(_shareControllers[id]?.text ?? '') ?? 0.0;
-      }
-      success = await provider.addExpense(
-        tripId: widget.tripId,
-        payerId: _eachPaidOwn ? null : _selectedPayerId,
-        amount: amount,
-        date: _selectedDate,
-        splitMode: 'CUSTOM',
-        customShares: shares,
-        description: _descriptionController.text.trim(),
-      );
+      for (final id in _selectedParticipantIds) shares[id] = double.tryParse(_shareControllers[id]?.text ?? '') ?? 0.0;
+      success = await provider.addExpense(tripId: widget.tripId, payerId: _eachPaidOwn ? null : _selectedPayerId, amount: _totalAmount, date: _selectedDate, splitMode: 'CUSTOM', customShares: shares, description: _descriptionController.text.trim());
     }
 
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.expenseAdded)),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.expenseAdded), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating));
       Navigator.pop(context);
     } else if (mounted && provider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(provider.errorMessage!), backgroundColor: Colors.red),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage!), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
     }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime today = DateTime.now().dateOnly;
-    final DateTime tripStart = _startDate?.dateOnly ?? today;
-    final DateTime tripEnd = _endDate?.dateOnly ?? today;
-    final DateTime maxCalendarDate = tripEnd.isBefore(today) ? tripEnd : today;
-
-    DateTime initialDate = _selectedDate.dateOnly;
-    if (initialDate.isAfter(tripEnd)) {
-      initialDate = tripEnd;
-    } else if (initialDate.isBefore(tripStart)) {
-      initialDate = tripStart;
-    }
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: tripStart,
-      lastDate: maxCalendarDate,
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() => _selectedDate = picked);
-    }
-  }
-
-  String _formalDate(DateTime date) {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return "${date.day} ${months[date.month - 1]} ${date.year}";
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TripDashboardProvider>();
-    final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final isCustom = _splitMode == 'CUSTOM';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.addNewExpense)),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  // Amount
-                  TextFormField(
-                    controller: _amountController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                    ],
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    decoration: InputDecoration(
-                      labelText: l10n.amount,
-                      prefixIcon: const Icon(Icons.attach_money),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    validator: (val) => (val == null || val.isEmpty || double.tryParse(val) == 0)
-                        ? l10n.enterValidAmount
-                        : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Description
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(
-                      labelText: l10n.description,
-                      hintText: l10n.descriptionHint,
-                      prefixIcon: const Icon(Icons.description_outlined),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    validator: (val) => (val == null || val.isEmpty) ? l10n.enterDescription : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Date
-                  Card(
-                    margin: EdgeInsets.zero,
-                    shape: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[400]!)),
-                    child: ListTile(
-                      leading: const Icon(Icons.calendar_month),
-                      title: Text(l10n.transactionDate),
-                      subtitle: Text(_formalDate(_selectedDate)),
-                      trailing: TextButton(
-                        onPressed: () => _selectDate(context),
-                        child: Text(l10n.choose),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Split mode toggle
-                  Row(
-                    children: [
-                      Text(
-                        'Split mode',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const Spacer(),
-                      SegmentedButton<String>(
-                        segments: [
-                          ButtonSegment(value: 'EQUAL', label: Text(l10n.splitEqual)),
-                          ButtonSegment(value: 'CUSTOM', label: Text(l10n.splitCustom)),
-                        ],
-                        selected: {_splitMode},
-                        onSelectionChanged: (val) => setState(() {
-                          _splitMode = val.first;
-                          _eachPaidOwn = false;
-                        }),
-                        style: const ButtonStyle(
-                          visualDensity: VisualDensity.compact,
+      backgroundColor: AppTheme.background,
+      body: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primary, AppTheme.secondary]),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(28), bottomRight: Radius.circular(28)),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 20, 20),
+                child: Row(
+                  children: [
+                    IconButton(icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white), onPressed: () => Navigator.pop(context)),
+                    const Icon(Icons.add_card, color: Colors.white70, size: 22),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(l10n.addNewExpense, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: -0.3), overflow: TextOverflow.ellipsis)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: provider.isLoading
+                ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+                : Form(
+                    key: _formKey,
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
+                      children: [
+                        // Сумма — большое поле
+                        TextFormField(
+                          controller: _amountController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: l10n.amount,
+                            labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                            prefixIcon: const Icon(Icons.attach_money, color: AppTheme.textSecondary),
+                            filled: true, fillColor: Colors.white,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red)),
+                          ),
+                          validator: (val) => (val == null || val.isEmpty || double.tryParse(val) == 0) ? l10n.enterValidAmount : null,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                        const SizedBox(height: 12),
 
-                  // Who paid
-                  if (!_eachPaidOwn) ...[
-                    Text(
-                      l10n.whoPaid,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      key: ValueKey(_selectedPayerId),
-                      value: provider.participantsMap.containsKey(_selectedPayerId) ? _selectedPayerId : null,
-                      items: provider.participantsMap.entries.map((entry) {
-                        return DropdownMenuItem<String>(
-                          value: entry.key,
-                          child: Text(entry.value.name),
-                        );
-                      }).toList(),
-                      onChanged: (val) => setState(() => _selectedPayerId = val),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                        TextFormField(
+                          controller: _descriptionController,
+                          style: const TextStyle(color: AppTheme.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: l10n.description,
+                            hintText: l10n.descriptionHint,
+                            labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                            prefixIcon: const Icon(Icons.description_outlined, color: AppTheme.textSecondary, size: 20),
+                            filled: true, fillColor: Colors.white,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red)),
+                          ),
+                          validator: (val) => (val == null || val.isEmpty) ? l10n.enterDescription : null,
+                        ),
+                        const SizedBox(height: 12),
 
-                  // Each paid own toggle (only in CUSTOM mode)
-                  if (isCustom)
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(l10n.eachPaidOwn),
-                      value: _eachPaidOwn,
-                      onChanged: (val) => setState(() => _eachPaidOwn = val),
-                    ),
+                        // Дата
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_today_outlined, color: AppTheme.textSecondary, size: 20),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(l10n.transactionDate, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                                    Text(_formatDate(_selectedDate), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                                  ],
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
 
-                  const SizedBox(height: 8),
-
-                  // Participants header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.splitBetween,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            if (_selectedParticipantIds.length == provider.participantsMap.length) {
-                              _selectedParticipantIds.clear();
-                            } else {
-                              _selectedParticipantIds.clear();
-                              _selectedParticipantIds.addAll(provider.participantsMap.keys);
-                            }
-                          });
-                        },
-                        child: Text(_selectedParticipantIds.length == provider.participantsMap.length
-                            ? l10n.deselectAll
-                            : l10n.selectAll),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Remaining counter (only in CUSTOM mode)
-                  if (isCustom) ...[
-                    _RemainingBanner(remaining: _remaining),
-                    const SizedBox(height: 8),
-                  ],
-
-                  // Participants list
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: colorScheme.outlineVariant),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: provider.participantsMap.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final participantId = provider.participantsMap.keys.elementAt(index);
-                        final participantName = provider.getParticipantName(participantId);
-                        final isSelected = _selectedParticipantIds.contains(participantId);
-
-                        if (!isCustom) {
-                          return CheckboxListTile(
-                            title: Text(participantName),
-                            value: isSelected,
-                            onChanged: (checked) {
-                              setState(() {
-                                if (checked == true) {
-                                  _selectedParticipantIds.add(participantId);
-                                } else {
-                                  _selectedParticipantIds.remove(participantId);
-                                }
-                              });
-                            },
-                          );
-                        }
-
-                        // CUSTOM mode row
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                        // Split mode
+                        _sectionLabel('Split'),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(14)),
                           child: Row(
-                            children: [
-                              Checkbox(
-                                value: isSelected,
-                                onChanged: (checked) {
-                                  setState(() {
-                                    if (checked == true) {
-                                      _selectedParticipantIds.add(participantId);
-                                    } else {
-                                      _selectedParticipantIds.remove(participantId);
-                                      _shareControllers[participantId]?.clear();
-                                    }
-                                  });
-                                },
-                              ),
-                              Expanded(child: Text(participantName)),
-                              if (isSelected)
-                                SizedBox(
-                                  width: 100,
-                                  child: TextField(
-                                    controller: _shareControllers[participantId],
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                                    ],
-                                    textAlign: TextAlign.right,
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                                      hintText: '0.00',
+                            children: ['EQUAL', 'CUSTOM'].map((mode) {
+                              final selected = _splitMode == mode;
+                              return Expanded(
+                                child: GestureDetector(
+                                  onTap: () => setState(() { _splitMode = mode; _eachPaidOwn = false; }),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: selected ? Colors.white : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: selected ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 6, offset: const Offset(0, 2))] : [],
+                                    ),
+                                    child: Text(
+                                      mode == 'EQUAL' ? l10n.splitEqual : l10n.splitCustom,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.w600, color: selected ? AppTheme.primary : AppTheme.textSecondary),
                                     ),
                                   ),
                                 ),
-                            ],
+                              );
+                            }).toList(),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+                        ),
+                        const SizedBox(height: 20),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: FilledButton.icon(
-                      onPressed: _submitData,
-                      icon: const Icon(Icons.save),
-                      label: Text(l10n.saveExpense, style: const TextStyle(fontSize: 16)),
+                        // Who paid
+                        if (!_eachPaidOwn) ...[
+                          _sectionLabel(l10n.whoPaid),
+                          const SizedBox(height: 10),
+                          Container(
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.grey.shade200)),
+                            child: DropdownButtonFormField<String>(
+                              key: ValueKey(_selectedPayerId),
+                              value: provider.participantsMap.containsKey(_selectedPayerId) ? _selectedPayerId : null,
+                              items: provider.participantsMap.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value.name))).toList(),
+                              onChanged: (val) => setState(() => _selectedPayerId = val),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                prefixIcon: Icon(Icons.person_outline, color: AppTheme.textSecondary, size: 20),
+                                contentPadding: EdgeInsets.symmetric(vertical: 14),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        if (isCustom)
+                          GestureDetector(
+                            onTap: () => setState(() => _eachPaidOwn = !_eachPaidOwn),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: _eachPaidOwn ? AppTheme.primary.withValues(alpha: 0.08) : Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: _eachPaidOwn ? AppTheme.primary.withValues(alpha: 0.3) : Colors.grey.shade200),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.people_outline, color: _eachPaidOwn ? AppTheme.primary : AppTheme.textSecondary, size: 20),
+                                  const SizedBox(width: 12),
+                                  Text(l10n.eachPaidOwn, style: TextStyle(fontWeight: FontWeight.w500, color: _eachPaidOwn ? AppTheme.primary : AppTheme.textPrimary)),
+                                  const Spacer(),
+                                  Switch(value: _eachPaidOwn, onChanged: (val) => setState(() => _eachPaidOwn = val), activeColor: AppTheme.primary),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 20),
+
+                        // Participants
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _sectionLabel(l10n.splitBetween),
+                            GestureDetector(
+                              onTap: () => setState(() {
+                                if (_selectedParticipantIds.length == provider.participantsMap.length) {
+                                  _selectedParticipantIds.clear();
+                                } else {
+                                  _selectedParticipantIds.clear();
+                                  _selectedParticipantIds.addAll(provider.participantsMap.keys);
+                                }
+                              }),
+                              child: Text(
+                                _selectedParticipantIds.length == provider.participantsMap.length ? l10n.deselectAll : l10n.selectAll,
+                                style: const TextStyle(fontSize: 13, color: AppTheme.primary, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+
+                        if (isCustom)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _RemainingBanner(remaining: _remaining),
+                          ),
+
+                        Container(
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.grey.shade200)),
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            itemCount: provider.participantsMap.length,
+                            separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade100),
+                            itemBuilder: (_, index) {
+                              final id = provider.participantsMap.keys.elementAt(index);
+                              final name = provider.getParticipantName(id);
+                              final isSelected = _selectedParticipantIds.contains(id);
+                              final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+
+                              if (!isCustom) {
+                                return InkWell(
+                                  onTap: () => setState(() {
+                                    if (isSelected) _selectedParticipantIds.remove(id);
+                                    else _selectedParticipantIds.add(id);
+                                  }),
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(radius: 16, backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
+                                          child: Text(initial, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primary))),
+                                        const SizedBox(width: 12),
+                                        Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.w500, color: AppTheme.textPrimary))),
+                                        Container(
+                                          width: 22, height: 22,
+                                          decoration: BoxDecoration(
+                                            color: isSelected ? AppTheme.primary : Colors.transparent,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: isSelected ? AppTheme.primary : Colors.grey.shade300, width: 1.5),
+                                          ),
+                                          child: isSelected ? const Icon(Icons.check, color: Colors.white, size: 13) : null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () => setState(() {
+                                        if (isSelected) { _selectedParticipantIds.remove(id); _shareControllers[id]?.clear(); }
+                                        else _selectedParticipantIds.add(id);
+                                      }),
+                                      child: Container(
+                                        width: 22, height: 22,
+                                        decoration: BoxDecoration(
+                                          color: isSelected ? AppTheme.primary : Colors.transparent,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: isSelected ? AppTheme.primary : Colors.grey.shade300, width: 1.5),
+                                        ),
+                                        child: isSelected ? const Icon(Icons.check, color: Colors.white, size: 13) : null,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    CircleAvatar(radius: 14, backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
+                                      child: Text(initial, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primary))),
+                                    const SizedBox(width: 10),
+                                    Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.w500, color: AppTheme.textPrimary))),
+                                    if (isSelected)
+                                      SizedBox(
+                                        width: 90,
+                                        child: TextField(
+                                          controller: _shareControllers[id],
+                                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                                          textAlign: TextAlign.right,
+                                          style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade200)),
+                                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppTheme.primary)),
+                                            hintText: '0.00',
+                                            filled: true, fillColor: AppTheme.background,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: FilledButton.icon(
+                            onPressed: _submitData,
+                            icon: const Icon(Icons.check_rounded),
+                            label: Text(l10n.saveExpense, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                            style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
+          ),
+        ],
+      ),
     );
   }
+
+  Widget _sectionLabel(String text) => Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textSecondary, letterSpacing: 0.5));
 }
 
 class _RemainingBanner extends StatelessWidget {
@@ -461,25 +472,25 @@ class _RemainingBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isZero = (remaining * 100).round() == 0;
-    final color = isZero ? Colors.green : Colors.orange;
+    final color = isZero ? const Color(0xFF22C55E) : Colors.orange;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.4)),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            isZero ? 'All distributed' : 'Remaining to distribute',
-            style: TextStyle(color: color, fontWeight: FontWeight.w500),
+          Row(
+            children: [
+              Icon(isZero ? Icons.check_circle_outline : Icons.pending_outlined, color: color, size: 18),
+              const SizedBox(width: 8),
+              Text(isZero ? 'All distributed' : 'Remaining', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+            ],
           ),
-          Text(
-            isZero ? '✓' : '${remaining.toStringAsFixed(2)}',
-            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16),
-          ),
+          Text(isZero ? '✓' : remaining.toStringAsFixed(2), style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
         ],
       ),
     );

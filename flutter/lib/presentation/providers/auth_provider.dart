@@ -17,11 +17,17 @@ class AuthProvider extends ChangeNotifier{
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _currentUserEmail;
+  String? _currentUserName;
+  String? get currentUserEmail => _currentUserEmail;
+  String? get currentUserName => _currentUserName;
+
   Future<bool> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
     try {
       await loginUseCase.call(email, password);
+      _currentUserEmail = email;
       _isLoading = false;
       notifyListeners();
       return true;
@@ -41,6 +47,8 @@ class AuthProvider extends ChangeNotifier{
 
     try {
       await registerUseCase.call(email, password, name);
+      _currentUserEmail = email;
+      _currentUserName = name;
       _isLoading = false;
       notifyListeners();
       return true;

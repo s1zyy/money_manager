@@ -33,6 +33,12 @@
   "general": "Geral",
   "finance": "Finanças",
   "dates": "Datas",
+  "startDate": "Data de início: {date}",
+  "@startDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "endDate": "Data de término: {date}",
   "@endDate": {
     "placeholders": {
@@ -169,5 +175,33 @@
   "enterPassword": "Insira a senha",
   "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
   "confirmPassword": "Confirmar senha",
-  "passwordsDoNotMatch": "As senhas não coincidem"
+  "passwordsDoNotMatch": "As senhas não coincidem",
+  "splashSubtitle": "Despesas de viagem — simplificadas",
+  "searchHint": "Pesquisar...",
+  "copyCode": "Copiar",
+  "currencyPickerTitle": "Moeda",
+  "virtualParticipantHint": "Participante sem conta no app",
+  "unarchiveTrip": "Desarquivar viagem",
+  "unarchiveTripConfirm": "Desarquivar viagem?",
+  "unarchiveTripMessage": "A viagem será restaurada para o status ativo ou próximo.",
+  "failedToUnarchive": "Falha ao desarquivar",
+  "splitEqual": "Igual",
+  "splitCustom": "Personalizado",
+  "eachPaidOwn": "Cada um pagou o seu",
+  "sharesMustSumToTotal": "As partes devem somar o valor total",
+  "settleUp": "Acertar contas",
+  "settleUpSubtitle": "A viagem acabou. Veja como quitar todas as dívidas com o mínimo de transferências.",
+  "tripEndedSettleUp": "Viagem encerrada — hora de acertar",
+  "paysTo": "{from} → {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "allSettled": "Tudo acertado!",
+  "allSettledMessage": "Todos estão em dia. Arquivar a viagem?",
+  "archiveAndFinish": "Arquivar e concluir",
+  "settlementDone": "Viagem arquivada com sucesso!",
+  "noSettlementNeeded": "Todos já estão em dia. Nenhuma transferência necessária."
 }

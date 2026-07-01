@@ -33,6 +33,12 @@
   "general": "General",
   "finance": "Finance",
   "dates": "Dates",
+  "startDate": "Start Date: {date}",
+  "@startDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "endDate": "End Date: {date}",
   "@endDate": {
     "placeholders": {
@@ -54,6 +60,10 @@
   "joinCodeCopied": "Join code copied to clipboard!",
   "inviteCode": "Invite Code",
 
+  "unarchiveTrip": "Unarchive Trip",
+  "unarchiveTripConfirm": "Unarchive Trip?",
+  "unarchiveTripMessage": "This will restore the trip to active or upcoming status.",
+  "failedToUnarchive": "Failed to unarchive",
   "archiveTrip": "Archive Trip",
   "archiveTripConfirm": "Archive Trip?",
   "archiveTripMessage": "This will move the trip to the Archived tab.",
@@ -161,13 +171,38 @@
   "splitBetween": "Split Between",
   "selectAll": "Select All",
   "deselectAll": "Deselect All",
+  "splitEqual": "Equal",
+  "splitCustom": "Custom",
+  "eachPaidOwn": "Each paid their own",
+  "sharesMustSumToTotal": "Shares must sum to total amount",
 
   "language": "Language",
+
+  "settleUp": "Settle Up",
+  "settleUpSubtitle": "The trip is over. Here's how to settle all debts with the minimum number of transfers.",
+  "tripEndedSettleUp": "Trip ended — time to settle up",
+  "paysTo": "{from} → {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "allSettled": "All settled!",
+  "allSettledMessage": "Everyone is even. Archive the trip?",
+  "archiveAndFinish": "Archive & Finish",
+  "settlementDone": "Trip archived successfully!",
+  "noSettlementNeeded": "Everyone is already even. No transfers needed.",
 
   "enterEmail": "Please enter email",
   "enterValidEmail": "Enter a valid email address",
   "enterPassword": "Please enter password",
   "passwordTooShort": "Password must be at least 6 characters",
   "confirmPassword": "Confirm Password",
-  "passwordsDoNotMatch": "Passwords do not match"
+  "passwordsDoNotMatch": "Passwords do not match",
+  "splashSubtitle": "Trip expenses — made simple",
+  "searchHint": "Search...",
+  "copyCode": "Copy",
+  "currencyPickerTitle": "Currency",
+  "virtualParticipantHint": "Participant without an app account"
 }

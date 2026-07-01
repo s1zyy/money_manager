@@ -33,6 +33,12 @@
   "general": "Основное",
   "finance": "Финансы",
   "dates": "Даты",
+  "startDate": "Дата начала: {date}",
+  "@startDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "endDate": "Дата окончания: {date}",
   "tripHasEnded": "Поездка уже завершена",
   "tripNotStarted": "Поездка ещё не началась! Вы сможете добавлять расходы после начала.",
@@ -53,6 +59,11 @@
   "archiveTripConfirm": "Архивировать?",
   "archiveTripMessage": "Поездка будет перемещена в архив.",
   "failedToArchive": "Не удалось архивировать",
+
+  "unarchiveTrip": "Разархивировать поездку",
+  "unarchiveTripConfirm": "Разархивировать поездку?",
+  "unarchiveTripMessage": "Поездка будет восстановлена в активный или предстоящий статус.",
+  "failedToUnarchive": "Не удалось разархивировать",
 
   "deleteTrip": "Удалить поездку навсегда",
   "deleteTripConfirm": "Удалить поездку?",
@@ -135,13 +146,38 @@
   "splitBetween": "Разделить между",
   "selectAll": "Выбрать всех",
   "deselectAll": "Снять выбор",
+  "splitEqual": "Поровну",
+  "splitCustom": "Своя сумма",
+  "eachPaidOwn": "Каждый за себя",
+  "sharesMustSumToTotal": "Суммы долей должны совпадать с общей суммой",
 
   "language": "Язык",
+
+  "settleUp": "Рассчитаться",
+  "settleUpSubtitle": "Поездка завершена. Вот минимальный набор переводов чтобы рассчитаться.",
+  "tripEndedSettleUp": "Поездка завершена — пора рассчитаться",
+  "paysTo": "{from} → {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "allSettled": "Все рассчитались!",
+  "allSettledMessage": "Все в расчёте. Архивировать поездку?",
+  "archiveAndFinish": "Архивировать",
+  "settlementDone": "Поездка успешно архивирована!",
+  "noSettlementNeeded": "Все в расчёте. Переводы не нужны.",
 
   "enterEmail": "Введите email",
   "enterValidEmail": "Введите корректный email адрес",
   "enterPassword": "Введите пароль",
   "passwordTooShort": "Пароль должен содержать не менее 6 символов",
   "confirmPassword": "Подтвердите пароль",
-  "passwordsDoNotMatch": "Пароли не совпадают"
+  "passwordsDoNotMatch": "Пароли не совпадают",
+  "splashSubtitle": "Траты в путешествии — просто",
+  "searchHint": "Поиск...",
+  "copyCode": "Скопировать",
+  "currencyPickerTitle": "Валюта",
+  "virtualParticipantHint": "Участник без аккаунта в приложении"
 }

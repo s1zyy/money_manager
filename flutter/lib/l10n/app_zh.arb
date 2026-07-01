@@ -33,6 +33,12 @@
   "general": "常规",
   "finance": "财务",
   "dates": "日期",
+  "startDate": "开始日期：{date}",
+  "@startDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "endDate": "结束日期：{date}",
   "@endDate": {
     "placeholders": {
@@ -169,5 +175,33 @@
   "enterPassword": "请输入密码",
   "passwordTooShort": "密码长度至少为6个字符",
   "confirmPassword": "确认密码",
-  "passwordsDoNotMatch": "两次密码不一致"
+  "passwordsDoNotMatch": "两次密码不一致",
+  "splashSubtitle": "旅途花费，轻松管理",
+  "searchHint": "搜索...",
+  "copyCode": "复制",
+  "currencyPickerTitle": "货币",
+  "virtualParticipantHint": "没有应用账号的参与者",
+  "unarchiveTrip": "恢复行程",
+  "unarchiveTripConfirm": "恢复行程？",
+  "unarchiveTripMessage": "行程将恢复为进行中或即将开始状态。",
+  "failedToUnarchive": "恢复失败",
+  "splitEqual": "平均",
+  "splitCustom": "自定义",
+  "eachPaidOwn": "各自付款",
+  "sharesMustSumToTotal": "各份额之和必须等于总金额",
+  "settleUp": "结算",
+  "settleUpSubtitle": "行程结束，以下是最少转账次数的结算方案。",
+  "tripEndedSettleUp": "行程已结束——立即结算",
+  "paysTo": "{from} → {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "allSettled": "全部结清！",
+  "allSettledMessage": "大家已经结清。归档行程？",
+  "archiveAndFinish": "归档并完成",
+  "settlementDone": "行程已成功归档！",
+  "noSettlementNeeded": "大家已经结清，无需转账。"
 }

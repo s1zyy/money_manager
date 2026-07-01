@@ -33,6 +33,12 @@
   "general": "Général",
   "finance": "Finances",
   "dates": "Dates",
+  "startDate": "Date de début : {date}",
+  "@startDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "endDate": "Date de fin : {date}",
   "@endDate": {
     "placeholders": {
@@ -169,5 +175,33 @@
   "enterPassword": "Entrez votre mot de passe",
   "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
   "confirmPassword": "Confirmer le mot de passe",
-  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas"
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+  "splashSubtitle": "Dépenses de voyage — en toute simplicité",
+  "searchHint": "Rechercher...",
+  "copyCode": "Copier",
+  "currencyPickerTitle": "Devise",
+  "virtualParticipantHint": "Participant sans compte dans l'app",
+  "unarchiveTrip": "Désarchiver le voyage",
+  "unarchiveTripConfirm": "Désarchiver le voyage ?",
+  "unarchiveTripMessage": "Le voyage sera restauré au statut actif ou à venir.",
+  "failedToUnarchive": "Échec du désarchivage",
+  "splitEqual": "Égal",
+  "splitCustom": "Personnalisé",
+  "eachPaidOwn": "Chacun a payé sa part",
+  "sharesMustSumToTotal": "Les parts doivent correspondre au montant total",
+  "settleUp": "Régler les comptes",
+  "settleUpSubtitle": "Le voyage est terminé. Voici comment régler toutes les dettes avec un minimum de transferts.",
+  "tripEndedSettleUp": "Voyage terminé — il est temps de régler",
+  "paysTo": "{from} → {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "allSettled": "Tout réglé !",
+  "allSettledMessage": "Tout le monde est quitte. Archiver le voyage ?",
+  "archiveAndFinish": "Archiver et terminer",
+  "settlementDone": "Voyage archivé avec succès !",
+  "noSettlementNeeded": "Tout le monde est déjà quitte. Aucun transfert nécessaire."
 }

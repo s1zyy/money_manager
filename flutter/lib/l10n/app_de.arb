@@ -33,6 +33,12 @@
   "general": "Allgemein",
   "finance": "Finanzen",
   "dates": "Daten",
+  "startDate": "Startdatum: {date}",
+  "@startDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "endDate": "Enddatum: {date}",
   "@endDate": {
     "placeholders": {
@@ -168,5 +174,33 @@
   "enterPassword": "Bitte Passwort eingeben",
   "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein",
   "confirmPassword": "Passwort bestätigen",
-  "passwordsDoNotMatch": "Passwörter stimmen nicht überein"
+  "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+  "splashSubtitle": "Reiseausgaben — ganz einfach",
+  "searchHint": "Suchen...",
+  "copyCode": "Kopieren",
+  "currencyPickerTitle": "Währung",
+  "virtualParticipantHint": "Teilnehmer ohne App-Konto",
+  "unarchiveTrip": "Reise wiederherstellen",
+  "unarchiveTripConfirm": "Reise wiederherstellen?",
+  "unarchiveTripMessage": "Die Reise wird wieder auf aktiv oder bevorstehend gesetzt.",
+  "failedToUnarchive": "Wiederherstellen fehlgeschlagen",
+  "splitEqual": "Gleich",
+  "splitCustom": "Benutzerdefiniert",
+  "eachPaidOwn": "Jeder hat selbst bezahlt",
+  "sharesMustSumToTotal": "Die Anteile müssen den Gesamtbetrag ergeben",
+  "settleUp": "Abrechnen",
+  "settleUpSubtitle": "Die Reise ist vorbei. So lassen sich alle Schulden mit minimalen Überweisungen begleichen.",
+  "tripEndedSettleUp": "Reise beendet — Zeit zur Abrechnung",
+  "paysTo": "{from} → {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "allSettled": "Alles beglichen!",
+  "allSettledMessage": "Alle sind quitt. Reise archivieren?",
+  "archiveAndFinish": "Archivieren & Abschließen",
+  "settlementDone": "Reise erfolgreich archiviert!",
+  "noSettlementNeeded": "Alle sind bereits quitt. Keine Überweisungen nötig."
 }

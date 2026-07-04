@@ -12,8 +12,8 @@
 
 <p align="center">
   <b><a href="https://github.com/s1zyy/money_manager_backend">⚙️ Backend (Spring Boot)</a></b> •
-  <b><a href="#-architecture">Architecture</a></b> •
-  <b><a href="#-quick-start">Quick Start</a></b>
+  <b><a href="#architecture">Architecture</a></b> •
+  <b><a href="#quick-start">Quick Start</a></b>
 </p>
 
 ---

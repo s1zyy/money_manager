@@ -6,12 +6,10 @@ class JoinTripByCode {
 
   JoinTripByCode({required this.repository});
 
-  Future<Trip> call(String joinCode) async {
-    // Validate join code format
+  Future<Trip> call(String joinCode, double budget) async {
     if (joinCode.isEmpty || joinCode.length != 8) {
       throw FormatException('Invalid join code format');
     }
-
-    return await repository.joinTripByCode(joinCode);
+    return await repository.joinTripByCode(joinCode, budget);
   }
 }

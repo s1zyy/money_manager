@@ -8,13 +8,15 @@ abstract class TripRemoteDataSource {
   Future<List<TripModel>> getUserTrips();
   Future<void> createTrip(Map<String, dynamic> tripData);
   Future<TripDashboardModel> getTripDashboard(String tripId);
-  Future<TripModel> joinTripByCode(String joinCode);
+  Future<TripModel> joinTripByCode(String joinCode, double budget);
   Future<void> updateTrip(String tripId, Map<String, dynamic> data);
+  Future<void> updateMyBudget(String tripId, double budget);
+  Future<void> updateParticipantBudget(String tripId, String participantId, double budget);
   Future<void> archiveTrip(String tripId);
   Future<void> leaveTrip(String tripId);
   Future<void> deleteTrip(String tripId);
   Future<void> removeParticipant(String tripId, String participantId);
-  Future<void> addVirtualParticipant(String tripId, String name);
+  Future<void> addVirtualParticipant(String tripId, String name, double budget);
   Future<List<SettlementTransferModel>> getSettlement(String tripId);
   Future<void> unarchiveTrip(String tripId);
 }
@@ -54,9 +56,9 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
   }
 
   @override
-  Future<TripModel> joinTripByCode(String joinCode) async {
+  Future<TripModel> joinTripByCode(String joinCode, double budget) async {
     try {
-      final response = await dio.post('/trips/join', data: {'joinCode': joinCode});
+      final response = await dio.post('/trips/join', data: {'joinCode': joinCode, 'budget': budget});
       return TripModel.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
@@ -67,6 +69,24 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
   Future<void> updateTrip(String tripId, Map<String, dynamic> data) async {
     try {
       await dio.put('/trips/$tripId', data: data);
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> updateMyBudget(String tripId, double budget) async {
+    try {
+      await dio.put('/trips/$tripId/my-budget', data: {'budget': budget});
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> updateParticipantBudget(String tripId, String participantId, double budget) async {
+    try {
+      await dio.put('/trips/$tripId/participants/$participantId/budget', data: {'budget': budget});
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }
@@ -109,9 +129,9 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
   }
 
   @override
-  Future<void> addVirtualParticipant(String tripId, String name) async {
+  Future<void> addVirtualParticipant(String tripId, String name, double budget) async {
     try {
-      await dio.post('/trips/$tripId/participants/virtual', data: {'name': name});
+      await dio.post('/trips/$tripId/participants/virtual', data: {'name': name, 'budget': budget});
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }

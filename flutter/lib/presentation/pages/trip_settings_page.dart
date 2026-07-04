@@ -18,22 +18,20 @@ class TripSettingsPage extends StatefulWidget {
 class _TripSettingsPageState extends State<TripSettingsPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  late TextEditingController _budgetController;
-  late TextEditingController _prepaidController;
+  late TextEditingController _myBudgetController;
 
   String _selectedCurrency = 'EUR';
-  double get _totalBudget => double.tryParse(_budgetController.text) ?? 0.0;
-  double get _prepaidExpenses => double.tryParse(_prepaidController.text) ?? 0.0;
+  double get _myBudget => double.tryParse(_myBudgetController.text) ?? 0.0;
   late DateTime _currentStartDate;
   late DateTime _currentEndDate;
 
   @override
   void initState() {
     super.initState();
-    final dashboard = context.read<TripDashboardProvider>().dashboard;
+    final provider = context.read<TripDashboardProvider>();
+    final dashboard = provider.dashboard;
     _nameController = TextEditingController(text: dashboard?.trip.name ?? '');
-    _budgetController = TextEditingController(text: _formatNumber(dashboard?.trip.totalBudget ?? 0));
-    _prepaidController = TextEditingController(text: _formatNumber(dashboard?.trip.prepaidExpenses ?? 0));
+    _myBudgetController = TextEditingController(text: _formatNumber(provider.myBudget));
     _selectedCurrency = dashboard?.trip.currency ?? 'EUR';
     _currentStartDate = dashboard?.trip.startDate ?? DateTime.now();
     _currentEndDate = dashboard?.trip.endDate ?? DateTime.now();
@@ -42,8 +40,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _budgetController.dispose();
-    _prepaidController.dispose();
+    _myBudgetController.dispose();
     super.dispose();
   }
 
@@ -116,15 +113,8 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 
                       _sectionLabel(l10n.finance),
                       const SizedBox(height: 14),
-                      _buildField(controller: _budgetController, label: l10n.totalBudget, icon: Icons.account_balance_wallet_outlined,
+                      _buildField(controller: _myBudgetController, label: l10n.myBudget, icon: Icons.account_balance_wallet_outlined,
                           keyboardType: TextInputType.number, highlighted: true, validator: (v) => (v == null || v.isEmpty) ? l10n.enterBudget : null),
-                      const SizedBox(height: 12),
-                      _buildField(controller: _prepaidController, label: l10n.prepaidExpenses, icon: Icons.payment_outlined, highlighted: true,
-                          keyboardType: TextInputType.number, validator: (v) {
-                            if (v == null || v.isEmpty) return l10n.enterPrepaid;
-                            if (_prepaidExpenses > _totalBudget) return l10n.prepaidExceedsBudget;
-                            return null;
-                          }),
                       const SizedBox(height: 12),
 
                       GestureDetector(
@@ -487,17 +477,22 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
     if (!_formKey.currentState!.validate()) return;
     final provider = context.read<TripDashboardProvider>();
     final isUpcoming = provider.dashboard?.trip.status == TripStatus.upcoming;
-    final success = await provider.updateTrip(
+
+    final tripSuccess = await provider.updateTrip(
       tripId: widget.tripId,
       name: _nameController.text.trim(),
-      totalBudget: _totalBudget,
-      prepaidExpenses: _prepaidExpenses,
       currency: _selectedCurrency,
       startDate: isUpcoming ? _currentStartDate : null,
       endDate: _currentEndDate,
     );
+    if (!tripSuccess) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      return;
+    }
+
+    final budgetSuccess = await provider.updateMyBudget(tripId: widget.tripId, budget: _myBudget);
     if (mounted) {
-      if (success) {
+      if (budgetSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.settingsSaved), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating));
         Navigator.of(context).pop();
       } else {

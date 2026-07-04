@@ -7,8 +7,6 @@ class UpdateTripUseCase {
   Future<void> call({
     required String tripId,
     required String name,
-    required double totalBudget,
-    required double prepaidExpenses,
     required String currency,
     DateTime? startDate,
     DateTime? endDate,
@@ -16,8 +14,6 @@ class UpdateTripUseCase {
     return await repository.updateTrip(
       tripId: tripId,
       name: name,
-      totalBudget: totalBudget,
-      prepaidExpenses: prepaidExpenses,
       currency: currency,
       startDate: startDate,
       endDate: endDate,

@@ -17,20 +17,17 @@ class _CreateTripPageState extends State<CreateTripPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _budgetController = TextEditingController();
-  final _prepaidController = TextEditingController();
 
   String _selectedCurrency = 'EUR';
   DateTime? _startDate;
   DateTime? _endDate;
 
-  double get _totalBudget => double.tryParse(_budgetController.text) ?? 0.0;
-  double get _prepaidExpenses => double.tryParse(_prepaidController.text) ?? 0.0;
+  double get _budget => double.tryParse(_budgetController.text) ?? 0.0;
 
   @override
   void initState() {
     super.initState();
     _budgetController.addListener(_updateState);
-    _prepaidController.addListener(_updateState);
   }
 
   void _updateState() => setState(() {});
@@ -39,7 +36,6 @@ class _CreateTripPageState extends State<CreateTripPage> {
   void dispose() {
     _nameController.dispose();
     _budgetController.dispose();
-    _prepaidController.dispose();
     super.dispose();
   }
 
@@ -168,22 +164,10 @@ class _CreateTripPageState extends State<CreateTripPage> {
                     const SizedBox(height: 10),
                     _buildField(
                       controller: _budgetController,
-                      label: l10n.totalBudget,
+                      label: l10n.myBudget,
                       icon: Icons.account_balance_wallet_outlined,
                       keyboardType: TextInputType.number,
                       validator: (v) => (v == null || v.isEmpty) ? l10n.enterTotalBudget : null,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildField(
-                      controller: _prepaidController,
-                      label: l10n.prepaidAmount,
-                      icon: Icons.payment_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return l10n.enterPrepaidAmount;
-                        if (_prepaidExpenses > _totalBudget) return l10n.prepaidExceedsBudget;
-                        return null;
-                      },
                     ),
 
                     const SizedBox(height: 24),
@@ -431,8 +415,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
     final success = await provider.addTrip(
       name: _nameController.text,
-      totalBudget: _totalBudget,
-      prepaidExpenses: _prepaidExpenses,
+      budget: _budget,
       startDate: _startDate!,
       endDate: _endDate!,
       currency: _selectedCurrency,

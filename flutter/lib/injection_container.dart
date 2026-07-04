@@ -39,6 +39,8 @@ import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/get_trip_settlement.dart';
 import 'package:money_manager/domain/usecases/trip/unarchive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
+import 'package:money_manager/domain/usecases/trip/update_my_budget.dart';
+import 'package:money_manager/domain/usecases/trip/update_participant_budget.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/locale_provider.dart';
@@ -108,6 +110,14 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   );
 
   sl.registerLazySingleton(
+    () => UpdateMyBudgetUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => UpdateParticipantBudgetUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
     () => ArchiveTripUseCase(repository: sl()),
   );
 
@@ -144,6 +154,8 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       updateExpenseUseCase: sl(),
       getParticipantsMapUseCase: sl(),
       updateTripUseCase: sl(),
+      updateMyBudgetUseCase: sl(),
+      updateParticipantBudgetUseCase: sl(),
       archiveTripUseCase: sl(),
       leaveTripUseCase: sl(),
       deleteTripUseCase: sl(),

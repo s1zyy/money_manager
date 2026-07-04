@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:money_manager/domain/entities/dashboard_participant.dart';
 import 'package:money_manager/domain/entities/expense.dart';
@@ -19,6 +17,8 @@ import 'package:money_manager/domain/usecases/trip/unarchive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/leave_trip.dart';
 import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
+import 'package:money_manager/domain/usecases/trip/update_my_budget.dart';
+import 'package:money_manager/domain/usecases/trip/update_participant_budget.dart';
 
 class TripDashboardProvider extends ChangeNotifier {
   final AddExpenseUseCase addExpenseUseCase;
@@ -27,6 +27,8 @@ class TripDashboardProvider extends ChangeNotifier {
   final DeleteExpenseUseCase deleteExpenseUseCase;
   final GetParticipantsMapUseCase getParticipantsMapUseCase;
   final UpdateTripUseCase updateTripUseCase;
+  final UpdateMyBudgetUseCase updateMyBudgetUseCase;
+  final UpdateParticipantBudgetUseCase updateParticipantBudgetUseCase;
   final ArchiveTripUseCase archiveTripUseCase;
   final LeaveTripUseCase leaveTripUseCase;
   final DeleteTripUseCase deleteTripUseCase;
@@ -42,6 +44,8 @@ class TripDashboardProvider extends ChangeNotifier {
     required this.deleteExpenseUseCase,
     required this.getParticipantsMapUseCase,
     required this.updateTripUseCase,
+    required this.updateMyBudgetUseCase,
+    required this.updateParticipantBudgetUseCase,
     required this.archiveTripUseCase,
     required this.leaveTripUseCase,
     required this.deleteTripUseCase,
@@ -62,12 +66,22 @@ class TripDashboardProvider extends ChangeNotifier {
 
   List<Expense> get expenses => _dashboard?.expenses ?? [];
   List<DashboardParticipant> get participants => _dashboard?.participants ?? [];
+  double get myBudget => _dashboard?.myStats.budget ?? 0.0;
+  double get myDailyLimit => _dashboard?.myStats.dailyLimit ?? 0.0;
+  double get todaySpent => _dashboard?.myStats.spentToday ?? 0.0;
+  String? get myParticipantId => _dashboard?.myStats.participantId;
+
+  double myShareOf(Expense e) =>
+      _dashboard?.myStats.shareOf(e.amount, e.participantShares, e.splitMode) ?? 0.0;
+
+  List<Expense> get regularExpenses =>
+      expenses.where((e) => !e.isPrepaid).toList();
+
+  List<Expense> get prepaidExpenses =>
+      expenses.where((e) => e.isPrepaid).toList();
 
   Map<String, ParticipantInfo> _participantsMap = {};
-
   Map<String, ParticipantInfo> get participantsMap => _participantsMap;
-
-
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -77,15 +91,14 @@ class TripDashboardProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    try{
+    try {
       final results = await Future.wait([
         getTripDashboardUseCase(tripId),
-        getParticipantsMapUseCase(tripId)
+        getParticipantsMapUseCase(tripId),
       ]);
-      final participants = results[1] as List<ParticipantInfo>;
+      final participantsList = results[1] as List<ParticipantInfo>;
       _dashboard = results[0] as TripDashboard;
-      _participantsMap = {for (var p in participants) p.id: p};
-
+      _participantsMap = {for (var p in participantsList) p.id: p};
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
@@ -93,18 +106,20 @@ class TripDashboardProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  String getParticipantName(String id) => _participantsMap[id]?.name ?? "Unknown";
+
+  String getParticipantName(String id) => _participantsMap[id]?.name ?? 'Unknown';
   bool isVirtualParticipant(String id) => _participantsMap[id]?.isVirtual ?? false;
 
   Future<bool> addExpense({
     required String tripId,
     required double amount,
-    required DateTime date,
+    DateTime? date,
     required String splitMode,
     String? payerId,
     List<String>? participantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -120,6 +135,7 @@ class TripDashboardProvider extends ChangeNotifier {
         participantIds: participantIds,
         customShares: customShares,
         description: description,
+        isPrepaid: isPrepaid,
       );
       await loadDashboard(tripId);
       return true;
@@ -133,28 +149,25 @@ class TripDashboardProvider extends ChangeNotifier {
   }
 
   Future<void> deleteExpense(String tripId, String expenseId) async {
-
     if (_dashboard == null) return;
 
+    final tempExpenses = List<Expense>.from(_dashboard!.expenses)
+      ..removeWhere((e) => e.id == expenseId);
 
-  final tempExpenses = List<Expense>.from(_dashboard!.expenses)
-    ..removeWhere((e) => e.id == expenseId);
+    _dashboard = TripDashboard(
+      trip: _dashboard!.trip,
+      myStats: _dashboard!.myStats,
+      participants: _dashboard!.participants,
+      expenses: tempExpenses,
+      isOwner: _dashboard!.isOwner,
+      canLeave: _dashboard!.canLeave,
+    );
+    notifyListeners();
 
-  _dashboard = TripDashboard(
-    trip: _dashboard!.trip,
-    dailyLimit: _dashboard!.dailyLimit,
-    participants: _dashboard!.participants,
-    expenses: tempExpenses,
-    isOwner: _dashboard!.isOwner,
-    canLeave: _dashboard!.canLeave
-  );
-  
-  notifyListeners();
-
-    try{
+    try {
       await deleteExpenseUseCase(tripId: tripId, expenseId: expenseId);
       await loadDashboard(tripId);
-    } catch(e) {
+    } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
     }
@@ -163,8 +176,6 @@ class TripDashboardProvider extends ChangeNotifier {
   Future<bool> updateTrip({
     required String tripId,
     required String name,
-    required double totalBudget,
-    required double prepaidExpenses,
     required String currency,
     DateTime? startDate,
     DateTime? endDate,
@@ -173,12 +184,10 @@ class TripDashboardProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    try{
+    try {
       await updateTripUseCase(
         tripId: tripId,
         name: name,
-        totalBudget: totalBudget,
-        prepaidExpenses: prepaidExpenses,
         currency: currency,
         startDate: startDate,
         endDate: endDate,
@@ -194,7 +203,45 @@ class TripDashboardProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> archiveTrip(String tripId) async{
+  Future<bool> updateMyBudget({
+    required String tripId,
+    required double budget,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await updateMyBudgetUseCase(tripId: tripId, budget: budget);
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateParticipantBudget({
+    required String tripId,
+    required String participantId,
+    required double budget,
+  }) async {
+    try {
+      await updateParticipantBudgetUseCase(
+          tripId: tripId, participantId: participantId, budget: budget);
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> archiveTrip(String tripId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -208,10 +255,9 @@ class TripDashboardProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-    
   }
 
-  Future<bool> leaveTrip(String tripId) async{
+  Future<bool> leaveTrip(String tripId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -225,9 +271,9 @@ class TripDashboardProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-    
   }
-  Future<bool> deleteTrip(String tripId) async{
+
+  Future<bool> deleteTrip(String tripId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -241,9 +287,7 @@ class TripDashboardProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-    
   }
-
 
   Future<bool> removeParticipant(String tripId, String participantId) async {
     try {
@@ -288,9 +332,10 @@ class TripDashboardProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> addVirtualParticipant(String tripId, String name) async {
+  Future<bool> addVirtualParticipant(
+      String tripId, String name, double budget) async {
     try {
-      await addVirtualParticipantUseCase(tripId, name);
+      await addVirtualParticipantUseCase(tripId, name, budget);
       await loadDashboard(tripId);
       return true;
     } catch (e) {
@@ -302,35 +347,20 @@ class TripDashboardProvider extends ChangeNotifier {
 
   Map<DateTime, List<Expense>> get expensesByDay {
     final map = <DateTime, List<Expense>>{};
-    for (final expense in expenses) {
-      final day = DateTime(expense.date.year, expense.date.month, expense.date.day);
+    for (final expense in regularExpenses) {
+      final day = DateTime(
+          expense.date!.year, expense.date!.month, expense.date!.day);
       map.putIfAbsent(day, () => []).add(expense);
     }
-    final sorted = Map.fromEntries(
+    return Map.fromEntries(
       map.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
     );
-    return sorted;
-  }
-
-  double get todaySpent {
-    if(_dashboard == null || _dashboard!.expenses.isEmpty) return 0.0;
-
-    final today = DateTime.now();
-
-    return _dashboard!.expenses
-      .where((expense) =>
-        expense.date.year == today.year &&
-        expense.date.month == today.month &&
-        expense.date.day == today.day)
-        .map((expense) => expense.amount)
-        .fold(0.0, (sum, amount) => sum + amount);
   }
 
   double get limitProgress {
-    final limit = _dashboard?.dailyLimit ?? 0.0;
-    if(limit == 0.0) return 0.0;
+    final limit = myDailyLimit;
+    if (limit <= 0.0) return 0.0;
     final progress = todaySpent / limit;
     return progress > 1.0 ? 1.0 : progress;
-
   }
 }

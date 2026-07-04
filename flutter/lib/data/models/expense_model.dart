@@ -10,6 +10,7 @@ class ExpenseModel extends Expense {
     required super.participantShares,
     required super.description,
     required super.date,
+    super.isPrepaid = false,
   });
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +18,7 @@ class ExpenseModel extends Expense {
     final shares = rawShares.map(
       (k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0.0),
     );
+    final dateStr = json['date'] as String?;
     return ExpenseModel(
       id: json['id'] as String,
       tripId: json['tripId'] as String,
@@ -25,7 +27,8 @@ class ExpenseModel extends Expense {
       splitMode: json['splitMode'] as String? ?? 'EQUAL',
       participantShares: shares,
       description: json['description'] as String,
-      date: DateTime.parse(json['date'] as String),
+      date: dateStr != null ? DateTime.parse(dateStr) : null,
+      isPrepaid: json['isPrepaid'] as bool? ?? false,
     );
   }
 }

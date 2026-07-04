@@ -131,7 +131,9 @@
 
   "dailyLimit": "Daily Limit",
   "remainingToday": "Remaining for today:",
+  "spentToday": "Spent today",
   "overspentToday": "Overspent today:",
+  "myShare": "My share",
   "notSet": "Not set",
 
   "choose": "CHOOSE",
@@ -204,5 +206,18 @@
   "searchHint": "Search...",
   "copyCode": "Copy",
   "currencyPickerTitle": "Currency",
-  "virtualParticipantHint": "Participant without an app account"
+  "virtualParticipantHint": "Participant without an app account",
+
+  "myBudget": "My Budget",
+  "budget": "Budget",
+  "prepaid": "Prepaid",
+  "prepaidDescription": "Bought before the trip",
+  "saveBudget": "Save Budget",
+  "virtualParticipant": "Virtual Participant",
+  "budgetWithCurrency": "Budget ({currency})",
+  "@budgetWithCurrency": {
+    "placeholders": {
+      "currency": { "type": "String" }
+    }
+  }
 }

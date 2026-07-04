@@ -6,16 +6,14 @@ class CreateTripUseCase {
 
   Future<void> call({
     required String name,
-    required double totalBudget,
-    required double prepaidExpenses,
+    required double budget,
     required DateTime startDate,
     required DateTime endDate,
     required String currency,
   }) async {
     return await tripRepository.createTrip(
       name: name,
-      totalBudget: totalBudget,
-      prepaidExpenses: prepaidExpenses,
+      budget: budget,
       startDate: startDate,
       endDate: endDate,
       currency: currency,

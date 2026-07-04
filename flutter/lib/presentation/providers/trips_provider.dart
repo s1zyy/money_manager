@@ -37,8 +37,7 @@ class TripsProvider extends ChangeNotifier {
 
   Future<bool> addTrip({
     required String name,
-    required double totalBudget,
-    required double prepaidExpenses,
+    required double budget,
     required DateTime startDate,
     required DateTime endDate,
     required String currency,
@@ -51,8 +50,7 @@ class TripsProvider extends ChangeNotifier {
     try {
       await createTripUseCase(
         name: name,
-        totalBudget: totalBudget,
-        prepaidExpenses: prepaidExpenses,
+        budget: budget,
         startDate: startDate,
         endDate: endDate,
         currency: currency,
@@ -69,14 +67,13 @@ class TripsProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> joinTrip(String code) async {
+  Future<bool> joinTrip(String code, double budget) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-
-      final Trip trip = await joinTripByCodeUseCase(code);
+      final Trip trip = await joinTripByCodeUseCase(code, budget);
       
       _trips.add(trip);
       return true;

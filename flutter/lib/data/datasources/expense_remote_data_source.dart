@@ -8,12 +8,13 @@ abstract class ExpenseRemoteDataSource {
   Future<bool> addExpense({
     required String tripId,
     required double amount,
-    required DateTime date,
+    DateTime? date,
     required String splitMode,
     String? payerId,
     List<String>? participantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   });
   Future<Expense> updateExpense({
     required String tripId,
@@ -48,20 +49,22 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   Future<bool> addExpense({
     required String tripId,
     required double amount,
-    required DateTime date,
+    DateTime? date,
     required String splitMode,
     String? payerId,
     List<String>? participantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     try {
       final body = <String, dynamic>{
         'amount': amount,
-        'date': date.toIso8601String().split('T')[0],
         'splitMode': splitMode,
         'description': description,
+        'isPrepaid': isPrepaid,
       };
+      if (date != null) body['date'] = date.toIso8601String().split('T')[0];
       if (payerId != null) body['payerId'] = payerId;
       if (splitMode == 'EQUAL') {
         body['participantIds'] = participantIds;

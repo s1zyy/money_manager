@@ -127,7 +127,9 @@
 
   "dailyLimit": "Tageslimit",
   "remainingToday": "Heute noch übrig:",
+  "spentToday": "Heute ausgegeben",
   "overspentToday": "Heute überzogen:",
+  "myShare": "Mein Anteil",
   "notSet": "Nicht festgelegt",
 
   "choose": "WÄHLEN",
@@ -202,5 +204,18 @@
   "allSettledMessage": "Alle sind quitt. Reise archivieren?",
   "archiveAndFinish": "Archivieren & Abschließen",
   "settlementDone": "Reise erfolgreich archiviert!",
-  "noSettlementNeeded": "Alle sind bereits quitt. Keine Überweisungen nötig."
+  "noSettlementNeeded": "Alle sind bereits quitt. Keine Überweisungen nötig.",
+
+  "myBudget": "Mein Budget",
+  "budget": "Budget",
+  "prepaid": "Vorausbezahlt",
+  "prepaidDescription": "Vor der Reise gekauft",
+  "saveBudget": "Budget speichern",
+  "virtualParticipant": "Virtueller Teilnehmer",
+  "budgetWithCurrency": "Budget ({currency})",
+  "@budgetWithCurrency": {
+    "placeholders": {
+      "currency": { "type": "String" }
+    }
+  }
 }

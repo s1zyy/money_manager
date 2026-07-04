@@ -4,8 +4,7 @@ class Trip {
   final String name;
   final DateTime startDate;
   final DateTime endDate;
-  final double totalBudget;
-  final double prepaidExpenses;
+  final Map<String, double> participantBudgets;
   final String joinCode;
   final TripStatus status;
   final String currency;
@@ -16,22 +15,19 @@ class Trip {
     required this.name,
     required this.startDate,
     required this.endDate,
-    required this.totalBudget,
-    required this.prepaidExpenses,
+    required this.participantBudgets,
     required this.joinCode,
     required this.status,
-    required this.currency
+    required this.currency,
   });
-
-
 }
 
-enum TripStatus { upcoming, active, archived}
+enum TripStatus { upcoming, active, archived }
 
 extension TripStatusExtension on TripStatus {
   static TripStatus fromString(String status) {
-    switch(status.toUpperCase()) {
-      case 'ACTIVE' :
+    switch (status.toUpperCase()) {
+      case 'ACTIVE':
         return TripStatus.active;
       case 'UPCOMING':
         return TripStatus.upcoming;

@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
@@ -28,7 +27,10 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    Future.microtask(() => context.read<TripsProvider>().loadTrips());
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<TripsProvider>().loadTrips();
+    });
   }
 
   @override
@@ -308,7 +310,6 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                 margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
               ),
-              // Аватар + имя
               CircleAvatar(
                 radius: 32,
                 backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
@@ -377,26 +378,39 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
 
   void _showJoinTripDialog(BuildContext pageContext) {
     final codeController = TextEditingController();
+    final budgetController = TextEditingController();
     final l10n = AppLocalizations.of(pageContext)!;
     showDialog(
       context: pageContext,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.joinTrip),
-        content: TextField(
-          controller: codeController,
-          autofocus: true,
-          textCapitalization: TextCapitalization.characters,
-          decoration: InputDecoration(hintText: l10n.inviteCodeHint),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: codeController,
+              autofocus: true,
+              textCapitalization: TextCapitalization.characters,
+              decoration: InputDecoration(hintText: l10n.inviteCodeHint),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: budgetController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: l10n.myBudget),
+            ),
+          ],
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () async {
               final code = codeController.text.trim();
+              final budget = double.tryParse(budgetController.text) ?? 0.0;
               if (code.isNotEmpty) {
                 Navigator.pop(dialogContext);
                 final provider = pageContext.read<TripsProvider>();
-                final success = await provider.joinTrip(code);
+                final success = await provider.joinTrip(code, budget);
                 if (!pageContext.mounted) return;
                 ScaffoldMessenger.of(pageContext).showSnackBar(
                   SnackBar(
@@ -520,7 +534,6 @@ class _TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final symbol = currencySymbol(trip.currency);
     final statusColor = _statusColor(trip.status);
 
     return GestureDetector(
@@ -563,15 +576,6 @@ class _TripCard extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$symbol${trip.totalBudget}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppTheme.textSecondary,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],

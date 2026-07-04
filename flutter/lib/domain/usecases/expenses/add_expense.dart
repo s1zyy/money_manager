@@ -7,12 +7,13 @@ class AddExpenseUseCase {
   Future<bool> call({
     required String tripId,
     required double amount,
-    required DateTime date,
+    DateTime? date,
     required String splitMode,
     String? payerId,
     List<String>? participantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     return await repository.addExpense(
       tripId: tripId,
@@ -23,6 +24,7 @@ class AddExpenseUseCase {
       participantIds: participantIds,
       customShares: customShares,
       description: description,
+      isPrepaid: isPrepaid,
     );
   }
 }

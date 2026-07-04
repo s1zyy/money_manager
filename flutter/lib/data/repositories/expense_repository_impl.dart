@@ -16,12 +16,13 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<bool> addExpense({
     required String tripId,
     required double amount,
-    required DateTime date,
+    DateTime? date,
     required String splitMode,
     String? payerId,
     List<String>? participantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     return await remoteDataSource.addExpense(
       tripId: tripId,
@@ -32,6 +33,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       participantIds: participantIds,
       customShares: customShares,
       description: description,
+      isPrepaid: isPrepaid,
     );
   }
 

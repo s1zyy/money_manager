@@ -27,6 +27,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   String _splitMode = 'EQUAL';
   bool _eachPaidOwn = false;
+  bool _isPrepaid = false;
 
   final List<String> _selectedParticipantIds = [];
   final Map<String, TextEditingController> _shareControllers = {};
@@ -120,13 +121,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
     }
 
     final provider = context.read<TripDashboardProvider>();
+    final date = _isPrepaid ? null : _selectedDate;
     bool success;
     if (_splitMode == 'EQUAL') {
-      success = await provider.addExpense(tripId: widget.tripId, payerId: _eachPaidOwn ? null : _selectedPayerId, amount: _totalAmount, date: _selectedDate, splitMode: 'EQUAL', participantIds: _selectedParticipantIds, description: _descriptionController.text.trim());
+      success = await provider.addExpense(tripId: widget.tripId, payerId: _eachPaidOwn ? null : _selectedPayerId, amount: _totalAmount, date: date, splitMode: 'EQUAL', participantIds: _selectedParticipantIds, description: _descriptionController.text.trim(), isPrepaid: _isPrepaid);
     } else {
       final shares = <String, double>{};
       for (final id in _selectedParticipantIds) shares[id] = double.tryParse(_shareControllers[id]?.text ?? '') ?? 0.0;
-      success = await provider.addExpense(tripId: widget.tripId, payerId: _eachPaidOwn ? null : _selectedPayerId, amount: _totalAmount, date: _selectedDate, splitMode: 'CUSTOM', customShares: shares, description: _descriptionController.text.trim());
+      success = await provider.addExpense(tripId: widget.tripId, payerId: _eachPaidOwn ? null : _selectedPayerId, amount: _totalAmount, date: date, splitMode: 'CUSTOM', customShares: shares, description: _descriptionController.text.trim(), isPrepaid: _isPrepaid);
     }
 
     if (success && mounted) {
@@ -213,34 +215,64 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Дата
+                        // Предоплата тоггл
                         GestureDetector(
-                          onTap: () => _selectDate(context),
+                          onTap: () => setState(() => _isPrepaid = !_isPrepaid),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: _isPrepaid ? AppTheme.primary.withValues(alpha: 0.08) : Colors.white,
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: Colors.grey.shade200),
+                              border: Border.all(color: _isPrepaid ? AppTheme.primary.withValues(alpha: 0.3) : Colors.grey.shade200),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_today_outlined, color: AppTheme.textSecondary, size: 20),
+                                Icon(Icons.credit_card_outlined, color: _isPrepaid ? AppTheme.primary : AppTheme.textSecondary, size: 20),
                                 const SizedBox(width: 12),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(l10n.transactionDate, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
-                                    Text(_formatDate(_selectedDate), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                                    Text(l10n.prepaid, style: TextStyle(fontWeight: FontWeight.w500, color: _isPrepaid ? AppTheme.primary : AppTheme.textPrimary)),
+                                    Text(l10n.prepaidDescription, style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
                                   ],
                                 ),
                                 const Spacer(),
-                                const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+                                Switch(value: _isPrepaid, onChanged: (val) => setState(() => _isPrepaid = val), activeColor: AppTheme.primary),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
+
+                        if (!_isPrepaid) ...[
+                          GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: Colors.grey.shade200),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.calendar_today_outlined, color: AppTheme.textSecondary, size: 20),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(l10n.transactionDate, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                                      Text(_formatDate(_selectedDate), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
 
                         // Split mode
                         _sectionLabel('Split'),

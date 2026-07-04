@@ -127,7 +127,9 @@
 
   "dailyLimit": "每日限额",
   "remainingToday": "今日剩余：",
+  "spentToday": "今日已花",
   "overspentToday": "今日超支：",
+  "myShare": "我的份额",
   "notSet": "未设置",
 
   "choose": "选择",
@@ -203,5 +205,18 @@
   "allSettledMessage": "大家已经结清。归档行程？",
   "archiveAndFinish": "归档并完成",
   "settlementDone": "行程已成功归档！",
-  "noSettlementNeeded": "大家已经结清，无需转账。"
+  "noSettlementNeeded": "大家已经结清，无需转账。",
+
+  "myBudget": "我的预算",
+  "budget": "预算",
+  "prepaid": "预付款",
+  "prepaidDescription": "旅行前购买",
+  "saveBudget": "保存预算",
+  "virtualParticipant": "虚拟参与者",
+  "budgetWithCurrency": "预算（{currency}）",
+  "@budgetWithCurrency": {
+    "placeholders": {
+      "currency": { "type": "String" }
+    }
+  }
 }

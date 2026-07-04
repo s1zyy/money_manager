@@ -107,7 +107,9 @@
 
   "dailyLimit": "Дневной лимит",
   "remainingToday": "Осталось на сегодня:",
+  "spentToday": "Потрачено сегодня",
   "overspentToday": "Перерасход за сегодня:",
+  "myShare": "Моя доля",
   "notSet": "Не задано",
 
   "choose": "ВЫБРАТЬ",
@@ -179,5 +181,18 @@
   "searchHint": "Поиск...",
   "copyCode": "Скопировать",
   "currencyPickerTitle": "Валюта",
-  "virtualParticipantHint": "Участник без аккаунта в приложении"
+  "virtualParticipantHint": "Участник без аккаунта в приложении",
+
+  "myBudget": "Мой бюджет",
+  "budget": "Бюджет",
+  "prepaid": "Предоплата",
+  "prepaidDescription": "Куплено до поездки",
+  "saveBudget": "Сохранить бюджет",
+  "virtualParticipant": "Виртуальный участник",
+  "budgetWithCurrency": "Бюджет ({currency})",
+  "@budgetWithCurrency": {
+    "placeholders": {
+      "currency": { "type": "String" }
+    }
+  }
 }

@@ -127,7 +127,9 @@
 
   "dailyLimit": "Limite diário",
   "remainingToday": "Restante para hoje:",
+  "spentToday": "Gasto hoje",
   "overspentToday": "Excedido hoje:",
+  "myShare": "Minha parte",
   "notSet": "Não definido",
 
   "choose": "ESCOLHER",
@@ -203,5 +205,18 @@
   "allSettledMessage": "Todos estão em dia. Arquivar a viagem?",
   "archiveAndFinish": "Arquivar e concluir",
   "settlementDone": "Viagem arquivada com sucesso!",
-  "noSettlementNeeded": "Todos já estão em dia. Nenhuma transferência necessária."
+  "noSettlementNeeded": "Todos já estão em dia. Nenhuma transferência necessária.",
+
+  "myBudget": "Meu orçamento",
+  "budget": "Orçamento",
+  "prepaid": "Pré-pago",
+  "prepaidDescription": "Comprado antes da viagem",
+  "saveBudget": "Salvar orçamento",
+  "virtualParticipant": "Participante virtual",
+  "budgetWithCurrency": "Orçamento ({currency})",
+  "@budgetWithCurrency": {
+    "placeholders": {
+      "currency": { "type": "String" }
+    }
+  }
 }

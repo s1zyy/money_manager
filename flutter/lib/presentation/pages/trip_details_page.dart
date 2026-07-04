@@ -191,7 +191,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   Widget _buildDailyLimitCard(BuildContext context, TripDashboardProvider provider, AppLocalizations l10n) {
     final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
-    final limit = provider.dashboard?.dailyLimit ?? 0.0;
+    final limit = provider.myDailyLimit;
     final spentToday = provider.todaySpent;
     final remaining = limit - spentToday;
     final progress = (provider.limitProgress).clamp(0.0, 1.0);
@@ -242,7 +242,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(l10n.dailyLimit, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                  Text(l10n.spentToday, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
                   Text('$cs${spentToday.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
                 ],
               ),
@@ -252,6 +252,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Container(
+                
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                 child: Text(l10n.overspentToday, style: const TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w500)),
@@ -408,7 +409,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     return Column(
       children: days.map((day) {
         final dayExpenses = grouped[day]!;
-        final dayTotal = dayExpenses.fold(0.0, (sum, e) => sum + e.amount);
+        final dayTotal = dayExpenses.fold(0.0, (sum, e) => sum + provider.myShareOf(e));
         final dateStr = '${day.day.toString().padLeft(2, '0')}.${day.month.toString().padLeft(2, '0')}.${day.year}';
         final expanded = _isExpanded(day);
 
@@ -496,8 +497,15 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                       ],
                                     ),
                                   ),
-                                  Text('$cs${expense.amount.toStringAsFixed(2)}',
-                                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text('$cs${expense.amount.toStringAsFixed(2)}',
+                                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+                                      Text('${l10n.myShare}: $cs${provider.myShareOf(expense).toStringAsFixed(2)}',
+                                          style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -585,9 +593,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           final isVirtual = provider.isVirtualParticipant(id);
                           final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
-                          return Container(
+                          final card = Container(
                             margin: const EdgeInsets.only(bottom: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: EdgeInsets.symmetric(horizontal: 14, vertical: isOwner && isVirtual ? 10 : 12),
                             decoration: BoxDecoration(
                               color: isEntryOwner ? AppTheme.primary.withValues(alpha: 0.05) : Colors.grey.shade50,
                               borderRadius: BorderRadius.circular(14),
@@ -647,6 +655,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                               ],
                             ),
                           );
+                          if (isOwner && isVirtual) {
+                            return GestureDetector(
+                              onTap: () => _showVirtualParticipantSheet(context, provider, widget.tripId, id, name),
+                              child: card,
+                            );
+                          }
+                          return card;
                         }),
                         if (isOwner)
                           GestureDetector(
@@ -721,8 +736,75 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
   }
 
+  void _showVirtualParticipantSheet(BuildContext context, TripDashboardProvider provider, String tripId, String participantId, String name) {
+    final currentBudget = provider.dashboard?.trip.participantBudgets[participantId] ?? 0.0;
+    final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
+    final budgetController = TextEditingController(text: currentBudget > 0 ? currentBudget.toStringAsFixed(0) : '');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetCtx) {
+        final l10n = AppLocalizations.of(context)!;
+        return Padding(
+        padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(sheetCtx).viewInsets.bottom + 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+            Row(children: [
+              CircleAvatar(radius: 20, backgroundColor: Colors.grey.shade200,
+                  child: const Icon(Icons.person_outline, color: AppTheme.textSecondary, size: 20)),
+              const SizedBox(width: 12),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+                Text(l10n.virtualParticipant, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+              ]),
+            ]),
+            const SizedBox(height: 20),
+            Text(l10n.budgetWithCurrency(cs), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textSecondary, letterSpacing: 0.5)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: budgetController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              autofocus: true,
+              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                hintText: '0',
+                prefixIcon: Padding(padding: const EdgeInsets.all(12), child: Text(cs, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primary))),
+                filled: true, fillColor: Colors.white,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: FilledButton(
+                onPressed: () async {
+                  final budget = double.tryParse(budgetController.text) ?? 0.0;
+                  Navigator.pop(sheetCtx);
+                  await provider.updateParticipantBudget(tripId: tripId, participantId: participantId, budget: budget);
+                },
+                style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                child: Text(l10n.saveBudget, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ],
+        ),
+        );
+      },
+    );
+  }
+
   void _showAddVirtualParticipantDialog(BuildContext context, TripDashboardProvider provider, String tripId, BuildContext modalContext) {
     final controller = TextEditingController();
+    final budgetController = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
 
     showModalBottomSheet(
@@ -765,6 +847,22 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
                 ),
               ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: budgetController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: InputDecoration(
+                  labelText: l10n.budget,
+                  labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                  prefixIcon: const Icon(Icons.account_balance_wallet_outlined, color: AppTheme.textSecondary, size: 20),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                ),
+              ),
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -783,10 +881,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     child: GestureDetector(
                       onTap: () async {
                         final name = controller.text.trim();
+                        final budget = double.tryParse(budgetController.text) ?? 0.0;
                         if (name.isEmpty) return;
                         Navigator.pop(sheetCtx);
                         Navigator.pop(modalContext);
-                        final success = await provider.addVirtualParticipant(tripId, name);
+                        final success = await provider.addVirtualParticipant(tripId, name, budget);
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(success ? l10n.memberAdded(name) : provider.errorMessage ?? l10n.failedToAdd),

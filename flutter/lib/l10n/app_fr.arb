@@ -127,7 +127,9 @@
 
   "dailyLimit": "Limite quotidienne",
   "remainingToday": "Restant pour aujourd'hui :",
+  "spentToday": "Dépensé aujourd'hui",
   "overspentToday": "Dépassé aujourd'hui :",
+  "myShare": "Ma part",
   "notSet": "Non défini",
 
   "choose": "CHOISIR",
@@ -203,5 +205,18 @@
   "allSettledMessage": "Tout le monde est quitte. Archiver le voyage ?",
   "archiveAndFinish": "Archiver et terminer",
   "settlementDone": "Voyage archivé avec succès !",
-  "noSettlementNeeded": "Tout le monde est déjà quitte. Aucun transfert nécessaire."
+  "noSettlementNeeded": "Tout le monde est déjà quitte. Aucun transfert nécessaire.",
+
+  "myBudget": "Mon budget",
+  "budget": "Budget",
+  "prepaid": "Prépayé",
+  "prepaidDescription": "Acheté avant le voyage",
+  "saveBudget": "Enregistrer le budget",
+  "virtualParticipant": "Participant virtuel",
+  "budgetWithCurrency": "Budget ({currency})",
+  "@budgetWithCurrency": {
+    "placeholders": {
+      "currency": { "type": "String" }
+    }
+  }
 }

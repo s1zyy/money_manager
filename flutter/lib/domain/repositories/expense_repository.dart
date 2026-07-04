@@ -6,12 +6,13 @@ abstract class ExpenseRepository {
   Future<bool> addExpense({
     required String tripId,
     required double amount,
-    required DateTime date,
+    DateTime? date,
     required String splitMode,
     String? payerId,
     List<String>? participantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   });
 
   Future<Expense> updateExpense({

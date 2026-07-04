@@ -196,4 +196,4 @@ This app requires the REST API from the companion backend:
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+Custom License — see [LICENSE](LICENSE)

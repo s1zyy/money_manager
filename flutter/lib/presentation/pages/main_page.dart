@@ -5,11 +5,10 @@ import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/create_trip_page.dart';
-import 'package:money_manager/presentation/pages/login_page.dart';
+import 'package:money_manager/presentation/pages/profile_page.dart';
 import 'package:money_manager/presentation/pages/trip_details_page.dart';
 import 'package:money_manager/presentation/providers/locale_provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
-import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,7 +82,7 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
               ),
               IconButton(
                 icon: const Icon(Icons.account_circle, color: Colors.white, size: 26),
-                onPressed: () => _showProfileSheet(pageContext),
+                onPressed: () => Navigator.push(pageContext, MaterialPageRoute(builder: (_) => const ProfilePage())),
               ),
               const SizedBox(width: 4),
             ],
@@ -287,144 +286,154 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
     );
   }
 
-  void _showProfileSheet(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final auth = context.read<AuthProvider>();
-    final name = auth.currentUserName;
-    final email = auth.currentUserEmail;
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
-              ),
-              CircleAvatar(
-                radius: 32,
-                backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
-                child: Text(
-                  name != null && name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.primary),
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (name != null && name.isNotEmpty)
-                Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
-              if (email != null && email.isNotEmpty)
-                Text(email, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
-              const SizedBox(height: 24),
-              const Divider(height: 1),
-              const SizedBox(height: 12),
-              // Logout
-              InkWell(
-                onTap: () async {
-                  Navigator.pop(sheetContext);
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (d) => AlertDialog(
-                      title: Text(l10n.logout),
-                      content: Text(l10n.logoutConfirm),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l10n.cancel)),
-                        FilledButton(
-                          style: FilledButton.styleFrom(backgroundColor: Colors.red),
-                          onPressed: () => Navigator.pop(d, true),
-                          child: Text(l10n.logout),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirmed == true) {
-                    await auth.logout();
-                    if (!context.mounted) return;
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginPage()), (r) => false);
-                  }
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.withValues(alpha: 0.15)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.logout, color: Colors.red, size: 20),
-                      const SizedBox(width: 12),
-                      Text(l10n.logout, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 15)),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   void _showJoinTripDialog(BuildContext pageContext) {
     final codeController = TextEditingController();
     final budgetController = TextEditingController();
     final l10n = AppLocalizations.of(pageContext)!;
-    showDialog(
+    showModalBottomSheet(
       context: pageContext,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.joinTrip),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: codeController,
-              autofocus: true,
-              textCapitalization: TextCapitalization.characters,
-              decoration: InputDecoration(hintText: l10n.inviteCodeHint),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: budgetController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(hintText: l10n.myBudget),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () async {
-              final code = codeController.text.trim();
-              final budget = double.tryParse(budgetController.text) ?? 0.0;
-              if (code.isNotEmpty) {
-                Navigator.pop(dialogContext);
-                final provider = pageContext.read<TripsProvider>();
-                final success = await provider.joinTrip(code, budget);
-                if (!pageContext.mounted) return;
-                ScaffoldMessenger.of(pageContext).showSnackBar(
-                  SnackBar(
-                    content: Text(success ? l10n.joinedSuccessfully : (provider.errorMessage ?? l10n.errorJoiningTrip)),
-                    backgroundColor: success ? Colors.green : Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
-            child: Text(l10n.join),
-          ),
-        ],
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 24,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppTheme.secondary.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.group_add_outlined, color: AppTheme.secondary, size: 28),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.joinTrip,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: codeController,
+                autofocus: true,
+                textCapitalization: TextCapitalization.characters,
+                style: const TextStyle(fontSize: 16, letterSpacing: 2, fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  hintText: l10n.inviteCodeHint,
+                  prefixIcon: const Icon(Icons.vpn_key_outlined, color: AppTheme.secondary),
+                  filled: true,
+                  fillColor: AppTheme.secondary.withValues(alpha: 0.06),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: AppTheme.secondary.withValues(alpha: 0.2)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: AppTheme.secondary.withValues(alpha: 0.2)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppTheme.secondary, width: 1.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: budgetController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  hintText: l10n.myBudget,
+                  prefixIcon: const Icon(Icons.account_balance_wallet_outlined, color: AppTheme.primary),
+                  filled: true,
+                  fillColor: AppTheme.primary.withValues(alpha: 0.06),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: AppTheme.primary.withValues(alpha: 0.2)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: AppTheme.primary.withValues(alpha: 0.2)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(sheetContext),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        side: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      child: Text(l10n.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: FilledButton(
+                      onPressed: () async {
+                        final code = codeController.text.trim();
+                        final budget = double.tryParse(budgetController.text) ?? 0.0;
+                        if (code.isNotEmpty) {
+                          Navigator.pop(sheetContext);
+                          final provider = pageContext.read<TripsProvider>();
+                          final success = await provider.joinTrip(code, budget);
+                          if (!pageContext.mounted) return;
+                          ScaffoldMessenger.of(pageContext).showSnackBar(
+                            SnackBar(
+                              content: Text(success ? l10n.joinedSuccessfully : (provider.errorMessage ?? l10n.errorJoiningTrip)),
+                              backgroundColor: success ? Colors.green : Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppTheme.secondary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      child: Text(l10n.join, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

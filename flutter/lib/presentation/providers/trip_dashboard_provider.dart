@@ -19,6 +19,7 @@ import 'package:money_manager/domain/usecases/trip/remove_participant.dart';
 import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/domain/usecases/trip/update_my_budget.dart';
 import 'package:money_manager/domain/usecases/trip/update_participant_budget.dart';
+import 'package:money_manager/domain/usecases/trip/invite_virtual_participant.dart';
 
 class TripDashboardProvider extends ChangeNotifier {
   final AddExpenseUseCase addExpenseUseCase;
@@ -34,6 +35,7 @@ class TripDashboardProvider extends ChangeNotifier {
   final DeleteTripUseCase deleteTripUseCase;
   final RemoveParticipantUseCase removeParticipantUseCase;
   final AddVirtualParticipantUseCase addVirtualParticipantUseCase;
+  final InviteVirtualParticipantUseCase inviteVirtualParticipantUseCase;
   final GetTripSettlementUseCase getTripSettlementUseCase;
   final UnarchiveTripUseCase unarchiveTripUseCase;
 
@@ -53,6 +55,7 @@ class TripDashboardProvider extends ChangeNotifier {
     required this.addVirtualParticipantUseCase,
     required this.getTripSettlementUseCase,
     required this.unarchiveTripUseCase,
+    required this.inviteVirtualParticipantUseCase,
   });
 
   TripDashboard? _dashboard;
@@ -337,6 +340,17 @@ class TripDashboardProvider extends ChangeNotifier {
     try {
       await addVirtualParticipantUseCase(tripId, name, budget);
       await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> inviteVirtualParticipant(String tripId, String participantId, String email) async {
+    try {
+      await inviteVirtualParticipantUseCase(tripId, participantId, email);
       return true;
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');

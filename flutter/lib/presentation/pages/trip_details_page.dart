@@ -547,6 +547,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     final joinCode = provider.dashboard?.trip.joinCode ?? '------';
     final isOwner = provider.dashboard?.isOwner ?? false;
     final ownerId = provider.dashboard?.trip.ownerId ?? '';
+    final myId = provider.myParticipantId ?? '';
     final memberCount = provider.participantsMap.length;
 
     showModalBottomSheet(
@@ -590,6 +591,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           final id = entry.key;
                           final name = entry.value.name;
                           final isEntryOwner = id == ownerId;
+                          final isMe = id == myId;
                           final isVirtual = provider.isVirtualParticipant(id);
                           final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
@@ -597,11 +599,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             margin: const EdgeInsets.only(bottom: 8),
                             padding: EdgeInsets.symmetric(horizontal: 14, vertical: isOwner && isVirtual ? 10 : 12),
                             decoration: BoxDecoration(
-                              color: isEntryOwner ? AppTheme.primary.withValues(alpha: 0.05) : Colors.grey.shade50,
+                              color: isMe ? AppTheme.primary.withValues(alpha: 0.05) : Colors.grey.shade50,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: isEntryOwner ? AppTheme.primary.withValues(alpha: 0.25) : Colors.grey.shade200,
-                                width: isEntryOwner ? 1.5 : 1,
+                                color: isMe ? AppTheme.primary.withValues(alpha: 0.25) : Colors.grey.shade200,
+                                width: isMe ? 1.5 : 1,
                               ),
                             ),
                             child: Row(
@@ -635,10 +637,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.textPrimary)),
-                                      if (isEntryOwner || isVirtual)
+                                      if (isEntryOwner || isVirtual || isMe)
                                         Text(
-                                          isEntryOwner ? l10n.owner : l10n.virtual,
-                                          style: TextStyle(fontSize: 11, color: isEntryOwner ? AppTheme.primary : AppTheme.textSecondary),
+                                          isEntryOwner ? l10n.owner : isMe ? l10n.you : l10n.virtual,
+                                          style: TextStyle(fontSize: 11, color: isMe ? AppTheme.primary : AppTheme.textSecondary),
                                         ),
                                     ],
                                   ),
@@ -795,10 +797,93 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 child: Text(l10n.saveBudget, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetCtx);
+                  _showInviteByEmailDialog(context, provider, tripId, participantId, name);
+                },
+                icon: const Icon(Icons.email_outlined, size: 18),
+                label: const Text('Пригласить по email', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primary,
+                  side: const BorderSide(color: AppTheme.primary),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+            ),
           ],
         ),
         );
       },
+    );
+  }
+
+  void _showInviteByEmailDialog(BuildContext context, TripDashboardProvider provider, String tripId, String participantId, String name) {
+    final emailController = TextEditingController();
+    bool sending = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          backgroundColor: AppTheme.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text('Пригласить $name', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Участник получит письмо с кодом для регистрации в Budgi.', style: TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: true,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                  prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.textSecondary, size: 20),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: sending ? null : () => Navigator.pop(dialogCtx),
+              child: const Text('Отмена', style: TextStyle(color: AppTheme.textSecondary)),
+            ),
+            FilledButton(
+              onPressed: sending ? null : () async {
+                final email = emailController.text.trim();
+                if (email.isEmpty || !email.contains('@')) return;
+                setState(() => sending = true);
+                final success = await provider.inviteVirtualParticipant(tripId, participantId, email);
+                if (!ctx.mounted) return;
+                Navigator.pop(dialogCtx);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(success ? 'Приглашение отправлено!' : (provider.errorMessage ?? 'Ошибка')),
+                  backgroundColor: success ? Colors.green : Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                ));
+              },
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              child: sending
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Text('Отправить'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

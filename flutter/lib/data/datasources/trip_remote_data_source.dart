@@ -17,6 +17,7 @@ abstract class TripRemoteDataSource {
   Future<void> deleteTrip(String tripId);
   Future<void> removeParticipant(String tripId, String participantId);
   Future<void> addVirtualParticipant(String tripId, String name, double budget);
+  Future<void> inviteVirtualParticipant(String tripId, String participantId, String email);
   Future<List<SettlementTransferModel>> getSettlement(String tripId);
   Future<void> unarchiveTrip(String tripId);
 }
@@ -141,6 +142,15 @@ class TripRemoteDataSourceImpl implements TripRemoteDataSource {
   Future<void> unarchiveTrip(String tripId) async {
     try {
       await dio.post('/trips/$tripId/unarchive');
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> inviteVirtualParticipant(String tripId, String participantId, String email) async {
+    try {
+      await dio.post('/trips/$tripId/participants/$participantId/invite', data: {'email': email});
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }

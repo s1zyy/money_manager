@@ -63,6 +63,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
     final isArchived = status == TripStatus.archived;
     final isUpcoming = status == TripStatus.upcoming;
     final canEdit = isOwner && !isArchived;
+    final canEditBudget = !isArchived;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -83,7 +84,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                     const Icon(Icons.settings_outlined, color: Colors.white70, size: 22),
                     const SizedBox(width: 8),
                     Expanded(child: Text(l10n.tripSettings, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: -0.3))),
-                    if (canEdit)
+                    if (canEditBudget)
                       TextButton(
                         onPressed: _saveSettings,
                         style: TextButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.white.withValues(alpha: 0.2), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
@@ -110,41 +111,46 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                       _buildField(controller: _nameController, label: l10n.tripName, icon: Icons.edit_outlined,
                           validator: (v) => (v == null || v.isEmpty) ? l10n.enterName : null),
                       const SizedBox(height: 24),
+                    ],
 
+                    if (canEditBudget) ...[
                       _sectionLabel(l10n.finance),
                       const SizedBox(height: 14),
                       _buildField(controller: _myBudgetController, label: l10n.myBudget, icon: Icons.account_balance_wallet_outlined,
-                          keyboardType: TextInputType.number, highlighted: true, validator: (v) => (v == null || v.isEmpty) ? l10n.enterBudget : null),
-                      const SizedBox(height: 12),
-
-                      GestureDetector(
-                        onTap: () => _showCurrencyPicker(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.grey.shade200)),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.currency_exchange, color: AppTheme.textSecondary, size: 20),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(l10n.tripCurrency, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
-                                  const SizedBox(height: 1),
-                                  Text(() {
-                                    final c = supportedCurrencies.firstWhere((c) => c.code == _selectedCurrency);
-                                    return '${c.symbol}  ${c.code} — ${c.name}';
-                                  }(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.textPrimary)),
-                                ],
-                              ),
-                              const Spacer(),
-                              const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
-                            ],
+                          keyboardType: TextInputType.number, highlighted: true),
+                      if (canEdit) ...[
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () => _showCurrencyPicker(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.grey.shade200)),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.currency_exchange, color: AppTheme.textSecondary, size: 20),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(l10n.tripCurrency, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                                    const SizedBox(height: 1),
+                                    Text(() {
+                                      final c = supportedCurrencies.firstWhere((c) => c.code == _selectedCurrency);
+                                      return '${c.symbol}  ${c.code} — ${c.name}';
+                                    }(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.textPrimary)),
+                                  ],
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                       const SizedBox(height: 24),
+                    ],
 
+                    if (canEdit) ...[
                       _sectionLabel(l10n.dates),
                       const SizedBox(height: 10),
                       if (isUpcoming) ...[
@@ -474,20 +480,23 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
 
   void _saveSettings() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_formKey.currentState!.validate()) return;
     final provider = context.read<TripDashboardProvider>();
+    final isOwner = provider.dashboard!.isOwner;
     final isUpcoming = provider.dashboard?.trip.status == TripStatus.upcoming;
 
-    final tripSuccess = await provider.updateTrip(
-      tripId: widget.tripId,
-      name: _nameController.text.trim(),
-      currency: _selectedCurrency,
-      startDate: isUpcoming ? _currentStartDate : null,
-      endDate: _currentEndDate,
-    );
-    if (!tripSuccess) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
-      return;
+    if (isOwner) {
+      if (!_formKey.currentState!.validate()) return;
+      final tripSuccess = await provider.updateTrip(
+        tripId: widget.tripId,
+        name: _nameController.text.trim(),
+        currency: _selectedCurrency,
+        startDate: isUpcoming ? _currentStartDate : null,
+        endDate: _currentEndDate,
+      );
+      if (!tripSuccess) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+        return;
+      }
     }
 
     final budgetSuccess = await provider.updateMyBudget(tripId: widget.tripId, budget: _myBudget);

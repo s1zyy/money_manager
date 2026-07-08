@@ -6,7 +6,7 @@ class RegisterUseCase {
 
   RegisterUseCase({required this.repository});
 
-  Future<AuthResult> call(String email, String password, String name) {
-    return repository.register(email, password, name);
+  Future<AuthResult> call(String email, String password, String name, {String? inviteToken}) {
+    return repository.register(email, password, name, inviteToken: inviteToken);
   }
 }

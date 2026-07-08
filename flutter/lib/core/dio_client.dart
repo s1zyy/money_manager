@@ -1,29 +1,21 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
+
+const _prodUrl = String.fromEnvironment('BASE_URL', defaultValue: '');
 
 class DioClient {
   final Dio dio;
 
   DioClient() : dio = Dio() {
-    String baseUrl;
+    final baseUrl = _prodUrl.isNotEmpty
+        ? _prodUrl
+        : 'http://192.168.1.98:8080/api';
 
-    if(Platform.isAndroid) {
-      baseUrl = 'http://10.0.2.2:8080/api';
-    } else if(Platform.isIOS) {
-      baseUrl = 'http://localhost:8080/api';
-    } else {
-      baseUrl = 'http://localhost:8080/api';
-    }
-
-    dio.options =
-      BaseOptions(
-        baseUrl: baseUrl,
-        contentType: 'application/json',
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
-      );
-
+    dio.options = BaseOptions(
+      baseUrl: baseUrl,
+      contentType: 'application/json',
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
+    );
   }
 
     

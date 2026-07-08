@@ -3,33 +3,28 @@ import 'package:money_manager/data/datasources/auth_remote_data_source.dart';
 import 'package:money_manager/domain/entities/auth_result.dart';
 import 'package:money_manager/domain/repositories/auth_repository.dart';
 
-class AuthRepositoryImpl implements AuthRepository{
+class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImpl({
-    required this.remoteDataSource,
-    required this.localDataSource
-    });
-
+  AuthRepositoryImpl({required this.remoteDataSource, required this.localDataSource});
 
   @override
   Future<AuthResult> login(String email, String password) async {
-    
     final authModel = await remoteDataSource.login(email, password);
     await localDataSource.saveToken(authModel.token);
     return authModel;
   }
-  
+
   @override
-  Future<AuthResult> register(String email, String password, String name) async {
-    final authModel = await remoteDataSource.register(email, password, name);
+  Future<AuthResult> register(String email, String password, String name, {String? inviteToken}) async {
+    final authModel = await remoteDataSource.register(email, password, name, inviteToken: inviteToken);
     await localDataSource.saveToken(authModel.token);
     return authModel;
   }
-  
+
   @override
-  Future<void> logout() async{
+  Future<void> logout() async {
     await localDataSource.deleteToken();
   }
 
@@ -39,4 +34,8 @@ class AuthRepositoryImpl implements AuthRepository{
     return token != null && token.isNotEmpty;
   }
 
+  @override
+  Future<Map<String, String>> validateInviteToken(String token) {
+    return remoteDataSource.validateInviteToken(token);
+  }
 }

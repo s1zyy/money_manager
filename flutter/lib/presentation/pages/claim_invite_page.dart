@@ -1,0 +1,252 @@
+import 'package:flutter/material.dart';
+import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:money_manager/presentation/pages/main_page.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+
+class ClaimInvitePage extends StatefulWidget {
+  const ClaimInvitePage({super.key});
+
+  @override
+  State<ClaimInvitePage> createState() => _ClaimInvitePageState();
+}
+
+class _ClaimInvitePageState extends State<ClaimInvitePage> {
+  final _codeController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _codeValidated = false;
+  String? _tripName;
+  String? _participantName;
+  String? _validatedToken;
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onValidateCode(AuthProvider auth) async {
+    final code = _codeController.text.trim().toUpperCase();
+    if (code.length != 8) return;
+    final result = await auth.validateInviteToken(code);
+    if (!mounted) return;
+    if (result != null) {
+      setState(() {
+        _codeValidated = true;
+        _validatedToken = code;
+        _tripName = result['tripName'];
+        _participantName = result['participantName'];
+        _emailController.text = result['invitedEmail']!;
+      });
+    }
+  }
+
+  Future<void> _onClaimPressed(AuthProvider auth) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    if (email.isEmpty || !email.contains('@') || password.length < 6) return;
+
+    final success = await auth.register(email, password, _participantName!, inviteToken: _validatedToken);
+    if (!mounted) return;
+    if (success) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const TripsPage()), (r) => false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: Consumer<AuthProvider>(
+        builder: (context, auth, _) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppTheme.primary, AppTheme.secondary],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.email_outlined, size: 44, color: Colors.white),
+                              SizedBox(height: 12),
+                              Text(
+                                'Код приглашения',
+                                style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Шаг 1: ввод кода
+                      TextField(
+                        controller: _codeController,
+                        enabled: !_codeValidated,
+                        textCapitalization: TextCapitalization.characters,
+                        style: TextStyle(
+                          color: _codeValidated ? AppTheme.textSecondary : AppTheme.textPrimary,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 6,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLength: 8,
+                        decoration: InputDecoration(
+                          counterText: '',
+                          labelText: 'Код из письма',
+                          labelStyle: const TextStyle(color: AppTheme.textSecondary, letterSpacing: 0),
+                          hintText: 'XXXXXXXX',
+                          hintStyle: TextStyle(color: Colors.grey.shade400, letterSpacing: 6, fontSize: 22),
+                          filled: true,
+                          fillColor: Colors.white,
+                          suffixIcon: _codeValidated
+                              ? const Icon(Icons.check_circle, color: Colors.green)
+                              : null,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                          disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.green, width: 1.5)),
+                        ),
+                      ),
+
+                      if (auth.errorMessage != null && !_codeValidated) ...[
+                        const SizedBox(height: 8),
+                        Text(auth.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                      ],
+
+                      if (_codeValidated) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.primary.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.person_outline, color: AppTheme.primary, size: 20),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Ты войдёшь как $_participantName в поездку «$_tripName»',
+                                  style: const TextStyle(fontSize: 13, color: AppTheme.primary, fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildField(
+                          controller: _emailController,
+                          label: 'Email',
+                          icon: Icons.email_outlined,
+                          enabled: false,
+                        ),
+                        const SizedBox(height: 14),
+                        _buildField(
+                          controller: _passwordController,
+                          label: 'Пароль',
+                          icon: Icons.lock_outline,
+                          obscureText: _obscurePassword,
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.textSecondary),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 28),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: (auth.isLoading || auth.isValidatingToken)
+                            ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+                            : FilledButton(
+                                onPressed: _codeValidated
+                                    ? () => _onClaimPressed(auth)
+                                    : () => _onValidateCode(auth),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: AppTheme.primary,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                ),
+                                child: Text(
+                                  _codeValidated ? 'Войти' : 'Проверить код',
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    bool enabled = true,
+    Widget? suffixIcon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      enabled: enabled,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        prefixIcon: Icon(icon, color: AppTheme.textSecondary, size: 20),
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+      ),
+    );
+  }
+}

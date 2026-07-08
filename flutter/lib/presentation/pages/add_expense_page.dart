@@ -144,6 +144,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     final provider = context.watch<TripDashboardProvider>();
     final l10n = AppLocalizations.of(context)!;
     final isCustom = _splitMode == 'CUSTOM';
+    final isSolo = provider.participantsMap.length == 1;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -177,7 +178,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     child: ListView(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
                       children: [
-                        // Сумма — большое поле
                         TextFormField(
                           controller: _amountController,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -215,7 +215,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Предоплата тоггл
                         GestureDetector(
                           onTap: () => setState(() => _isPrepaid = !_isPrepaid),
                           child: Container(
@@ -275,6 +274,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ],
 
                         // Split mode
+                        if (!isSolo) ...[
                         _sectionLabel('Split'),
                         const SizedBox(height: 10),
                         Container(
@@ -473,6 +473,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             },
                           ),
                         ),
+                        ], // isSolo
 
                         const SizedBox(height: 32),
                         SizedBox(

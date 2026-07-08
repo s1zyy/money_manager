@@ -26,6 +26,8 @@ import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
 import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
+import 'package:money_manager/domain/usecases/trip/invite_virtual_participant.dart';
+import 'package:money_manager/domain/usecases/auth/validate_invite_token.dart';
 import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/create_trip.dart';
 import 'package:money_manager/domain/usecases/trip/delete_trip.dart';
@@ -161,6 +163,7 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       deleteTripUseCase: sl(),
       removeParticipantUseCase: sl(),
       addVirtualParticipantUseCase: sl(),
+      inviteVirtualParticipantUseCase: sl(),
       getTripSettlementUseCase: sl(),
       unarchiveTripUseCase: sl(),
     ),
@@ -194,7 +197,20 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   
 
   sl.registerLazySingleton(
-    () => AuthProvider(loginUseCase: sl(), registerUseCase: sl(), logoutUseCase: sl()),
+    () => AuthProvider(
+      loginUseCase: sl(),
+      registerUseCase: sl(),
+      logoutUseCase: sl(),
+      validateInviteTokenUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => ValidateInviteTokenUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => InviteVirtualParticipantUseCase(repository: sl()),
   );
 
   sl.registerLazySingleton(

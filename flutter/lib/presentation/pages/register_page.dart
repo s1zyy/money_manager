@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/presentation/pages/claim_invite_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -177,6 +178,24 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   child: Text(l10n.register, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                 ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(children: [
+                          Expanded(child: Divider(color: Colors.grey.shade300)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text('или', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey.shade300)),
+                        ]),
+                        const SizedBox(height: 14),
+                        GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ClaimInvitePage())),
+                          child: const Text(
+                            '📩 Получил приглашение? Ввести код',
+                            style: TextStyle(color: AppTheme.primary, fontSize: 14, fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ],
                     ),

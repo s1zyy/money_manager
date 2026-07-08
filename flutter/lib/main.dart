@@ -41,7 +41,7 @@ class MoneyManagerApp extends StatelessWidget {
     final locale = context.watch<LocaleProvider>().locale;
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'Money Manager',
+      title: 'Budgi',
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

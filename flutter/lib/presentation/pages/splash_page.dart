@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/usecases/auth/check_auth.dart';
+import 'package:money_manager/injection_container.dart' as di;
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
+import 'package:money_manager/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashPage extends StatefulWidget {
   final CheckAuthUseCase checkAuthUseCase;
@@ -49,19 +52,33 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   }
 
   Future<void> _navigate() async {
+    final prefs = di.sl<SharedPreferences>();
     final results = await Future.wait([
       widget.checkAuthUseCase.call(),
       Future.delayed(const Duration(milliseconds: 1600)),
     ]);
     if (!mounted) return;
 
+    final onboardingDone = prefs.getBool('onboardingComplete') ?? false;
+    if (!onboardingDone) {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 400),
+          pageBuilder: (_, _, _) => const OnboardingPage(),
+          transitionsBuilder: (_, anim, _, child) => FadeTransition(opacity: anim, child: child),
+        ),
+      );
+      return;
+    }
+
     final isLoggedIn = results[0] as bool;
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 400),
-        pageBuilder: (_, __, ___) => isLoggedIn ? const TripsPage() : const LoginPage(),
-        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+        pageBuilder: (_, _, _) => isLoggedIn ? const TripsPage() : const LoginPage(),
+        transitionsBuilder: (_, anim, _, child) => FadeTransition(opacity: anim, child: child),
       ),
     );
   }
@@ -86,7 +103,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
               AnimatedBuilder(
                 animation: _controller,
-                builder: (_, __) => Opacity(
+                builder: (_, _) => Opacity(
                   opacity: _fadeIn.value,
                   child: Transform.scale(
                     scale: _scaleIn.value,
@@ -121,7 +138,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
               AnimatedBuilder(
                 animation: _controller,
-                builder: (_, __) => Opacity(
+                builder: (_, _) => Opacity(
                   opacity: _fadeIn.value,
                   child: Transform.translate(
                     offset: Offset(0, _slideUp.value),
@@ -141,7 +158,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
               AnimatedBuilder(
                 animation: _controller,
-                builder: (_, __) => Opacity(
+                builder: (_, _) => Opacity(
                   opacity: _fadeIn.value,
                   child: Column(
                     children: [

@@ -68,7 +68,10 @@ class _CreateTripPageState extends State<CreateTripPage> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
         children: [
           Container(
             decoration: const BoxDecoration(
@@ -205,6 +208,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

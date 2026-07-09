@@ -47,12 +47,14 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Consumer<AuthProvider>(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           return SingleChildScrollView(
             child: Column(
               children: [
-                // Градиентный верх
                 Container(
                   height: MediaQuery.of(context).size.height * 0.38,
                   decoration: const BoxDecoration(
@@ -166,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         },
+      ),
       ),
     );
   }

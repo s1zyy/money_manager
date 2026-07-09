@@ -114,6 +114,16 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 10),
                 _buildCard(children: [
                   _actionTile(
+                    icon: Icons.coffee,
+                    label: 'Buy me a coffee',
+                    color: const Color(0xFFFF9F43),
+                    onTap: () => launchUrl(
+                      Uri.parse('https://buymeacoffee.com/s1zy'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
+                  _divider(),
+                  _actionTile(
                     icon: Icons.mail_outline,
                     label: l10n.sendFeedback,
                     color: AppTheme.secondary,

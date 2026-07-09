@@ -148,7 +148,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
         children: [
           Container(
             decoration: const BoxDecoration(
@@ -491,6 +494,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
           ),
         ],
+        ),
       ),
     );
   }

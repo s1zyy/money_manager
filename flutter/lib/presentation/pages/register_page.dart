@@ -53,7 +53,10 @@ class _RegisterPageState extends State<RegisterPage> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Consumer<AuthProvider>(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           return SingleChildScrollView(
             child: Column(
@@ -205,6 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           );
         },
+      ),
       ),
     );
   }

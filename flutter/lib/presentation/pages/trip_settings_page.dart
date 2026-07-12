@@ -434,7 +434,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       final success = await provider.unarchiveTrip(widget.tripId);
       if (mounted) {
         if (success) Navigator.of(context).pop();
-        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToUnarchive), behavior: SnackBarBehavior.floating));
+        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToUnarchive), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
       }
     }
   }
@@ -448,7 +448,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       final success = await provider.archiveTrip(widget.tripId);
       if (mounted) {
         if (success) { navigator.pop(); navigator.pop(); }
-        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive), behavior: SnackBarBehavior.floating));
+        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
       }
     }
   }
@@ -462,7 +462,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       final success = await provider.leaveTrip(widget.tripId);
       if (mounted) {
         if (success) { navigator.pop(); navigator.pop(); }
-        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToLeave), behavior: SnackBarBehavior.floating));
+        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToLeave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
       }
     }
   }

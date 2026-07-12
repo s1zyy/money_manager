@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
 
-  "appTitle": "Money Manager",
+  "appTitle": "Budgi",
 
   "login": "Войти",
   "register": "Регистрация",
@@ -115,6 +115,8 @@
   "choose": "ВЫБРАТЬ",
   "enterName": "Введите имя",
   "enterBudget": "Введите бюджет",
+  "budgetMustBePositive": "Бюджет должен быть больше 0",
+  "nameAlreadyTaken": "Участник с таким именем уже есть",
   "enterPrepaid": "Введите сумму предоплаты",
   "prepaidExceedsBudget": "Предоплата не может превышать бюджет",
   "noAccountRegister": "Нет аккаунта? Зарегистрируйтесь",
@@ -194,5 +196,36 @@
     "placeholders": {
       "currency": { "type": "String" }
     }
-  }
+  },
+  "you": "Ты",
+  "profile": "Профиль",
+  "account": "Аккаунт",
+  "editProfile": "Редактировать профиль",
+  "comingSoon": "Скоро",
+  "changePassword": "Изменить пароль",
+  "support": "Поддержка",
+  "sendFeedback": "Написать отзыв",
+  "feedbackEmailError": "Не удалось открыть почту",
+  "inviteCodeFromLetter": "Код из письма",
+  "youWillJoinAs": "Ты войдёшь как {name} в поездку «{trip}»",
+  "@youWillJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "trip": { "type": "String" }
+    }
+  },
+  "checkCode": "Проверить код",
+  "signInToTrip": "Войти",
+  "inviteByEmail": "Пригласить по email",
+  "inviteParticipantTitle": "Пригласить {name}",
+  "@inviteParticipantTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inviteParticipantDescription": "Участник получит письмо с кодом для регистрации в Budgi.",
+  "inviteSent": "Приглашение отправлено!",
+  "orDivider": "или",
+  "gotInvitation": "📩 Получил приглашение? Ввести код",
+  "send": "Отправить"
 }

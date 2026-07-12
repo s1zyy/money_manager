@@ -1,8 +1,6 @@
 {
   "@@locale": "de",
-
-  "appTitle": "Money Manager",
-
+  "appTitle": "Budgi",
   "login": "Anmelden",
   "register": "Registrieren",
   "email": "E-Mail",
@@ -17,7 +15,6 @@
   "retry": "Wiederholen",
   "delete": "Löschen",
   "join": "Beitreten",
-
   "trips": "Reisen",
   "createTrip": "Reise erstellen",
   "createNewTrip": "Neue Reise",
@@ -36,13 +33,17 @@
   "startDate": "Startdatum: {date}",
   "@startDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "endDate": "Enddatum: {date}",
   "@endDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "tripHasEnded": "Die Reise ist bereits beendet",
@@ -50,7 +51,6 @@
   "settingsSaved": "Einstellungen gespeichert!",
   "failedToSave": "Speichern fehlgeschlagen",
   "failedToCreateTrip": "Reise konnte nicht erstellt werden",
-
   "joinTrip": "Reise beitreten",
   "joinTripByCode": "Mit Code beitreten",
   "enterInviteCode": "Einladungscode von einem Freund eingeben",
@@ -59,23 +59,18 @@
   "errorJoiningTrip": "Fehler beim Beitreten",
   "joinCodeCopied": "Code in die Zwischenablage kopiert!",
   "inviteCode": "Einladungscode",
-
   "archiveTrip": "Reise archivieren",
   "archiveTripConfirm": "Reise archivieren?",
   "archiveTripMessage": "Die Reise wird in den Archiv-Tab verschoben.",
   "failedToArchive": "Archivieren fehlgeschlagen",
-
   "deleteTrip": "Reise dauerhaft löschen",
   "deleteTripConfirm": "Reise löschen?",
   "deleteTripMessage": "Bist du absolut sicher? Diese Aktion kann nicht rückgängig gemacht werden und die gesamte Ausgabenhistorie geht verloren.",
-
   "leaveTrip": "Reise verlassen",
   "leaveTripConfirm": "Reise verlassen?",
   "leaveTripMessage": "Du wirst keinen Zugriff mehr auf diese Reise haben.",
   "failedToLeave": "Verlassen fehlgeschlagen",
-
   "dangerZone": "Gefahrenzone",
-
   "members": "Mitglieder",
   "owner": "Eigentümer",
   "virtual": "virtuell",
@@ -85,26 +80,31 @@
   "removeMemberConfirm": "{name} aus dieser Reise entfernen?",
   "@removeMemberConfirm": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberRemoved": "{name} aus der Reise entfernt",
   "@memberRemoved": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberAdded": "{name} hinzugefügt",
   "@memberAdded": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "failedToAdd": "Hinzufügen fehlgeschlagen",
   "failedToRemove": "Teilnehmer konnte nicht entfernt werden",
   "noParticipants": "Keine Teilnehmer",
   "participantBalances": "Teilnehmersalden",
-
   "expenses": "Ausgaben",
   "addExpense": "Ausgabe hinzufügen",
   "addNewExpense": "Neue Ausgabe",
@@ -116,7 +116,9 @@
   "paidBy": "Bezahlt von: {name}",
   "@paidBy": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "selectWhoPaid": "Bitte wähle aus, wer bezahlt hat",
@@ -124,23 +126,21 @@
   "expenseAdded": "Ausgabe erfolgreich hinzugefügt!",
   "expenseDeleted": "Ausgabe gelöscht",
   "noExpensesYet": "Noch keine Ausgaben. Füge die erste hinzu!",
-
   "dailyLimit": "Tageslimit",
   "remainingToday": "Heute noch übrig:",
   "spentToday": "Heute ausgegeben",
   "overspentToday": "Heute überzogen:",
   "myShare": "Mein Anteil",
   "notSet": "Nicht festgelegt",
-
   "choose": "WÄHLEN",
   "enterName": "Namen eingeben",
   "enterBudget": "Budget eingeben",
+  "budgetMustBePositive": "Budget muss größer als 0 sein",
+  "nameAlreadyTaken": "Ein Teilnehmer mit diesem Namen existiert bereits",
   "enterPrepaid": "Vorauszahlungsbetrag eingeben",
   "prepaidExceedsBudget": "Vorauszahlung darf das Gesamtbudget nicht überschreiten",
-
   "noAccountRegister": "Noch kein Konto? Registrieren",
   "registrationSuccessful": "Registrierung erfolgreich!",
-
   "active": "Aktiv",
   "upcoming": "Bevorstehend",
   "archived": "Archiviert",
@@ -151,7 +151,9 @@
   "budgetAmount": "Budget: {amount}",
   "@budgetAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "startDateLabel": "Startdatum",
@@ -161,16 +163,13 @@
   "enterPrepaidAmount": "Vorauszahlungsbetrag eingeben",
   "prepaidAmount": "Vorauszahlungsbetrag",
   "unknown": "Unbekannt",
-
   "enterValidAmount": "Gültigen Betrag eingeben",
   "enterDescription": "Beschreibung eingeben",
   "whoPaid": "Wer hat bezahlt?",
   "splitBetween": "Aufteilen zwischen",
   "selectAll": "Alle auswählen",
   "deselectAll": "Alle abwählen",
-
   "language": "Sprache",
-
   "enterEmail": "Bitte E-Mail eingeben",
   "enterValidEmail": "Gültige E-Mail-Adresse eingeben",
   "enterPassword": "Bitte Passwort eingeben",
@@ -196,8 +195,12 @@
   "paysTo": "{from} → {to}",
   "@paysTo": {
     "placeholders": {
-      "from": { "type": "String" },
-      "to": { "type": "String" }
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
     }
   },
   "allSettled": "Alles beglichen!",
@@ -205,7 +208,6 @@
   "archiveAndFinish": "Archivieren & Abschließen",
   "settlementDone": "Reise erfolgreich archiviert!",
   "noSettlementNeeded": "Alle sind bereits quitt. Keine Überweisungen nötig.",
-
   "myBudget": "Mein Budget",
   "budget": "Budget",
   "prepaid": "Vorausbezahlt",
@@ -215,7 +217,40 @@
   "budgetWithCurrency": "Budget ({currency})",
   "@budgetWithCurrency": {
     "placeholders": {
-      "currency": { "type": "String" }
+      "currency": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "you": "Du",
+  "profile": "Profil",
+  "account": "Konto",
+  "editProfile": "Profil bearbeiten",
+  "comingSoon": "Bald verfügbar",
+  "changePassword": "Passwort ändern",
+  "support": "Support",
+  "sendFeedback": "Feedback senden",
+  "feedbackEmailError": "E-Mail konnte nicht geöffnet werden",
+  "inviteCodeFromLetter": "Code aus dem Brief",
+  "youWillJoinAs": "Du trittst als {name} der Reise «{trip}» bei",
+  "@youWillJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "trip": { "type": "String" }
+    }
+  },
+  "checkCode": "Code prüfen",
+  "signInToTrip": "Anmelden",
+  "inviteByEmail": "Per E-Mail einladen",
+  "inviteParticipantTitle": "{name} einladen",
+  "@inviteParticipantTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inviteParticipantDescription": "Der Teilnehmer erhält einen Registrierungscode per E-Mail.",
+  "inviteSent": "Einladung gesendet!",
+  "orDivider": "oder",
+  "gotInvitation": "📩 Einladung erhalten? Code eingeben",
+  "send": "Senden"
 }

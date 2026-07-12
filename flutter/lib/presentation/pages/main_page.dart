@@ -393,8 +393,6 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                       onPressed: () => Navigator.pop(sheetContext),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        side: BorderSide(color: Colors.grey.shade300),
                       ),
                       child: Text(l10n.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
                     ),
@@ -423,7 +421,6 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                       style: FilledButton.styleFrom(
                         backgroundColor: AppTheme.secondary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
                       child: Text(l10n.join, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                     ),

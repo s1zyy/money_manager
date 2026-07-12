@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -60,6 +61,7 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Consumer<AuthProvider>(
@@ -93,12 +95,12 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                         Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.email_outlined, size: 44, color: Colors.white),
-                              SizedBox(height: 12),
+                            children: [
+                              const Icon(Icons.email_outlined, size: 44, color: Colors.white),
+                              const SizedBox(height: 12),
                               Text(
-                                'Код приглашения',
-                                style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                                l10n.inviteCode,
+                                style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: -0.5),
                               ),
                             ],
                           ),
@@ -127,7 +129,7 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                         maxLength: 8,
                         decoration: InputDecoration(
                           counterText: '',
-                          labelText: 'Код из письма',
+                          labelText: l10n.inviteCodeFromLetter,
                           labelStyle: const TextStyle(color: AppTheme.textSecondary, letterSpacing: 0),
                           hintText: 'XXXXXXXX',
                           hintStyle: TextStyle(color: Colors.grey.shade400, letterSpacing: 6, fontSize: 22),
@@ -163,7 +165,7 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Ты войдёшь как $_participantName в поездку «$_tripName»',
+                                  l10n.youWillJoinAs(_participantName!, _tripName!),
                                   style: const TextStyle(fontSize: 13, color: AppTheme.primary, fontWeight: FontWeight.w500),
                                 ),
                               ),
@@ -180,7 +182,7 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                         const SizedBox(height: 14),
                         _buildField(
                           controller: _passwordController,
-                          label: 'Пароль',
+                          label: l10n.password,
                           icon: Icons.lock_outline,
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
@@ -200,12 +202,8 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                                 onPressed: _codeValidated
                                     ? () => _onClaimPressed(auth)
                                     : () => _onValidateCode(auth),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: AppTheme.primary,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                ),
                                 child: Text(
-                                  _codeValidated ? 'Войти' : 'Проверить код',
+                                  _codeValidated ? l10n.signInToTrip : l10n.checkCode,
                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                                 ),
                               ),

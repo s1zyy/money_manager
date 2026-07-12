@@ -270,7 +270,6 @@ class _SettlementPageState extends State<SettlementPage> {
                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.archive_outlined),
                 label: Text(l10n.archiveAndFinish, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
               ),
             ),
           ],
@@ -312,7 +311,6 @@ class _SettlementPageState extends State<SettlementPage> {
                     ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.archive_outlined, size: 18),
                 label: Text(l10n.archiveAndFinish, style: const TextStyle(fontWeight: FontWeight.w600)),
-                style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
               ),
             ),
           ],

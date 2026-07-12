@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appTitle": "Money Manager",
+  "appTitle": "Budgi",
 
   "login": "Login",
   "register": "Register",
@@ -139,6 +139,8 @@
   "choose": "CHOOSE",
   "enterName": "Enter name",
   "enterBudget": "Enter budget",
+  "budgetMustBePositive": "Budget must be greater than 0",
+  "nameAlreadyTaken": "A participant with this name already exists",
   "enterPrepaid": "Enter prepaid amount",
   "prepaidExceedsBudget": "Prepaid cannot exceed total budget",
 
@@ -219,5 +221,36 @@
     "placeholders": {
       "currency": { "type": "String" }
     }
-  }
+  },
+  "you": "You",
+  "profile": "Profile",
+  "account": "Account",
+  "editProfile": "Edit Profile",
+  "comingSoon": "Coming soon",
+  "changePassword": "Change Password",
+  "support": "Support",
+  "sendFeedback": "Send Feedback",
+  "feedbackEmailError": "Could not open mail app",
+  "inviteCodeFromLetter": "Code from the letter",
+  "youWillJoinAs": "You will join as {name} in trip «{trip}»",
+  "@youWillJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "trip": { "type": "String" }
+    }
+  },
+  "checkCode": "Check code",
+  "signInToTrip": "Sign in",
+  "inviteByEmail": "Invite by email",
+  "inviteParticipantTitle": "Invite {name}",
+  "@inviteParticipantTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inviteParticipantDescription": "The participant will receive a registration code by email.",
+  "inviteSent": "Invitation sent!",
+  "orDivider": "or",
+  "gotInvitation": "📩 Got an invite? Enter code",
+  "send": "Send"
 }

@@ -108,11 +108,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (!_eachPaidOwn && _selectedPayerId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectWhoPaid), behavior: SnackBarBehavior.floating));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectWhoPaid), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
       return;
     }
     if (_selectedParticipantIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectParticipants), behavior: SnackBarBehavior.floating));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectParticipants), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
       return;
     }
     if (_splitMode == 'CUSTOM' && _remainingCents != 0) {
@@ -486,7 +486,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             onPressed: _submitData,
                             icon: const Icon(Icons.check_rounded),
                             label: Text(l10n.saveExpense, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                            style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                           ),
                         ),
                       ],

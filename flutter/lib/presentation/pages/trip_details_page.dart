@@ -393,7 +393,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           const SizedBox(height: 16),
           FilledButton(
             onPressed: () => provider.loadDashboard(widget.tripId),
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.primary),
             child: Text(l10n.retry),
           ),
         ],
@@ -465,7 +464,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             onDismissed: (_) {
                               provider.deleteExpense(widget.tripId, expense.id);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.expenseDeleted), behavior: SnackBarBehavior.floating),
+                                SnackBar(content: Text(l10n.expenseDeleted), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating),
                               );
                             },
                             child: Container(
@@ -526,7 +525,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   void _onAddExpense(BuildContext context, TripDashboardProvider provider, AppLocalizations l10n) {
     final startDate = provider.dashboard?.trip.startDate;
     if (startDate != null && startDate.dateOnly.isAfter(DateTime.now().dateOnly)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tripNotStarted), behavior: SnackBarBehavior.floating));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tripNotStarted), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
       return;
     }
     Navigator.push(
@@ -544,24 +543,28 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   void _showMembersModal(BuildContext context, TripDashboardProvider provider) {
     final l10n = AppLocalizations.of(context)!;
-    final joinCode = provider.dashboard?.trip.joinCode ?? '------';
-    final isOwner = provider.dashboard?.isOwner ?? false;
-    final ownerId = provider.dashboard?.trip.ownerId ?? '';
-    final myId = provider.myParticipantId ?? '';
-    final memberCount = provider.participantsMap.length;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (sheetCtx) {
-        return DraggableScrollableSheet(
+        return ChangeNotifierProvider.value(
+          value: provider,
+          child: DraggableScrollableSheet(
           initialChildSize: 0.92,
           minChildSize: 0.5,
           maxChildSize: 0.92,
           expand: false,
           builder: (_, scrollController) {
-            return Padding(
+            return Consumer<TripDashboardProvider>(
+              builder: (ctx, p, _) {
+                final joinCode = p.dashboard?.trip.joinCode ?? '------';
+                final isOwner = p.dashboard?.isOwner ?? false;
+                final ownerId = p.dashboard?.trip.ownerId ?? '';
+                final myId = p.myParticipantId ?? '';
+                final memberCount = p.participantsMap.length;
+                return Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
               child: Column(
                 children: [
@@ -735,7 +738,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           },
         );
       },
+      ),
     );
+  },
+  );
   }
 
   void _showVirtualParticipantSheet(BuildContext context, TripDashboardProvider provider, String tripId, String participantId, String name) {
@@ -793,7 +799,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   Navigator.pop(sheetCtx);
                   await provider.updateParticipantBudget(tripId: tripId, participantId: participantId, budget: budget);
                 },
-                style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                 child: Text(l10n.saveBudget, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ),
@@ -807,11 +812,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   _showInviteByEmailDialog(context, provider, tripId, participantId, name);
                 },
                 icon: const Icon(Icons.email_outlined, size: 18),
-                label: const Text('Пригласить по email', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                label: Text(AppLocalizations.of(context)!.inviteByEmail, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primary,
                   side: const BorderSide(color: AppTheme.primary),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
             ),
@@ -819,7 +823,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         ),
         );
       },
-    );
+      );
+      
+    
   }
 
   void _showInviteByEmailDialog(BuildContext context, TripDashboardProvider provider, String tripId, String participantId, String name) {
@@ -832,12 +838,12 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         builder: (ctx, setState) => AlertDialog(
           backgroundColor: AppTheme.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Пригласить $name', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+          title: Text(AppLocalizations.of(context)!.inviteParticipantTitle(name), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Участник получит письмо с кодом для регистрации в Budgi.', style: TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
+              Text(AppLocalizations.of(context)!.inviteParticipantDescription, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               TextField(
                 controller: emailController,
@@ -860,26 +866,32 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           actions: [
             TextButton(
               onPressed: sending ? null : () => Navigator.pop(dialogCtx),
-              child: const Text('Отмена', style: TextStyle(color: AppTheme.textSecondary)),
+              child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
             ),
             FilledButton(
               onPressed: sending ? null : () async {
                 final email = emailController.text.trim();
-                if (email.isEmpty || !email.contains('@')) return;
+                if (email.isEmpty || !email.contains('@')) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                    content: Text(AppLocalizations.of(ctx)!.enterValidEmail),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ));
+                  return;
+                }
                 setState(() => sending = true);
                 final success = await provider.inviteVirtualParticipant(tripId, participantId, email);
                 if (!ctx.mounted) return;
                 Navigator.pop(dialogCtx);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(success ? 'Приглашение отправлено!' : (provider.errorMessage ?? 'Ошибка')),
+                  content: Text(success ? AppLocalizations.of(context)!.inviteSent : (provider.errorMessage ?? AppLocalizations.of(context)!.failedToAdd)),
                   backgroundColor: success ? Colors.green : Colors.red,
                   behavior: SnackBarBehavior.floating,
                 ));
               },
-              style: FilledButton.styleFrom(backgroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: sending
                   ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Отправить'),
+                  : Text(AppLocalizations.of(context)!.send),
             ),
           ],
         ),
@@ -892,12 +904,18 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     final budgetController = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
 
+    final formKey = GlobalKey<FormState>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (sheetCtx) {
-        return Padding(
+        String? serverNameError;
+        bool isLoading = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) => Form(
+          key: formKey,
+          child: Padding(
           padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(sheetCtx).viewInsets.bottom + 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -917,26 +935,44 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               const SizedBox(height: 6),
               Text(l10n.virtualParticipantHint, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
               const SizedBox(height: 24),
-              TextField(
+              TextFormField(
                 controller: controller,
                 autofocus: true,
+                onChanged: (_) { if (serverNameError != null) setSheetState(() => serverNameError = null); },
                 style: const TextStyle(color: AppTheme.textPrimary),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return l10n.enterName;
+                  final taken = provider.participantsMap.values.any(
+                    (p) => p.name.trim().toLowerCase() == v.trim().toLowerCase(),
+                  );
+                  if (taken) return l10n.nameAlreadyTaken;
+                  return null;
+                },
                 decoration: InputDecoration(
                   labelText: l10n.name,
                   labelStyle: const TextStyle(color: AppTheme.textSecondary),
                   prefixIcon: const Icon(Icons.person_outline, color: AppTheme.textSecondary, size: 20),
+                  errorText: serverNameError,
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
                   focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                  errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red)),
+                  focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 12),
-              TextField(
+              TextFormField(
                 controller: budgetController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 style: const TextStyle(color: AppTheme.textPrimary),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return l10n.enterBudget;
+                  final val = double.tryParse(v.trim());
+                  if (val == null || val <= 0) return l10n.budgetMustBePositive;
+                  return null;
+                },
                 decoration: InputDecoration(
                   labelText: l10n.budget,
                   labelStyle: const TextStyle(color: AppTheme.textSecondary),
@@ -946,6 +982,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
                   focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+                  errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red)),
+                  focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -964,19 +1002,23 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () async {
+                      onTap: isLoading ? null : () async {
+                        if (!formKey.currentState!.validate()) return;
                         final name = controller.text.trim();
-                        final budget = double.tryParse(budgetController.text) ?? 0.0;
-                        if (name.isEmpty) return;
-                        Navigator.pop(sheetCtx);
-                        Navigator.pop(modalContext);
+                        final budget = double.parse(budgetController.text.trim());
+                        setSheetState(() { isLoading = true; serverNameError = null; });
                         final success = await provider.addVirtualParticipant(tripId, name, budget);
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(success ? l10n.memberAdded(name) : provider.errorMessage ?? l10n.failedToAdd),
-                          backgroundColor: success ? Colors.green : Colors.red,
-                          behavior: SnackBarBehavior.floating,
-                        ));
+                        if (!ctx.mounted) return;
+                        if (success) {
+                          Navigator.pop(sheetCtx);
+                          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(l10n.memberAdded(name)),
+                            backgroundColor: Colors.green,
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                        } else {
+                          setSheetState(() { isLoading = false; serverNameError = provider.errorMessage ?? l10n.failedToAdd; });
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -989,9 +1031,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
+  },
+  );
   }
 
   void _confirmRemoveParticipant(BuildContext context, TripDashboardProvider provider, String tripId, String participantId, String name, BuildContext modalContext) {
@@ -1055,7 +1099,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     child: GestureDetector(
                       onTap: () async {
                         Navigator.pop(sheetCtx);
-                        Navigator.pop(modalContext);
                         final success = await provider.removeParticipant(tripId, participantId);
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

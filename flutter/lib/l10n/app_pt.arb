@@ -1,8 +1,6 @@
 {
   "@@locale": "pt",
-
-  "appTitle": "Money Manager",
-
+  "appTitle": "Budgi",
   "login": "Entrar",
   "register": "Cadastrar",
   "email": "E-mail",
@@ -17,7 +15,6 @@
   "retry": "Tentar novamente",
   "delete": "Excluir",
   "join": "Entrar",
-
   "trips": "Viagens",
   "createTrip": "Criar viagem",
   "createNewTrip": "Nova viagem",
@@ -36,13 +33,17 @@
   "startDate": "Data de início: {date}",
   "@startDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "endDate": "Data de término: {date}",
   "@endDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "tripHasEnded": "A viagem já terminou",
@@ -50,7 +51,6 @@
   "settingsSaved": "Configurações salvas!",
   "failedToSave": "Falha ao salvar",
   "failedToCreateTrip": "Falha ao criar viagem",
-
   "joinTrip": "Entrar na viagem",
   "joinTripByCode": "Entrar com código",
   "enterInviteCode": "Digite o código de convite de um amigo",
@@ -59,23 +59,18 @@
   "errorJoiningTrip": "Erro ao entrar na viagem",
   "joinCodeCopied": "Código copiado para a área de transferência!",
   "inviteCode": "Código de convite",
-
   "archiveTrip": "Arquivar viagem",
   "archiveTripConfirm": "Arquivar viagem?",
   "archiveTripMessage": "A viagem será movida para a aba Arquivadas.",
   "failedToArchive": "Falha ao arquivar",
-
   "deleteTrip": "Excluir viagem permanentemente",
   "deleteTripConfirm": "Excluir viagem?",
   "deleteTripMessage": "Tem absolutamente certeza? Esta ação não pode ser desfeita e todo o histórico de despesas será perdido.",
-
   "leaveTrip": "Sair da viagem",
   "leaveTripConfirm": "Sair da viagem?",
   "leaveTripMessage": "Você não terá mais acesso a esta viagem.",
   "failedToLeave": "Falha ao sair",
-
   "dangerZone": "Zona de perigo",
-
   "members": "Membros",
   "owner": "proprietário",
   "virtual": "virtual",
@@ -85,26 +80,31 @@
   "removeMemberConfirm": "Remover {name} desta viagem?",
   "@removeMemberConfirm": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberRemoved": "{name} removido da viagem",
   "@memberRemoved": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberAdded": "{name} adicionado",
   "@memberAdded": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "failedToAdd": "Falha ao adicionar",
   "failedToRemove": "Falha ao remover participante",
   "noParticipants": "Sem participantes",
   "participantBalances": "Saldos dos participantes",
-
   "expenses": "Despesas",
   "addExpense": "Adicionar despesa",
   "addNewExpense": "Nova despesa",
@@ -116,7 +116,9 @@
   "paidBy": "Pago por: {name}",
   "@paidBy": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "selectWhoPaid": "Selecione quem pagou",
@@ -124,23 +126,21 @@
   "expenseAdded": "Despesa adicionada com sucesso!",
   "expenseDeleted": "Despesa excluída",
   "noExpensesYet": "Ainda não há despesas. Adicione a primeira!",
-
   "dailyLimit": "Limite diário",
   "remainingToday": "Restante para hoje:",
   "spentToday": "Gasto hoje",
   "overspentToday": "Excedido hoje:",
   "myShare": "Minha parte",
   "notSet": "Não definido",
-
   "choose": "ESCOLHER",
   "enterName": "Digite o nome",
   "enterBudget": "Digite o orçamento",
+  "budgetMustBePositive": "O orçamento deve ser maior que 0",
+  "nameAlreadyTaken": "Já existe um participante com este nome",
   "enterPrepaid": "Digite o valor pré-pago",
   "prepaidExceedsBudget": "O pré-pago não pode exceder o orçamento total",
-
   "noAccountRegister": "Não tem conta? Cadastre-se",
   "registrationSuccessful": "Cadastro realizado com sucesso!",
-
   "active": "Ativas",
   "upcoming": "Próximas",
   "archived": "Arquivadas",
@@ -151,10 +151,11 @@
   "budgetAmount": "Orçamento: {amount}",
   "@budgetAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
-
   "startDateLabel": "Data de início",
   "endDateLabel": "Data de término",
   "enterTripName": "Digite o nome da viagem",
@@ -162,16 +163,13 @@
   "enterPrepaidAmount": "Digite o valor pré-pago",
   "prepaidAmount": "Valor pré-pago",
   "unknown": "Desconhecido",
-
   "enterValidAmount": "Digite um valor válido",
   "enterDescription": "Digite uma descrição",
   "whoPaid": "Quem pagou?",
   "splitBetween": "Dividir entre",
   "selectAll": "Selecionar todos",
   "deselectAll": "Desmarcar todos",
-
   "language": "Idioma",
-
   "enterEmail": "Insira o e-mail",
   "enterValidEmail": "Insira um endereço de e-mail válido",
   "enterPassword": "Insira a senha",
@@ -197,8 +195,12 @@
   "paysTo": "{from} → {to}",
   "@paysTo": {
     "placeholders": {
-      "from": { "type": "String" },
-      "to": { "type": "String" }
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
     }
   },
   "allSettled": "Tudo acertado!",
@@ -206,7 +208,6 @@
   "archiveAndFinish": "Arquivar e concluir",
   "settlementDone": "Viagem arquivada com sucesso!",
   "noSettlementNeeded": "Todos já estão em dia. Nenhuma transferência necessária.",
-
   "myBudget": "Meu orçamento",
   "budget": "Orçamento",
   "prepaid": "Pré-pago",
@@ -216,7 +217,40 @@
   "budgetWithCurrency": "Orçamento ({currency})",
   "@budgetWithCurrency": {
     "placeholders": {
-      "currency": { "type": "String" }
+      "currency": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "you": "Eu",
+  "profile": "Perfil",
+  "account": "Conta",
+  "editProfile": "Editar perfil",
+  "comingSoon": "Em breve",
+  "changePassword": "Alterar senha",
+  "support": "Suporte",
+  "sendFeedback": "Enviar feedback",
+  "feedbackEmailError": "Não foi possível abrir o e-mail",
+  "inviteCodeFromLetter": "Código do e-mail",
+  "youWillJoinAs": "Você entrará como {name} na viagem «{trip}»",
+  "@youWillJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "trip": { "type": "String" }
+    }
+  },
+  "checkCode": "Verificar código",
+  "signInToTrip": "Entrar",
+  "inviteByEmail": "Convidar por e-mail",
+  "inviteParticipantTitle": "Convidar {name}",
+  "@inviteParticipantTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inviteParticipantDescription": "O participante receberá um código de registro por e-mail.",
+  "inviteSent": "Convite enviado!",
+  "orDivider": "ou",
+  "gotInvitation": "📩 Recebeu um convite? Inserir código",
+  "send": "Enviar"
 }

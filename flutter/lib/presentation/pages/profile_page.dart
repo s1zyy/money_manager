@@ -236,7 +236,7 @@ class ProfilePage extends StatelessWidget {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.feedbackEmailError), behavior: SnackBarBehavior.floating),
+          SnackBar(content: Text(l10n.feedbackEmailError), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
         );
       }
     }

@@ -1,8 +1,6 @@
 {
   "@@locale": "zh",
-
-  "appTitle": "Money Manager",
-
+  "appTitle": "Budgi",
   "login": "登录",
   "register": "注册",
   "email": "邮箱",
@@ -17,7 +15,6 @@
   "retry": "重试",
   "delete": "删除",
   "join": "加入",
-
   "trips": "旅行",
   "createTrip": "创建旅行",
   "createNewTrip": "新建旅行",
@@ -36,13 +33,17 @@
   "startDate": "开始日期：{date}",
   "@startDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "endDate": "结束日期：{date}",
   "@endDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "tripHasEnded": "旅行已结束",
@@ -50,7 +51,6 @@
   "settingsSaved": "设置已保存！",
   "failedToSave": "保存失败",
   "failedToCreateTrip": "创建旅行失败",
-
   "joinTrip": "加入旅行",
   "joinTripByCode": "使用邀请码加入",
   "enterInviteCode": "输入朋友的邀请码",
@@ -59,23 +59,18 @@
   "errorJoiningTrip": "加入旅行时出错",
   "joinCodeCopied": "邀请码已复制到剪贴板！",
   "inviteCode": "邀请码",
-
   "archiveTrip": "归档旅行",
   "archiveTripConfirm": "归档旅行？",
   "archiveTripMessage": "旅行将移至已归档标签页。",
   "failedToArchive": "归档失败",
-
   "deleteTrip": "永久删除旅行",
   "deleteTripConfirm": "删除旅行？",
   "deleteTripMessage": "您确定吗？此操作无法撤销，所有费用记录将丢失。",
-
   "leaveTrip": "离开旅行",
   "leaveTripConfirm": "离开旅行？",
   "leaveTripMessage": "您将不再有权访问此旅行。",
   "failedToLeave": "离开失败",
-
   "dangerZone": "危险区域",
-
   "members": "成员",
   "owner": "所有者",
   "virtual": "虚拟",
@@ -85,26 +80,31 @@
   "removeMemberConfirm": "从此旅行中移除 {name}？",
   "@removeMemberConfirm": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberRemoved": "{name} 已从旅行中移除",
   "@memberRemoved": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberAdded": "{name} 已添加",
   "@memberAdded": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "failedToAdd": "添加失败",
   "failedToRemove": "移除参与者失败",
   "noParticipants": "暂无参与者",
   "participantBalances": "参与者余额",
-
   "expenses": "费用",
   "addExpense": "添加费用",
   "addNewExpense": "新增费用",
@@ -116,7 +116,9 @@
   "paidBy": "付款人：{name}",
   "@paidBy": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "selectWhoPaid": "请选择付款人",
@@ -124,23 +126,21 @@
   "expenseAdded": "费用添加成功！",
   "expenseDeleted": "费用已删除",
   "noExpensesYet": "暂无费用。添加第一笔吧！",
-
   "dailyLimit": "每日限额",
   "remainingToday": "今日剩余：",
   "spentToday": "今日已花",
   "overspentToday": "今日超支：",
   "myShare": "我的份额",
   "notSet": "未设置",
-
   "choose": "选择",
   "enterName": "输入姓名",
   "enterBudget": "输入预算",
+  "budgetMustBePositive": "预算必须大于0",
+  "nameAlreadyTaken": "已存在同名参与者",
   "enterPrepaid": "输入预付金额",
   "prepaidExceedsBudget": "预付金额不能超过总预算",
-
   "noAccountRegister": "没有账号？注册",
   "registrationSuccessful": "注册成功！",
-
   "active": "进行中",
   "upcoming": "即将开始",
   "archived": "已归档",
@@ -151,10 +151,11 @@
   "budgetAmount": "预算：{amount}",
   "@budgetAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
-
   "startDateLabel": "开始日期",
   "endDateLabel": "结束日期",
   "enterTripName": "请输入旅行名称",
@@ -162,16 +163,13 @@
   "enterPrepaidAmount": "请输入预付金额",
   "prepaidAmount": "预付金额",
   "unknown": "未知",
-
   "enterValidAmount": "请输入有效金额",
   "enterDescription": "请输入描述",
   "whoPaid": "谁付款了？",
   "splitBetween": "分摊给",
   "selectAll": "全选",
   "deselectAll": "取消全选",
-
   "language": "语言",
-
   "enterEmail": "请输入电子邮箱",
   "enterValidEmail": "请输入有效的电子邮箱地址",
   "enterPassword": "请输入密码",
@@ -197,8 +195,12 @@
   "paysTo": "{from} → {to}",
   "@paysTo": {
     "placeholders": {
-      "from": { "type": "String" },
-      "to": { "type": "String" }
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
     }
   },
   "allSettled": "全部结清！",
@@ -206,7 +208,6 @@
   "archiveAndFinish": "归档并完成",
   "settlementDone": "行程已成功归档！",
   "noSettlementNeeded": "大家已经结清，无需转账。",
-
   "myBudget": "我的预算",
   "budget": "预算",
   "prepaid": "预付款",
@@ -216,7 +217,40 @@
   "budgetWithCurrency": "预算（{currency}）",
   "@budgetWithCurrency": {
     "placeholders": {
-      "currency": { "type": "String" }
+      "currency": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "you": "我",
+  "profile": "个人资料",
+  "account": "账户",
+  "editProfile": "编辑资料",
+  "comingSoon": "即将推出",
+  "changePassword": "修改密码",
+  "support": "支持",
+  "sendFeedback": "发送反馈",
+  "feedbackEmailError": "无法打开邮件应用",
+  "inviteCodeFromLetter": "邮件中的码",
+  "youWillJoinAs": "您将以 {name} 的身份加入旅行《{trip}》",
+  "@youWillJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "trip": { "type": "String" }
+    }
+  },
+  "checkCode": "验证码",
+  "signInToTrip": "登录",
+  "inviteByEmail": "通过邮件邀请",
+  "inviteParticipantTitle": "邀请 {name}",
+  "@inviteParticipantTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inviteParticipantDescription": "参与者将收到包含注册码的邮件。",
+  "inviteSent": "邀请已发送！",
+  "orDivider": "或",
+  "gotInvitation": "📩 收到邀请？输入码",
+  "send": "发送"
 }

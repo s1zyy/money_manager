@@ -411,6 +411,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(l10n.selectDates),
+        backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));
       return;

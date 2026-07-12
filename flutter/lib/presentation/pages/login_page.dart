@@ -145,10 +145,6 @@ class _LoginPageState extends State<LoginPage> {
                               ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
                               : FilledButton(
                                   onPressed: () => _onLoginPressed(auth, l10n),
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: AppTheme.primary,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                  ),
                                   child: Text(l10n.login, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                 ),
                         ),

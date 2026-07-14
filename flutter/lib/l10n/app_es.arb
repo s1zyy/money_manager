@@ -252,5 +252,16 @@
   "inviteSent": "¡Invitación enviada!",
   "orDivider": "o",
   "gotInvitation": "📩 ¿Recibiste una invitación? Introducir código",
-  "send": "Enviar"
+  "send": "Enviar",
+  "bugReport": "Reportar error",
+  "generalFeedback": "Comentarios generales",
+  "feedbackPlaceholder": "Describe el problema o tu idea...",
+  "feedbackSent": "¡Gracias! Lo revisaremos.",
+  "somethingWentWrong": "Algo salió mal",
+  "loginToJoinAs": "Este correo ya está registrado. Ingresa tu contraseña para unirte al viaje como {name}.",
+  "@loginToJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

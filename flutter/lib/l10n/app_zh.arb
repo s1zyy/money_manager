@@ -252,5 +252,16 @@
   "inviteSent": "邀请已发送！",
   "orDivider": "或",
   "gotInvitation": "📩 收到邀请？输入码",
-  "send": "发送"
+  "send": "发送",
+  "bugReport": "报告错误",
+  "generalFeedback": "一般反馈",
+  "feedbackPlaceholder": "描述问题或分享你的想法...",
+  "feedbackSent": "谢谢！我们会处理的。",
+  "somethingWentWrong": "出了点问题",
+  "loginToJoinAs": "此邮箱已注册。输入密码以 {name} 的身份加入旅行。",
+  "@loginToJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

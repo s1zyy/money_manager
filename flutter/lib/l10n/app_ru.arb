@@ -227,5 +227,16 @@
   "inviteSent": "Приглашение отправлено!",
   "orDivider": "или",
   "gotInvitation": "📩 Получил приглашение? Ввести код",
-  "send": "Отправить"
+  "send": "Отправить",
+  "bugReport": "Сообщить о баге",
+  "generalFeedback": "Обратная связь",
+  "feedbackPlaceholder": "Опишите проблему или поделитесь идеей...",
+  "feedbackSent": "Спасибо! Мы разберёмся.",
+  "somethingWentWrong": "Что-то пошло не так",
+  "loginToJoinAs": "Этот email уже зарегистрирован. Введи пароль, чтобы войти в поездку как {name}.",
+  "@loginToJoinAs": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

@@ -21,6 +21,7 @@ class TripsPage extends StatefulWidget {
 
 class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -43,49 +44,88 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
     final l10n = AppLocalizations.of(context)!;
     final pageContext = context;
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
-            pinned: true,
-            toolbarHeight: 72,
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [AppTheme.primary, AppTheme.secondary],
-                ),
+      body: Stack(
+        children: [
+          _animatedTab(0, _buildTripsTab(pageContext, l10n)),
+          _animatedTab(1, _buildFriendsTab(l10n)),
+          _animatedTab(2, const ProfilePage()),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (i) => setState(() => _selectedIndex = i),
+        backgroundColor: Colors.white,
+        indicatorColor: AppTheme.primary.withValues(alpha: 0.12),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.flight_takeoff_outlined),
+            selectedIcon: const Icon(Icons.flight_takeoff, color: AppTheme.primary),
+            label: l10n.trips,
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people, color: AppTheme.primary),
+            label: 'Friends',
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person, color: AppTheme.primary),
+            label: l10n.profile,
+          ),
+        ],
+      ),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: () => _showAddOrJoinTripModal(pageContext),
+              backgroundColor: AppTheme.primary,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add),
+              label: const Text('New Trip', style: TextStyle(fontWeight: FontWeight.w600)),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildTripsTab(BuildContext pageContext, AppLocalizations l10n) {
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+        SliverAppBar(
+          pinned: true,
+          toolbarHeight: 72,
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [AppTheme.primary, AppTheme.secondary],
               ),
             ),
-            title: Row(
-              children: [
-                const Icon(Icons.airplanemode_active, color: Colors.white70, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.trips,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.3,
-                  ),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.airplanemode_active, color: Colors.white70, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                l10n.trips,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.3,
                 ),
-              ],
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.language, color: Colors.white, size: 22),
-                onPressed: () => _showLanguageDialog(pageContext),
               ),
-              IconButton(
-                icon: const Icon(Icons.account_circle, color: Colors.white, size: 26),
-                onPressed: () => Navigator.push(pageContext, MaterialPageRoute(builder: (_) => const ProfilePage())),
-              ),
-              const SizedBox(width: 4),
             ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.language, color: Colors.white, size: 22),
+              onPressed: () => _showLanguageDialog(pageContext),
+            ),
+            const SizedBox(width: 4),
+          ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(52),
               child: Container(
@@ -153,13 +193,29 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
             );
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddOrJoinTripModal(context),
-        backgroundColor: AppTheme.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: const Text('New Trip', style: TextStyle(fontWeight: FontWeight.w600)),
+      );
+  }
+
+  Widget _animatedTab(int index, Widget child) {
+    final visible = _selectedIndex == index;
+    return AnimatedOpacity(
+      opacity: visible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 200),
+      child: IgnorePointer(ignoring: !visible, child: child),
+    );
+  }
+
+  Widget _buildFriendsTab(AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.people_outline, size: 64, color: AppTheme.textSecondary.withValues(alpha: 0.4)),
+          const SizedBox(height: 16),
+          const Text('Friends', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+          const SizedBox(height: 8),
+          const Text('Coming soon', style: TextStyle(fontSize: 14, color: AppTheme.textSecondary)),
+        ],
       ),
     );
   }

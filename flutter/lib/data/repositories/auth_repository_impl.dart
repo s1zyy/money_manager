@@ -35,7 +35,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Map<String, String>> validateInviteToken(String token) {
+  Future<Map<String, dynamic>> validateInviteToken(String token) {
     return remoteDataSource.validateInviteToken(token);
+  }
+
+  @override
+  Future<AuthResult> claimInviteWithLogin(String token, String password) async {
+    final authModel = await remoteDataSource.claimInviteWithLogin(token, password);
+    await localDataSource.saveToken(authModel.token);
+    return authModel;
   }
 }

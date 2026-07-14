@@ -321,8 +321,11 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                   decoration: InputDecoration(
                     hintText: l10n.searchHint,
                     prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary, size: 20),
-                    filled: true, fillColor: Colors.grey.shade100,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
+                    focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)), borderSide: BorderSide(color: AppTheme.primary, width: 1.5)),
                     contentPadding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -341,15 +344,15 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? AppTheme.primary.withValues(alpha: 0.08) : Colors.grey.shade50,
+                            color: isSelected ? AppTheme.primary.withValues(alpha: 0.07) : Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: isSelected ? AppTheme.primary.withValues(alpha: 0.4) : Colors.grey.shade200, width: isSelected ? 1.5 : 1),
+                            border: Border.all(color: isSelected ? AppTheme.primary : Colors.grey.shade200, width: isSelected ? 1.5 : 1),
                           ),
                           child: Row(
                             children: [
                               Container(width: 40, height: 40,
-                                decoration: BoxDecoration(color: isSelected ? AppTheme.primary.withValues(alpha: 0.12) : Colors.grey.shade200, shape: BoxShape.circle),
-                                child: Center(child: Text(c.symbol, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isSelected ? AppTheme.primary : AppTheme.textPrimary))),
+                                decoration: BoxDecoration(color: isSelected ? AppTheme.primary : Colors.grey.shade100, shape: BoxShape.circle),
+                                child: Center(child: Text(c.symbol, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : AppTheme.textSecondary))),
                               ),
                               const SizedBox(width: 14),
                               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -357,7 +360,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
                                 Text(c.name, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
                               ]),
                               const Spacer(),
-                              if (isSelected) Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 20),
+                              if (isSelected) const Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 20),
                             ],
                           ),
                         ),

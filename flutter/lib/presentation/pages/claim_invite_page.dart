@@ -19,9 +19,19 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
 
   bool _obscurePassword = true;
   bool _codeValidated = false;
+  bool _requiresLogin = false;
   String? _tripName;
   String? _participantName;
   String? _validatedToken;
+  String? _passwordError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().clearError();
+    });
+  }
 
   @override
   void dispose() {
@@ -40,19 +50,24 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
       setState(() {
         _codeValidated = true;
         _validatedToken = code;
-        _tripName = result['tripName'];
-        _participantName = result['participantName'];
-        _emailController.text = result['invitedEmail']!;
+        _tripName = result['tripName'] as String;
+        _participantName = result['participantName'] as String;
+        _emailController.text = result['invitedEmail'] as String;
+        _requiresLogin = result['requiresLogin'] as bool;
       });
     }
   }
 
-  Future<void> _onClaimPressed(AuthProvider auth) async {
-    final email = _emailController.text.trim();
+  Future<void> _onClaimPressed(AuthProvider auth, AppLocalizations l10n) async {
     final password = _passwordController.text.trim();
-    if (email.isEmpty || !email.contains('@') || password.length < 6) return;
+    if (password.length < 6) {
+      setState(() => _passwordError = l10n.passwordTooShort);
+      return;
+    }
 
-    final success = await auth.register(email, password, _participantName!, inviteToken: _validatedToken);
+    final success = _requiresLogin
+        ? await auth.claimInviteWithLogin(_validatedToken!, password)
+        : await auth.register(_emailController.text.trim(), password, _participantName!, inviteToken: _validatedToken);
     if (!mounted) return;
     if (success) {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const TripsPage()), (r) => false);
@@ -62,6 +77,7 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Consumer<AuthProvider>(
@@ -165,7 +181,9 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  l10n.youWillJoinAs(_participantName!, _tripName!),
+                                  _requiresLogin
+                                      ? l10n.loginToJoinAs(_participantName!)
+                                      : l10n.youWillJoinAs(_participantName!, _tripName!),
                                   style: const TextStyle(fontSize: 13, color: AppTheme.primary, fontWeight: FontWeight.w500),
                                 ),
                               ),
@@ -185,6 +203,8 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                           label: l10n.password,
                           icon: Icons.lock_outline,
                           obscureText: _obscurePassword,
+                          errorText: _passwordError,
+                          onChanged: (_) { if (_passwordError != null) setState(() => _passwordError = null); },
                           suffixIcon: IconButton(
                             icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.textSecondary),
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -200,7 +220,7 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                             ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
                             : FilledButton(
                                 onPressed: _codeValidated
-                                    ? () => _onClaimPressed(auth)
+                                    ? () => _onClaimPressed(auth, l10n)
                                     : () => _onValidateCode(auth),
                                 child: Text(
                                   _codeValidated ? l10n.signInToTrip : l10n.checkCode,
@@ -208,6 +228,10 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                                 ),
                               ),
                       ),
+                      if (auth.errorMessage != null && _codeValidated) ...[
+                        const SizedBox(height: 10),
+                        Text(auth.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                      ],
                     ],
                   ),
                 ),
@@ -227,23 +251,29 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
     bool obscureText = false,
     bool enabled = true,
     Widget? suffixIcon,
+    String? errorText,
+    ValueChanged<String>? onChanged,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
       enabled: enabled,
+      onChanged: onChanged,
       style: const TextStyle(color: AppTheme.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: AppTheme.textSecondary),
         prefixIcon: Icon(icon, color: AppTheme.textSecondary, size: 20),
         suffixIcon: suffixIcon,
+        errorText: errorText,
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red)),
+        focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
       ),
     );
   }

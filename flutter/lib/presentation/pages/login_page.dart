@@ -35,10 +35,6 @@ class _LoginPageState extends State<LoginPage> {
     if (!mounted) return;
     if (success) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const TripsPage()));
-    } else if (auth.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(auth.errorMessage!), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-      );
     }
   }
 
@@ -116,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) return l10n.enterEmail;
-                            if (!v.contains('@') || !v.contains('.')) return l10n.enterValidEmail;
+                            if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$').hasMatch(v)) return l10n.enterValidEmail;
                             return null;
                           },
                         ),
@@ -148,6 +144,10 @@ class _LoginPageState extends State<LoginPage> {
                                   child: Text(l10n.login, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                 ),
                         ),
+                        if (auth.errorMessage != null) ...[
+                          const SizedBox(height: 10),
+                          Text(auth.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                        ],
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterPage())),

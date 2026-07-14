@@ -5,5 +5,6 @@ abstract class AuthRepository {
   Future<AuthResult> register(String email, String password, String name, {String? inviteToken});
   Future<void> logout();
   Future<bool> hasToken();
-  Future<Map<String, String>> validateInviteToken(String token);
+  Future<Map<String, dynamic>> validateInviteToken(String token);
+  Future<AuthResult> claimInviteWithLogin(String token, String password);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:money_manager/domain/usecases/auth/claim_invite_with_login.dart';
 import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
@@ -11,12 +12,14 @@ class AuthProvider extends ChangeNotifier {
   final RegisterUseCase registerUseCase;
   final LogoutUseCase logoutUseCase;
   final ValidateInviteTokenUseCase validateInviteTokenUseCase;
+  final ClaimInviteWithLoginUseCase claimInviteWithLoginUseCase;
 
   AuthProvider({
     required this.loginUseCase,
     required this.registerUseCase,
     required this.logoutUseCase,
     required this.validateInviteTokenUseCase,
+    required this.claimInviteWithLoginUseCase,
   });
 
   bool _isLoading = false;
@@ -27,6 +30,11 @@ class AuthProvider extends ChangeNotifier {
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
 
   String? _currentUserEmail;
   String? _currentUserName;
@@ -69,8 +77,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Returns {'tripName': ..., 'participantName': ...} or null on error
-  Future<Map<String, String>?> validateInviteToken(String token) async {
+  // Returns {'tripName': ..., 'participantName': ..., 'requiresLogin': bool} or null on error
+  Future<Map<String, dynamic>?> validateInviteToken(String token) async {
     _isValidatingToken = true;
     _errorMessage = null;
     notifyListeners();
@@ -84,6 +92,23 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = _clean(e);
       notifyListeners();
       return null;
+    }
+  }
+
+  Future<bool> claimInviteWithLogin(String token, String password) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await claimInviteWithLoginUseCase.call(token, password);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = _clean(e);
+      notifyListeners();
+      return false;
     }
   }
 

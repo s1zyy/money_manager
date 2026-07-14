@@ -89,6 +89,11 @@ class TripDashboardProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   Future<void> loadDashboard(String tripId) async {
     _isLoading = true;
     _errorMessage = null;

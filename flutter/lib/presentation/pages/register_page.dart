@@ -41,10 +41,6 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!mounted) return;
     if (success) {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const TripsPage()), (r) => false);
-    } else if (auth.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(auth.errorMessage!), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-      );
     }
   }
 
@@ -129,7 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) return l10n.enterEmail;
-                            if (!v.contains('@') || !v.contains('.')) return l10n.enterValidEmail;
+                            if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$').hasMatch(v)) return l10n.enterValidEmail;
                             return null;
                           },
                         ),
@@ -178,6 +174,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                   child: Text(l10n.register, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                 ),
                         ),
+                        if (auth.errorMessage != null) ...[
+                          const SizedBox(height: 10),
+                          Text(auth.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                        ],
                         const SizedBox(height: 20),
                         Row(children: [
                           Expanded(child: Divider(color: Colors.grey.shade300)),

@@ -5,7 +5,7 @@ class ValidateInviteTokenUseCase {
 
   ValidateInviteTokenUseCase({required this.repository});
 
-  Future<Map<String, String>> call(String token) {
+  Future<Map<String, dynamic>> call(String token) {
     return repository.validateInviteToken(token);
   }
 }

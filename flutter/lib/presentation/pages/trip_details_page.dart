@@ -68,9 +68,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           children: [
             _buildHeader(context, provider, l10n),
             Expanded(
-              child: provider.isLoading && provider.expenses.isEmpty
+              child: provider.dashboard == null && provider.errorMessage == null
                   ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
-                  : provider.errorMessage != null
+                  : provider.dashboard == null
                       ? _buildError(provider, l10n)
                       : _buildBody(context, provider, l10n),
             ),
@@ -370,14 +370,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   // ─── EXPENSES ─────────────────────────────────────────────────────────────
 
   Widget _buildEmptyExpenses(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40),
-      child: Column(
-        children: [
-          Icon(Icons.receipt_long_outlined, size: 56, color: AppTheme.textSecondary.withValues(alpha: 0.4)),
-          const SizedBox(height: 12),
-          Text(l10n.noExpensesYet, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15)),
-        ],
+    return SizedBox(
+      height: 220,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.receipt_long_outlined, size: 64, color: AppTheme.textSecondary.withValues(alpha: 0.35)),
+            const SizedBox(height: 16),
+            Text(l10n.noExpensesYet, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15)),
+          ],
+        ),
       ),
     );
   }
@@ -389,7 +392,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         children: [
           const Icon(Icons.error_outline, color: AppTheme.textSecondary, size: 48),
           const SizedBox(height: 12),
-          Text(provider.errorMessage!, style: const TextStyle(color: AppTheme.textSecondary)),
+          Text(provider.errorMessage ?? l10n.somethingWentWrong, style: const TextStyle(color: AppTheme.textSecondary)),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: () => provider.loadDashboard(widget.tripId),
@@ -830,73 +833,107 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   void _showInviteByEmailDialog(BuildContext context, TripDashboardProvider provider, String tripId, String participantId, String name) {
     final emailController = TextEditingController();
-    bool sending = false;
+    final l10n = AppLocalizations.of(context)!;
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (dialogCtx) => StatefulBuilder(
-        builder: (ctx, setState) => AlertDialog(
-          backgroundColor: AppTheme.surface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(AppLocalizations.of(context)!.inviteParticipantTitle(name), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(AppLocalizations.of(context)!.inviteParticipantDescription, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                autofocus: true,
-                style: const TextStyle(color: AppTheme.textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: const TextStyle(color: AppTheme.textSecondary),
-                  prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.textSecondary, size: 20),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primary, width: 1.5)),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetCtx) {
+        bool sending = false;
+        String? sheetError;
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) => Padding(
+            padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(sheetCtx).viewInsets.bottom + 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40, height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
                 ),
-              ),
-            ],
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.08), shape: BoxShape.circle),
+                  child: const Icon(Icons.email_outlined, color: AppTheme.primary, size: 32),
+                ),
+                const SizedBox(height: 16),
+                Text(l10n.inviteParticipantTitle(name), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+                const SizedBox(height: 6),
+                Text(l10n.inviteParticipantDescription, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  autofocus: true,
+                  onChanged: (_) { if (sheetError != null) setSheetState(() => sheetError = null); },
+                  style: const TextStyle(color: AppTheme.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.textSecondary, size: 20),
+                    errorText: sheetError,
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+                    focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14)), borderSide: BorderSide(color: AppTheme.primary, width: 1.5)),
+                    errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red)),
+                    focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: sending ? null : () => Navigator.pop(sheetCtx),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(14)),
+                          child: Text(l10n.cancel, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: sending ? null : () async {
+                          final email = emailController.text.trim();
+                          if (email.isEmpty || !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$').hasMatch(email)) {
+                            setSheetState(() => sheetError = l10n.enterValidEmail);
+                            return;
+                          }
+                          setSheetState(() { sending = true; sheetError = null; });
+                          final success = await provider.inviteVirtualParticipant(tripId, participantId, email);
+                          if (!ctx.mounted) return;
+                          if (success) {
+                            Navigator.pop(sheetCtx);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(l10n.inviteSent),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                            ));
+                          } else {
+                            setSheetState(() { sending = false; sheetError = provider.errorMessage ?? l10n.failedToAdd; });
+                          }
+                        },
+                        style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                        child: sending
+                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text(l10n.send, style: const TextStyle(fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: sending ? null : () => Navigator.pop(dialogCtx),
-              child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
-            ),
-            FilledButton(
-              onPressed: sending ? null : () async {
-                final email = emailController.text.trim();
-                if (email.isEmpty || !email.contains('@')) {
-                  ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-                    content: Text(AppLocalizations.of(ctx)!.enterValidEmail),
-                    backgroundColor: Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                  ));
-                  return;
-                }
-                setState(() => sending = true);
-                final success = await provider.inviteVirtualParticipant(tripId, participantId, email);
-                if (!ctx.mounted) return;
-                Navigator.pop(dialogCtx);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(success ? AppLocalizations.of(context)!.inviteSent : (provider.errorMessage ?? AppLocalizations.of(context)!.failedToAdd)),
-                  backgroundColor: success ? Colors.green : Colors.red,
-                  behavior: SnackBarBehavior.floating,
-                ));
-              },
-              child: sending
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : Text(AppLocalizations.of(context)!.send),
-            ),
-          ],
-        ),
-      ),
-    );
+        );
+      },
+    ).then((_) => provider.clearError());
   }
 
   void _showAddVirtualParticipantDialog(BuildContext context, TripDashboardProvider provider, String tripId, BuildContext modalContext) {

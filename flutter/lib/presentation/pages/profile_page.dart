@@ -5,8 +5,7 @@ import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-const _feedbackEmail = 'cotravel.dev@gmail.com';
+import 'package:money_manager/presentation/pages/feedback_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -44,10 +43,7 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
+                        const SizedBox(width: 16),
                         Text(l10n.profile, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                       ],
                     ),
@@ -127,7 +123,7 @@ class ProfilePage extends StatelessWidget {
                     icon: Icons.mail_outline,
                     label: l10n.sendFeedback,
                     color: AppTheme.secondary,
-                    onTap: () => _sendFeedback(context, l10n),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedbackPage())),
                   ),
                 ]),
 
@@ -222,24 +218,6 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _sendFeedback(BuildContext context, AppLocalizations l10n) async {
-    final uri = Uri(
-      scheme: 'mailto',
-      path: _feedbackEmail,
-      queryParameters: {
-        'subject': '[Budgi Feedback]',
-        'body': '\n\n---\nApp: Budgi\nPlatform: ${Theme.of(context).platform.name}',
-      },
-    );
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.feedbackEmailError), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-        );
-      }
-    }
   }
 
   Future<void> _confirmLogout(BuildContext context, AppLocalizations l10n, AuthProvider auth) async {

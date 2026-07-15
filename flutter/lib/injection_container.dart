@@ -25,6 +25,8 @@ import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/participant/update_profile.dart';
+import 'package:money_manager/domain/usecases/participant/change_password.dart';
 import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/invite_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/auth/claim_invite_with_login.dart';
@@ -187,6 +189,14 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     () => GetParticipantsMapUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => UpdateProfileUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => ChangePasswordUseCase(repository: sl()),
+  );
+
   //-----
 
   //Auth + login
@@ -204,6 +214,8 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       logoutUseCase: sl(),
       validateInviteTokenUseCase: sl(),
       claimInviteWithLoginUseCase: sl(),
+      updateProfileUseCase: sl(),
+      changePasswordUseCase: sl(),
     ),
   );
 

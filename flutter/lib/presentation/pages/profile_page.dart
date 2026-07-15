@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/presentation/pages/edit_profile_page.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -90,16 +91,14 @@ class ProfilePage extends StatelessWidget {
                 _sectionLabel(l10n.account),
                 const SizedBox(height: 10),
                 _buildCard(children: [
-                  _comingSoonTile(
+                  _actionTile(
                     icon: Icons.person_outline,
                     label: l10n.editProfile,
-                    l10n: l10n,
-                  ),
-                  _divider(),
-                  _comingSoonTile(
-                    icon: Icons.lock_outline,
-                    label: l10n.changePassword,
-                    l10n: l10n,
+                    color: AppTheme.primary,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                    ),
                   ),
                 ]),
 
@@ -158,26 +157,6 @@ class ProfilePage extends StatelessWidget {
 
   Widget _divider() => Divider(height: 1, indent: 52, color: Colors.grey.shade100);
 
-  Widget _comingSoonTile({required IconData icon, required String label, required AppLocalizations l10n}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Icon(icon, color: AppTheme.textSecondary, size: 22),
-          const SizedBox(width: 14),
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary))),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(l10n.comingSoon, style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _actionTile({required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
     return InkWell(

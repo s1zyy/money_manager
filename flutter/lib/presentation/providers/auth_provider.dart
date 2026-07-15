@@ -4,6 +4,8 @@ import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
 import 'package:money_manager/domain/usecases/auth/validate_invite_token.dart';
+import 'package:money_manager/domain/usecases/participant/change_password.dart';
+import 'package:money_manager/domain/usecases/participant/update_profile.dart';
 
 String _clean(Object e) => e.toString().replaceFirst('Exception: ', '');
 
@@ -13,6 +15,8 @@ class AuthProvider extends ChangeNotifier {
   final LogoutUseCase logoutUseCase;
   final ValidateInviteTokenUseCase validateInviteTokenUseCase;
   final ClaimInviteWithLoginUseCase claimInviteWithLoginUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
+  final ChangePasswordUseCase changePasswordUseCase;
 
   AuthProvider({
     required this.loginUseCase,
@@ -20,6 +24,8 @@ class AuthProvider extends ChangeNotifier {
     required this.logoutUseCase,
     required this.validateInviteTokenUseCase,
     required this.claimInviteWithLoginUseCase,
+    required this.updateProfileUseCase,
+    required this.changePasswordUseCase,
   });
 
   bool _isLoading = false;
@@ -101,6 +107,41 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await claimInviteWithLoginUseCase.call(token, password);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = _clean(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateProfile(String name) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final updatedName = await updateProfileUseCase.call(name);
+      _currentUserName = updatedName;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = _clean(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await changePasswordUseCase.call(currentPassword, newPassword);
       _isLoading = false;
       notifyListeners();
       return true;

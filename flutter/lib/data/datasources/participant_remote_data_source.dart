@@ -3,17 +3,16 @@ import 'package:money_manager/core/dio_error_message.dart';
 import 'package:money_manager/domain/entities/participant_info.dart';
 
 abstract class ParticipantRemoteDataSource {
-
   Future<List<ParticipantInfo>> getParticipantsMap(String tripId);
+  Future<String> updateProfile(String name);
+  Future<void> changePassword(String currentPassword, String newPassword);
 }
 
 class ParticipantRemoteDataSourceImpl implements ParticipantRemoteDataSource {
 
   final Dio dio;
 
-
   ParticipantRemoteDataSourceImpl({required this.dio});
-
 
   @override
   Future<List<ParticipantInfo>> getParticipantsMap(String tripId) async {
@@ -29,4 +28,25 @@ class ParticipantRemoteDataSourceImpl implements ParticipantRemoteDataSource {
     }
   }
 
+  @override
+  Future<String> updateProfile(String name) async {
+    try {
+      final response = await dio.patch('/participants/me', data: {'name': name});
+      return response.data['name'] as String;
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      await dio.patch('/participants/me/password', data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      });
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
 }

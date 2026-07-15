@@ -7,7 +7,17 @@ class ParticipantRepositoryImpl implements ParticipantRepository{
 
   ParticipantRepositoryImpl({required this.participantRemoteDataSource});
   @override
-  Future<List<ParticipantInfo>> getParticipants(String tripId) async{
+  Future<List<ParticipantInfo>> getParticipants(String tripId) async {
     return participantRemoteDataSource.getParticipantsMap(tripId);
+  }
+
+  @override
+  Future<String> updateProfile(String name) async {
+    return participantRemoteDataSource.updateProfile(name);
+  }
+
+  @override
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    return participantRemoteDataSource.changePassword(currentPassword, newPassword);
   }
 }

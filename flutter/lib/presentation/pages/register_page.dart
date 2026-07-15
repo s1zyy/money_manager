@@ -47,7 +47,11 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) context.read<AuthProvider>().clearError();
+      },
+      child: Scaffold(
       backgroundColor: AppTheme.background,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -57,7 +61,6 @@ class _RegisterPageState extends State<RegisterPage> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                // Градиентный верх с кнопкой назад
                 Container(
                   height: MediaQuery.of(context).size.height * 0.3,
                   decoration: const BoxDecoration(
@@ -104,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
 
-                // Форма
+                
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
                   child: Form(
@@ -206,7 +209,8 @@ class _RegisterPageState extends State<RegisterPage> {
         },
       ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildField({

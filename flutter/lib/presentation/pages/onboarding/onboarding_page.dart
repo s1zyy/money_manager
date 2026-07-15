@@ -30,12 +30,14 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
       _fade(0.14, 0.64),
       _fade(0.28, 0.78),
       _fade(0.42, 0.92),
+      _fade(0.56, 1.00),
     ];
     _slides = [
       _slide(0.00, 0.55),
       _slide(0.14, 0.69),
       _slide(0.28, 0.83),
       _slide(0.42, 0.97),
+      _slide(0.56, 1.00),
     ];
     _animController.forward();
   }
@@ -204,7 +206,7 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
               _animated(
                 1,
                 const Text(
-                  'Welcome to Budgi!',
+                  'Welcome to CoTravel!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 32,
@@ -249,7 +251,7 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
               _animated(
                 0,
                 const Text(
-                  'Why travelers\nlove Budgi',
+                  'Why travelers\nlove CoTravel',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -284,6 +286,15 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
                   icon: Icons.person_add_alt_1_outlined,
                   title: 'No sign-up required',
                   desc: 'Add friends as virtual participants right away — they can claim their account later.',
+                ),
+              ),
+              const SizedBox(height: 28),
+              _animated(
+                4,
+                _benefitRow(
+                  icon: Icons.account_balance_wallet_outlined,
+                  title: 'Daily budget tracking',
+                  desc: 'Set a budget per person. CoTravel calculates your daily limit and shows how much you\'ve spent today.',
                 ),
               ),
             ],
@@ -325,122 +336,103 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
     );
   }
 
-  // ─── Page 3: Support ────────────────────────────────────────────────────────
+  // ─── Page 3: Get Started ────────────────────────────────────────────────────
 
   Widget _supportPage() {
     return Container(
-      color: AppTheme.surface,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppTheme.primary, AppTheme.secondary],
+        ),
+      ),
       child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(28, 48, 28, 24),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 36),
           child: Column(
             children: [
+              const Spacer(flex: 2),
               _animated(
                 0,
-                Column(
-                  children: [
-                    Container(
-                      width: 96,
-                      height: 96,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFF9F43), Color(0xFFFF6B6B)],
-                        ),
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                      child: const Icon(Icons.coffee, color: Colors.white, size: 50),
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Budgi is free.\nForever.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
-                        height: 1.2,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'No subscriptions, no limits, no paywalls.\nIf Budgi made your trip a little easier, consider buying me a coffee — it means a lot.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: AppTheme.textSecondary,
-                        height: 1.6,
-                      ),
-                    ),
-                  ],
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.rocket_launch_outlined, size: 60, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 40),
               _animated(
                 1,
+                const Text(
+                  'Ready to go!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _animated(
+                2,
+                Text(
+                  'Create your first trip, add your friends,\nand start tracking expenses together.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white.withValues(alpha: 0.85),
+                    height: 1.55,
+                  ),
+                ),
+              ),
+              const Spacer(flex: 2),
+              _animated(
+                3,
                 SizedBox(
                   width: double.infinity,
                   height: 54,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFF9F43), Color(0xFFFF6B6B)],
-                      ),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: TextButton(
-                      onPressed: () => launchUrl(
-                        Uri.parse('https://buymeacoffee.com/s1zy'),
-                        mode: LaunchMode.externalApplication,
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.coffee, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
-                          Text(
-                            'Buy me a coffee',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      onPressed: _complete,
+                      child: const Text(
+                        'Get Started',
+                        style: TextStyle(
+                          color: AppTheme.primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               _animated(
-                2,
-                Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: OutlinedButton(
-                        onPressed: _complete,
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: AppTheme.primary.withValues(alpha: 0.4)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
-                        ),
-                        child: const Text(
-                          'Get Started',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                4,
+                TextButton.icon(
+                  onPressed: () => launchUrl(
+                    Uri.parse('https://buymeacoffee.com/s1zy'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  icon: Icon(Icons.coffee, size: 18, color: Colors.white.withValues(alpha: 0.7)),
+                  label: Text(
+                    'Buy me a coffee',
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14),
+                  ),
                 ),
               ),
+              const Spacer(),
             ],
           ),
         ),

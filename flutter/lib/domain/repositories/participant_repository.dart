@@ -4,4 +4,6 @@ abstract class ParticipantRepository {
   Future<List<ParticipantInfo>> getParticipants(String tripId);
   Future<String> updateProfile(String name);
   Future<void> changePassword(String currentPassword, String newPassword);
+  Future<void> deleteAccount();
+  Future<void> fullDeleteAccount();
 }

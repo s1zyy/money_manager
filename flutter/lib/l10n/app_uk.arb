@@ -200,7 +200,7 @@
 "you": "Ти",
 "profile": "Профіль",
 "account": "Акаунт",
-"editProfile": "Редагувати профіль",
+"editProfile": "Налаштування профілю",
 "comingSoon": "Незабаром",
 "changePassword": "Змінити пароль",
 "currentPassword": "Поточний пароль",
@@ -242,5 +242,15 @@
     "placeholders": {
     "name": { "type": "String" }
     }
-}
+},
+"deleteAccount": "Видалити акаунт",
+"deleteAccountConfirmTitle": "Видалити акаунт",
+"deleteAccountConfirmBody": "Акаунт буде видалено. Історія поїздок і витрати збережуться для інших учасників.",
+"deactivateAccount": "Деактивувати акаунт",
+"deleteEverything": "Видалити все",
+  "deleteEverythingBody": "Ваш акаунт і всі ваші поїздки будуть видалені назавжди.",
+"friends": "Друзі",
+  "areYouSure": "Ви впевнені?",
+  "typeDeleteToConfirm": "Цю дію не можна скасувати. Введіть DELETE для підтвердження.",
+  "confirm": "Підтвердити"
 }

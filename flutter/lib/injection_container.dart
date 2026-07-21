@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money_manager/core/app_version_interceptor.dart';
 import 'package:money_manager/core/dio_client.dart';
+import 'package:money_manager/presentation/pages/update_required_page.dart';
 import 'package:money_manager/data/datasources/auth_local_data_source.dart';
 import 'package:money_manager/data/datasources/auth_remote_data_source.dart';
 import 'package:money_manager/data/datasources/expense_remote_data_source.dart';
@@ -27,6 +29,8 @@ import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
 import 'package:money_manager/domain/usecases/participant/update_profile.dart';
 import 'package:money_manager/domain/usecases/participant/change_password.dart';
+import 'package:money_manager/domain/usecases/participant/delete_account.dart';
+import 'package:money_manager/domain/usecases/participant/full_delete_account.dart';
 import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/invite_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/auth/claim_invite_with_login.dart';
@@ -197,6 +201,14 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     () => ChangePasswordUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => DeleteAccountUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => FullDeleteAccountUseCase(repository: sl()),
+  );
+
   //-----
 
   //Auth + login
@@ -255,6 +267,15 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   );
 
   sl.registerLazySingleton(
+    () => AppVersionInterceptor(onUpgradeRequired: () {
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const UpdateRequiredPage()),
+        (route) => false,
+      );
+    }),
+  );
+
+  sl.registerLazySingleton(
     () => AuthInterceptor(localDataSource: sl(), onUnauthorized: () {
       navigatorKey.currentState?.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -276,11 +297,9 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   sl.registerLazySingleton(() => DioClient());
 
   sl.registerLazySingleton<Dio>(() {
-
     final dio = sl<DioClient>().dio;
-    
+    dio.interceptors.add(sl<AppVersionInterceptor>());
     dio.interceptors.add(sl<AuthInterceptor>());
-
     dio.interceptors.add(LogInterceptor(requestBody: false, responseBody: true));
     return dio;
   });

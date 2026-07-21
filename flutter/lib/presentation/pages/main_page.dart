@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/injection_container.dart';
@@ -62,10 +63,10 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
             selectedIcon: const Icon(Icons.flight_takeoff, color: AppTheme.primary),
             label: l10n.trips,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people, color: AppTheme.primary),
-            label: 'Friends',
+          NavigationDestination(
+            icon: const Icon(Icons.people_outline),
+            selectedIcon: const Icon(Icons.people, color: AppTheme.primary),
+            label: l10n.friends,
           ),
           NavigationDestination(
             icon: const Icon(Icons.person_outline),
@@ -80,7 +81,7 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               icon: const Icon(Icons.add),
-              label: const Text('New Trip', style: TextStyle(fontWeight: FontWeight.w600)),
+              label: Text(l10n.createNewTrip, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: 0.3)),
             )
           : null,
     );
@@ -212,9 +213,9 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
         children: [
           Icon(Icons.people_outline, size: 64, color: AppTheme.textSecondary.withValues(alpha: 0.4)),
           const SizedBox(height: 16),
-          const Text('Friends', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+          Text(l10n.friends, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
           const SizedBox(height: 8),
-          const Text('Coming soon', style: TextStyle(fontSize: 14, color: AppTheme.textSecondary)),
+          Text(l10n.comingSoon, style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary)),
         ],
       ),
     );
@@ -422,6 +423,7 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
               TextField(
                 controller: budgetController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                 decoration: InputDecoration(
                   hintText: l10n.myBudget,
                   prefixIcon: const Icon(Icons.account_balance_wallet_outlined, color: AppTheme.primary),
@@ -467,7 +469,7 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                           if (!pageContext.mounted) return;
                           ScaffoldMessenger.of(pageContext).showSnackBar(
                             SnackBar(
-                              content: Text(success ? l10n.joinedSuccessfully : (provider.errorMessage ?? l10n.errorJoiningTrip)),
+                              content: Text(success ? l10n.joinedSuccessfully : (provider.joinError ?? l10n.errorJoiningTrip)),
                               backgroundColor: success ? Colors.green : Colors.red,
                               behavior: SnackBarBehavior.floating,
                             ),

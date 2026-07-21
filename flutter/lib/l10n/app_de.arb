@@ -225,7 +225,7 @@
   "you": "Du",
   "profile": "Profil",
   "account": "Konto",
-  "editProfile": "Profil bearbeiten",
+  "editProfile": "Profileinstellungen",
   "comingSoon": "Bald verfügbar",
   "changePassword": "Passwort ändern",
   "currentPassword": "Aktuelles Passwort",
@@ -267,5 +267,15 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+  "deleteAccount": "Konto löschen",
+  "deleteAccountConfirmTitle": "Konto löschen",
+  "deleteAccountConfirmBody": "Dein Konto wird dauerhaft gelöscht. Reiseverlauf und Ausgaben bleiben für andere Teilnehmer erhalten.",
+  "deactivateAccount": "Konto deaktivieren",
+  "deleteEverything": "Alles löschen",
+  "deleteEverythingBody": "Ihr Konto und alle Ihre Reisen werden dauerhaft gelöscht.",
+  "friends": "Freunde",
+  "areYouSure": "Sind Sie sicher?",
+  "typeDeleteToConfirm": "Diese Aktion kann nicht rückgängig gemacht werden. Geben Sie DELETE ein.",
+  "confirm": "Bestätigen"
 }

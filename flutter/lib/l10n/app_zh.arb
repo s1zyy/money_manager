@@ -225,7 +225,7 @@
   "you": "我",
   "profile": "个人资料",
   "account": "账户",
-  "editProfile": "编辑资料",
+  "editProfile": "个人资料设置",
   "comingSoon": "即将推出",
   "changePassword": "修改密码",
   "currentPassword": "当前密码",
@@ -267,5 +267,15 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+  "deleteAccount": "删除账户",
+  "deleteAccountConfirmTitle": "删除账户",
+  "deleteAccountConfirmBody": "您的账户将被永久删除。旅行历史和费用将为其他参与者保留。",
+  "deactivateAccount": "停用账户",
+  "deleteEverything": "删除所有内容",
+  "deleteEverythingBody": "您的账户及所有行程将被永久删除。",
+  "friends": "好友",
+  "areYouSure": "您确定吗？",
+  "typeDeleteToConfirm": "此操作无法撤销。输入 DELETE 以确认。",
+  "confirm": "确认"
 }

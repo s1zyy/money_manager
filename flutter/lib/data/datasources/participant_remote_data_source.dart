@@ -6,6 +6,8 @@ abstract class ParticipantRemoteDataSource {
   Future<List<ParticipantInfo>> getParticipantsMap(String tripId);
   Future<String> updateProfile(String name);
   Future<void> changePassword(String currentPassword, String newPassword);
+  Future<void> deleteAccount();
+  Future<void> fullDeleteAccount();
 }
 
 class ParticipantRemoteDataSourceImpl implements ParticipantRemoteDataSource {
@@ -45,6 +47,24 @@ class ParticipantRemoteDataSourceImpl implements ParticipantRemoteDataSource {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
       });
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await dio.delete('/participants/me');
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> fullDeleteAccount() async {
+    try {
+      await dio.delete('/participants/me/full');
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }

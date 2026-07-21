@@ -23,6 +23,14 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscureConfirm = true;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().clearError();
+    });
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -47,11 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return PopScope(
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) context.read<AuthProvider>().clearError();
-      },
-      child: Scaffold(
+    return Scaffold(
       backgroundColor: AppTheme.background,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -209,7 +213,7 @@ class _RegisterPageState extends State<RegisterPage> {
         },
       ),
       ),
-    ),
+    
   );
   }
 

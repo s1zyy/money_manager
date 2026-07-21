@@ -51,8 +51,9 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await loginUseCase.call(email, password);
-      _currentUserEmail = email;
+      final result = await loginUseCase.call(email, password);
+      _currentUserEmail = result.email.isNotEmpty ? result.email : email;
+      _currentUserName = result.name.isNotEmpty ? result.name : null;
       _isLoading = false;
       notifyListeners();
       return true;

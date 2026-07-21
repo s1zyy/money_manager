@@ -21,6 +21,9 @@ class TripsProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _joinError;
+  String? get joinError => _joinError;
+
   Future<void> loadTrips() async {
     _isLoading = true;
     _errorMessage = null;
@@ -68,22 +71,16 @@ class TripsProvider extends ChangeNotifier {
   }
 
   Future<bool> joinTrip(String code, double budget) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    _joinError = null;
 
     try {
       final Trip trip = await joinTripByCodeUseCase(code, budget);
-      
       _trips.add(trip);
+      notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      notifyListeners();
+      _joinError = e.toString().replaceFirst('Exception: ', '');
       return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 }

@@ -225,7 +225,7 @@
   "you": "Eu",
   "profile": "Perfil",
   "account": "Conta",
-  "editProfile": "Editar perfil",
+  "editProfile": "Configurações de perfil",
   "comingSoon": "Em breve",
   "changePassword": "Alterar senha",
   "currentPassword": "Senha atual",
@@ -267,5 +267,15 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+  "deleteAccount": "Excluir conta",
+  "deleteAccountConfirmTitle": "Excluir conta",
+  "deleteAccountConfirmBody": "Sua conta será excluída permanentemente. O histórico de viagens e as despesas serão preservados para outros participantes.",
+  "deactivateAccount": "Desativar conta",
+  "deleteEverything": "Excluir tudo",
+  "deleteEverythingBody": "Sua conta e todas as suas viagens serão excluídas permanentemente.",
+  "friends": "Amigos",
+  "areYouSure": "Tem certeza?",
+  "typeDeleteToConfirm": "Esta ação não pode ser desfeita. Digite DELETE para confirmar.",
+  "confirm": "Confirmar"
 }

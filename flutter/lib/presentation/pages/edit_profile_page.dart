@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:money_manager/domain/usecases/participant/delete_account.dart';
+import 'package:money_manager/domain/usecases/participant/full_delete_account.dart';
+import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -169,6 +173,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             const SizedBox(height: 24),
 
             // --- Password section ---
+
             _sectionLabel(l10n.changePassword),
             const SizedBox(height: 10),
             _sectionCard(
@@ -239,10 +244,69 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ],
             ),
+            const SizedBox(height: 32),
+
+            // --- Delete account ---
+            InkWell(
+              onTap: () => _confirmDeleteAccount(context, l10n, auth),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.delete_forever_outlined, color: Colors.red, size: 20),
+                    const SizedBox(width: 10),
+                    Text(l10n.deleteAccount,
+                        style: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.w500, fontSize: 15)),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _confirmDeleteAccount(
+      BuildContext context, AppLocalizations l10n, AuthProvider auth) async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetCtx) => _DeleteAccountSheet(l10n: l10n),
+    );
+
+    if (result == null || !context.mounted) return;
+
+    try {
+      if (result == 'full') {
+        await sl<FullDeleteAccountUseCase>().call();
+      } else {
+        await sl<DeleteAccountUseCase>().call();
+      }
+      await auth.logout();
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (_) => const LoginPage()), (r) => false);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(e.toString().replaceFirst('Exception: ', '')),
+              backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   Widget _sectionLabel(String text) => Padding(
@@ -317,4 +381,171 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+}
+
+class _DeleteAccountSheet extends StatefulWidget {
+  final AppLocalizations l10n;
+  const _DeleteAccountSheet({required this.l10n});
+
+  @override
+  State<_DeleteAccountSheet> createState() => _DeleteAccountSheetState();
+}
+
+class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
+  String? _choice;
+  final _confirmController = TextEditingController();
+
+  @override
+  void dispose() {
+    _confirmController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        child: _choice == null ? _buildChoiceStep(context, l10n) : _buildConfirmStep(context, l10n),
+      ),
+    );
+  }
+
+  Widget _buildChoiceStep(BuildContext context, AppLocalizations l10n) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _handle(),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.08), shape: BoxShape.circle),
+          child: const Icon(Icons.delete_forever_outlined, color: Colors.red, size: 32),
+        ),
+        const SizedBox(height: 16),
+        Text(l10n.deleteAccountConfirmTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+        const SizedBox(height: 24),
+        GestureDetector(
+          onTap: () => setState(() => _choice = 'soft'),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red.withValues(alpha: 0.4)),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.deactivateAccount,
+                    style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.red, fontSize: 15)),
+                const SizedBox(height: 2),
+                Text(l10n.deleteAccountConfirmBody,
+                    style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () => setState(() => _choice = 'full'),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(14)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.deleteEverything,
+                    style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 15)),
+                const SizedBox(height: 2),
+                Text(l10n.deleteEverythingBody,
+                    style: const TextStyle(fontSize: 12, color: Colors.white70)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _cancelButton(context, l10n, onTap: () => Navigator.pop(context, null)),
+      ],
+    );
+  }
+
+  Widget _buildConfirmStep(BuildContext context, AppLocalizations l10n) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _handle(),
+        const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),
+        const SizedBox(height: 12),
+        Text(l10n.areYouSure,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+        const SizedBox(height: 8),
+        Text(l10n.typeDeleteToConfirm,
+            style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary),
+            textAlign: TextAlign.center),
+        const SizedBox(height: 20),
+        TextField(
+          controller: _confirmController,
+          autofocus: true,
+          textCapitalization: TextCapitalization.characters,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            hintText: 'DELETE',
+            hintStyle: TextStyle(color: Colors.grey.shade400),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey.shade300)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey.shade300)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.red, width: 1.5)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTap: _confirmController.text == 'DELETE'
+              ? () => Navigator.pop(context, _choice)
+              : null,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color: _confirmController.text == 'DELETE'
+                  ? Colors.red
+                  : Colors.red.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(l10n.confirm,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 15)),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _cancelButton(context, l10n, onTap: () => setState(() { _choice = null; _confirmController.clear(); })),
+      ],
+    );
+  }
+
+  Widget _handle() => Container(
+      width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)));
+
+  Widget _cancelButton(BuildContext context, AppLocalizations l10n, {required VoidCallback onTap}) =>
+      GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(14)),
+          child: Text(l10n.cancel,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+        ),
+      );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/core/utils/date_picker_helper.dart';
@@ -169,7 +170,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
                       controller: _budgetController,
                       label: l10n.myBudget,
                       icon: Icons.account_balance_wallet_outlined,
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                       validator: (v) => (v == null || v.isEmpty) ? l10n.enterTotalBudget : null,
                     ),
 
@@ -272,11 +274,13 @@ class _CreateTripPageState extends State<CreateTripPage> {
     required String label,
     required IconData icon,
     TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       validator: validator,
       style: const TextStyle(color: AppTheme.textPrimary),
       decoration: InputDecoration(

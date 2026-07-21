@@ -20,4 +20,14 @@ class ParticipantRepositoryImpl implements ParticipantRepository{
   Future<void> changePassword(String currentPassword, String newPassword) async {
     return participantRemoteDataSource.changePassword(currentPassword, newPassword);
   }
+
+  @override
+  Future<void> deleteAccount() async {
+    return participantRemoteDataSource.deleteAccount();
+  }
+
+  @override
+  Future<void> fullDeleteAccount() async {
+    return participantRemoteDataSource.fullDeleteAccount();
+  }
 }

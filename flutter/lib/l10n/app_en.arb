@@ -20,7 +20,7 @@
 
   "trips": "Trips",
   "createTrip": "Create Trip",
-  "createNewTrip": "Create New Trip",
+  "createNewTrip": "New Trip",
   "tripName": "Trip Name",
   "tripSettings": "Trip Settings",
   "tripCurrency": "Trip Currency",
@@ -225,7 +225,7 @@
   "you": "You",
   "profile": "Profile",
   "account": "Account",
-  "editProfile": "Edit Profile",
+  "editProfile": "Profile Settings",
   "comingSoon": "Coming soon",
   "changePassword": "Change Password",
   "currentPassword": "Current Password",
@@ -267,5 +267,15 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+  "deleteAccount": "Delete Account",
+  "deleteAccountConfirmTitle": "Delete Account",
+  "deleteAccountConfirmBody": "Your account will be permanently deleted. Trip history and expenses will be preserved for other participants.",
+  "deactivateAccount": "Deactivate Account",
+  "deleteEverything": "Delete Everything",
+  "deleteEverythingBody": "Your account and all owned trips will be permanently deleted.",
+  "friends": "Friends",
+  "areYouSure": "Are you sure?",
+  "typeDeleteToConfirm": "This action cannot be undone. Type DELETE to confirm.",
+  "confirm": "Confirm"
 }

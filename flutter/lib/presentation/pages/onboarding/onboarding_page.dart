@@ -206,7 +206,7 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
               _animated(
                 1,
                 const Text(
-                  'Welcome to CoTravel!',
+                  'Welcome to TripPace!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 32,
@@ -251,7 +251,7 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
               _animated(
                 0,
                 const Text(
-                  'Why travelers\nlove CoTravel',
+                  'Why travelers\nlove TripPace',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -294,7 +294,7 @@ class _OnboardingPageState extends State<OnboardingPage> with TickerProviderStat
                 _benefitRow(
                   icon: Icons.account_balance_wallet_outlined,
                   title: 'Daily budget tracking',
-                  desc: 'Set a budget per person. CoTravel calculates your daily limit and shows how much you\'ve spent today.',
+                  desc: 'Set a budget per person. TripPace calculates your daily limit and shows how much you\'ve spent today.',
                 ),
               ),
             ],

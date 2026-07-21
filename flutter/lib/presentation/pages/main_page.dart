@@ -497,12 +497,13 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
 
     const languages = [
       ('en', 'English', '🇬🇧'),
-      ('ru', 'Русский', '🇷🇺'),
       ('es', 'Español', '🇪🇸'),
       ('de', 'Deutsch', '🇩🇪'),
       ('fr', 'Français', '🇫🇷'),
       ('pt', 'Português', '🇵🇹'),
       ('zh', '中文', '🇨🇳'),
+      ('ru', 'Русский', '🇷🇺'),
+      ('uk', 'Українська', '🇺🇦'),
     ];
 
     showModalBottomSheet(

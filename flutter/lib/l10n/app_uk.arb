@@ -1,0 +1,246 @@
+{
+"@@locale": "uk",
+
+"appTitle": "TripPace",
+
+"login": "Увійти",
+"register": "Реєстрація",
+"email": "Пошта",
+"password": "Пароль",
+"name": "Ім'я",
+"logout": "Вийти",
+"logoutConfirm": "Ви впевнені, що хочете вийти?",
+"cancel": "Скасувати",
+"save": "Зберегти",
+"add": "Додати",
+"remove": "Видалити",
+"retry": "Повторити",
+"delete": "Видалити",
+"join": "Приєднатися",
+
+"trips": "Поїздки",
+"createTrip": "Створити поїздку",
+"createNewTrip": "Нова поїздка",
+"tripName": "Назва поїздки",
+"tripSettings": "Налаштування поїздки",
+"tripCurrency": "Валюта поїздки",
+"totalBudget": "Загальний бюджет",
+"prepaidExpenses": "Передоплачені витрати",
+"noTripsYet": "Поїздок поки немає!",
+"youWillBeOwner": "Ви станете власником і задасте бюджет",
+"selectDates": "Виберіть дати",
+"currency": "Валюта",
+"general": "Основне",
+"finance": "Фінанси",
+"dates": "Дати",
+"startDate": "Дата початку: {date}",
+"@startDate": {
+    "placeholders": {
+    "date": { "type": "String" }
+    }
+},
+"endDate": "Дата закінчення: {date}",
+"tripHasEnded": "Поїздку вже завершено",
+"tripNotStarted": "Поїздка ще не почалася! Ви зможете додавати витрати після початку.",
+"settingsSaved": "Налаштування збережено!",
+"failedToSave": "Не вдалося зберегти",
+"failedToCreateTrip": "Не вдалося створити поїздку",
+
+"joinTrip": "Приєднатися",
+"joinTripByCode": "Увійти за кодом",
+"enterInviteCode": "Введіть код запрошення від друга",
+"inviteCodeHint": "Введіть код",
+"joinedSuccessfully": "Ви успішно приєдналися!",
+"errorJoiningTrip": "Помилка при приєднанні",
+"joinCodeCopied": "Код скопійовано в буфер обміну!",
+"inviteCode": "Код запрошення",
+
+"archiveTrip": "Архівувати поїздку",
+"archiveTripConfirm": "Архівувати?",
+"archiveTripMessage": "Поїздку буде переміщено до архіву.",
+"failedToArchive": "Не вдалося архівувати",
+
+"unarchiveTrip": "Розархівувати поїздку",
+"unarchiveTripConfirm": "Розархівувати поїздку?",
+"unarchiveTripMessage": "Поїздка буде відновлена в активний або майбутній статус.",
+"failedToUnarchive": "Не вдалося розархівувати",
+
+"deleteTrip": "Видалити поїздку назавжди",
+"deleteTripConfirm": "Видалити поїздку?",
+"deleteTripMessage": "Ви впевнені? Ця дія незворотна, вся історія витрат буде втрачена.",
+
+"leaveTrip": "Покинути поїздку",
+"leaveTripConfirm": "Покинути поїздку?",
+"leaveTripMessage": "Ви втратите доступ до цієї поїздки.",
+"failedToLeave": "Не вдалося покинути",
+
+"dangerZone": "Небезпечна зона",
+
+"members": "Учасники",
+"owner": "власник",
+"virtual": "віртуальний",
+"addWithoutAccount": "Додати без акаунта",
+"addVirtualParticipant": "Додати віртуального учасника",
+"removeMember": "Видалити учасника",
+"removeMemberConfirm": "Видалити {name} з поїздки?",
+"memberRemoved": "{name} видалено з поїздки",
+"memberAdded": "{name} додано",
+"failedToAdd": "Не вдалося додати",
+"failedToRemove": "Не вдалося видалити учасника",
+"noParticipants": "Немає учасників",
+"participantBalances": "Баланси учасників",
+
+"expenses": "Витрати",
+"addExpense": "Додати витрату",
+"addNewExpense": "Нова витрата",
+"saveExpense": "Зберегти витрату",
+"amount": "Сума",
+"description": "Опис",
+"descriptionHint": "напр., Вечеря, Таксі, Квитки",
+"transactionDate": "Дата транзакції",
+"paidBy": "Оплатив(ла): {name}",
+"selectWhoPaid": "Виберіть, хто оплатив",
+"selectParticipants": "Виберіть хоча б одного учасника",
+"expenseAdded": "Витрату додано!",
+"expenseDeleted": "Витрату видалено",
+"noExpensesYet": "Витрат поки немає. Додайте першу!",
+
+"dailyLimit": "Денний ліміт",
+"remainingToday": "Залишилося на сьогодні:",
+"spentToday": "Витрачено сьогодні",
+"overspentToday": "Перевитрата за сьогодні:",
+"myShare": "Моя частка",
+"notSet": "Не вказано",
+
+"choose": "ВИБРАТИ",
+"enterName": "Введіть ім'я",
+"enterBudget": "Введіть бюджет",
+"budgetMustBePositive": "Бюджет має бути більшим за 0",
+"nameAlreadyTaken": "Учасник із таким ім'ям вже є",
+"enterPrepaid": "Введіть суму передоплати",
+"prepaidExceedsBudget": "Передоплата не може перевищувати бюджет",
+"noAccountRegister": "Немає акаунта? Зареєструйтесь",
+"registrationSuccessful": "Реєстрація пройшла успішно!",
+
+"active": "Активні",
+"upcoming": "Майбутні",
+"archived": "Архів",
+"addTrip": "Додати поїздку",
+"noActiveTrips": "Немає активних поїздок",
+"noUpcomingTrips": "Немає запланованих поїздок",
+"noArchivedTrips": "Архів порожній",
+"budgetAmount": "Бюджет: {amount}",
+"@budgetAmount": {
+    "placeholders": {
+    "amount": { "type": "String" }
+    }
+},
+
+"startDateLabel": "Дата початку",
+"endDateLabel": "Дата закінчення",
+"enterTripName": "Введіть назву поїздки",
+"enterTotalBudget": "Введіть загальний бюджет",
+"enterPrepaidAmount": "Введіть суму передоплати",
+"prepaidAmount": "Сума передоплати",
+"unknown": "Невідомо",
+
+"enterValidAmount": "Введіть коректну суму",
+"enterDescription": "Введіть опис",
+"whoPaid": "Хто оплатив?",
+"splitBetween": "Розділити між",
+"selectAll": "Вибрати всіх",
+"deselectAll": "Зняти вибір",
+"splitEqual": "Порівну",
+"splitCustom": "Своя сума",
+"eachPaidOwn": "Кожен за себе",
+"sharesMustSumToTotal": "Суми часток мають збігатися із загальною сумою",
+
+"language": "Мова",
+
+"settleUp": "Розрахуватися",
+"settleUpSubtitle": "Поїздку завершено. Ось мінімальний набір переказів, щоб розрахуватися.",
+"tripEndedSettleUp": "Поїздку завершено — час розрахуватися",
+"paysTo": "{from} → {to}",
+"@paysTo": {
+    "placeholders": {
+    "from": { "type": "String" },
+    "to": { "type": "String" }
+    }
+},
+"allSettled": "Усі розрахувалися!",
+"allSettledMessage": "Усі розрахувалися. Архівувати поїздку?",
+"archiveAndFinish": "Архівувати",
+"settlementDone": "Поїздку успішно архівовано!",
+"noSettlementNeeded": "Усі розрахувалися. Перекази не потрібні.",
+
+"enterEmail": "Введіть email",
+"enterValidEmail": "Введіть коректну email адресу",
+"enterPassword": "Введіть пароль",
+"passwordTooShort": "Пароль має містити не менше 6 символів",
+"confirmPassword": "Підтвердіть пароль",
+"passwordsDoNotMatch": "Паролі не збігаються",
+"splashSubtitle": "Витрати в подорожі — просто",
+"searchHint": "Пошук...",
+"copyCode": "Скопіювати",
+"currencyPickerTitle": "Валюта",
+"virtualParticipantHint": "Учасник без акаунта в додатку",
+
+"myBudget": "Мій бюджет",
+"budget": "Бюджет",
+"prepaid": "Передоплата",
+"prepaidDescription": "Куплено до поїздки",
+"saveBudget": "Зберегти бюджет",
+"virtualParticipant": "Віртуальний учасник",
+"budgetWithCurrency": "Бюджет ({currency})",
+"@budgetWithCurrency": {
+    "placeholders": {
+    "currency": { "type": "String" }
+    }
+},
+"you": "Ти",
+"profile": "Профіль",
+"account": "Акаунт",
+"editProfile": "Редагувати профіль",
+"comingSoon": "Незабаром",
+"changePassword": "Змінити пароль",
+"currentPassword": "Поточний пароль",
+"newPassword": "Новий пароль",
+"profileUpdated": "Профіль оновлено",
+"passwordChanged": "Пароль змінено",
+"support": "Підтримка",
+"sendFeedback": "Написати відгук",
+"feedbackEmailError": "Не вдалося відкрити пошту",
+"inviteCodeFromLetter": "Код із листа",
+"youWillJoinAs": "Ти увійдеш як {name} у поїздку «{trip}»",
+"@youWillJoinAs": {
+    "placeholders": {
+    "name": { "type": "String" },
+    "trip": { "type": "String" }
+    }
+},
+"checkCode": "Перевірити код",
+"signInToTrip": "Увійти",
+"inviteByEmail": "Запросити через email",
+"inviteParticipantTitle": "Запросити {name}",
+"@inviteParticipantTitle": {
+    "placeholders": {
+    "name": { "type": "String" }
+    }
+},
+"inviteParticipantDescription": "Учасник отримає лист із кодом для реєстрації в TripPace.",
+"inviteSent": "Запрошення надіслано!",
+"orDivider": "або",
+"gotInvitation": "📩 Отримав запрошення? Ввести код",
+"send": "Надіслати",
+"bugReport": "Повідомити про баг",
+"generalFeedback": "Зворотний зв'язок",
+"feedbackPlaceholder": "Опишіть проблему або поділіться ідеєю...",
+"feedbackSent": "Дякуємо! Ми розберемося.",
+"somethingWentWrong": "Щось пішло не так",
+"loginToJoinAs": "Цей email вже зареєстровано. Введи пароль, щоб увійти в поїздку як {name}.",
+"@loginToJoinAs": {
+    "placeholders": {
+    "name": { "type": "String" }
+    }
+}
+}

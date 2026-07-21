@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
 
-  "appTitle": "Budgi",
+  "appTitle": "TripPace",
 
   "login": "Войти",
   "register": "Регистрация",
@@ -227,7 +227,7 @@
       "name": { "type": "String" }
     }
   },
-  "inviteParticipantDescription": "Участник получит письмо с кодом для регистрации в Budgi.",
+  "inviteParticipantDescription": "Участник получит письмо с кодом для регистрации в TripPace.",
   "inviteSent": "Приглашение отправлено!",
   "orDivider": "или",
   "gotInvitation": "📩 Получил приглашение? Ввести код",

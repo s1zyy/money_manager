@@ -120,7 +120,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                         ),
                         const SizedBox(height: 24),
                         const Text(
-                          'Budgi',
+                          'TripPace',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,

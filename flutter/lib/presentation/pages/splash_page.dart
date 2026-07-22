@@ -7,6 +7,8 @@ import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:money_manager/presentation/pages/onboarding/onboarding_page.dart';
+import 'package:money_manager/presentation/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashPage extends StatefulWidget {
@@ -73,6 +75,10 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     }
 
     final isLoggedIn = results[0] as bool;
+    if (isLoggedIn && mounted) {
+      await context.read<AuthProvider>().loadProfile();
+    }
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(

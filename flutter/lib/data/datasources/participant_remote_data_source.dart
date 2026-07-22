@@ -4,6 +4,7 @@ import 'package:money_manager/domain/entities/participant_info.dart';
 
 abstract class ParticipantRemoteDataSource {
   Future<List<ParticipantInfo>> getParticipantsMap(String tripId);
+  Future<({String name, String email})> getMe();
   Future<String> updateProfile(String name);
   Future<void> changePassword(String currentPassword, String newPassword);
   Future<void> deleteAccount();
@@ -25,6 +26,16 @@ class ParticipantRemoteDataSourceImpl implements ParticipantRemoteDataSource {
         name: p['name'],
         isVirtual: p['isVirtual'] ?? false,
       )).toList();
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<({String name, String email})> getMe() async {
+    try {
+      final response = await dio.get('/participants/me');
+      return (name: response.data['name'] as String, email: response.data['email'] as String);
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }

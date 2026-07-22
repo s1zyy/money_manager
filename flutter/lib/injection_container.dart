@@ -27,6 +27,7 @@ import 'package:money_manager/domain/usecases/expenses/get_trip_dashboard.dart';
 import 'package:money_manager/domain/usecases/expenses/list_expenses.dart';
 import 'package:money_manager/domain/usecases/expenses/update_expense.dart';
 import 'package:money_manager/domain/usecases/participant/get_participants_map.dart';
+import 'package:money_manager/domain/usecases/participant/get_profile.dart';
 import 'package:money_manager/domain/usecases/participant/update_profile.dart';
 import 'package:money_manager/domain/usecases/participant/change_password.dart';
 import 'package:money_manager/domain/usecases/participant/delete_account.dart';
@@ -194,6 +195,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
   );
 
   sl.registerLazySingleton(
+    () => GetProfileUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
     () => UpdateProfileUseCase(repository: sl()),
   );
 
@@ -228,6 +233,7 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       claimInviteWithLoginUseCase: sl(),
       updateProfileUseCase: sl(),
       changePasswordUseCase: sl(),
+      getProfileUseCase: sl(),
     ),
   );
 

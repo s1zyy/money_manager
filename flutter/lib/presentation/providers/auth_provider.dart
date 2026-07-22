@@ -5,6 +5,7 @@ import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
 import 'package:money_manager/domain/usecases/auth/validate_invite_token.dart';
 import 'package:money_manager/domain/usecases/participant/change_password.dart';
+import 'package:money_manager/domain/usecases/participant/get_profile.dart';
 import 'package:money_manager/domain/usecases/participant/update_profile.dart';
 
 String _clean(Object e) => e.toString().replaceFirst('Exception: ', '');
@@ -17,6 +18,7 @@ class AuthProvider extends ChangeNotifier {
   final ClaimInviteWithLoginUseCase claimInviteWithLoginUseCase;
   final UpdateProfileUseCase updateProfileUseCase;
   final ChangePasswordUseCase changePasswordUseCase;
+  final GetProfileUseCase getProfileUseCase;
 
   AuthProvider({
     required this.loginUseCase,
@@ -26,6 +28,7 @@ class AuthProvider extends ChangeNotifier {
     required this.claimInviteWithLoginUseCase,
     required this.updateProfileUseCase,
     required this.changePasswordUseCase,
+    required this.getProfileUseCase,
   });
 
   bool _isLoading = false;
@@ -46,6 +49,15 @@ class AuthProvider extends ChangeNotifier {
   String? _currentUserName;
   String? get currentUserEmail => _currentUserEmail;
   String? get currentUserName => _currentUserName;
+
+  Future<void> loadProfile() async {
+    try {
+      final profile = await getProfileUseCase.call();
+      _currentUserName = profile.name;
+      _currentUserEmail = profile.email;
+      notifyListeners();
+    } catch (_) {}
+  }
 
   Future<bool> login(String email, String password) async {
     _isLoading = true;

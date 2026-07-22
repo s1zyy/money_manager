@@ -12,6 +12,11 @@ class ParticipantRepositoryImpl implements ParticipantRepository{
   }
 
   @override
+  Future<({String name, String email})> getMe() async {
+    return participantRemoteDataSource.getMe();
+  }
+
+  @override
   Future<String> updateProfile(String name) async {
     return participantRemoteDataSource.updateProfile(name);
   }

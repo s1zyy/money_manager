@@ -277,5 +277,7 @@
   "friends": "好友",
   "areYouSure": "您确定吗？",
   "typeDeleteToConfirm": "此操作无法撤销。输入 DELETE 以确认。",
-  "confirm": "确认"
+  "confirm": "确认",
+  "activeTripLimitReached": "您已达到10个活跃行程的上限",
+  "upcomingTripLimitReached": "您已达到99个即将到来行程的上限"
 }

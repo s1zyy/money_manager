@@ -277,5 +277,7 @@
   "friends": "Amigos",
   "areYouSure": "¿Estás seguro?",
   "typeDeleteToConfirm": "Esta acción no se puede deshacer. Escribe DELETE para confirmar.",
-  "confirm": "Confirmar"
+  "confirm": "Confirmar",
+  "activeTripLimitReached": "Has alcanzado el límite de 10 viajes activos",
+  "upcomingTripLimitReached": "Has alcanzado el límite de 99 viajes próximos"
 }

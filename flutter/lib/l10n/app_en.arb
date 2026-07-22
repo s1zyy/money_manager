@@ -277,5 +277,7 @@
   "friends": "Friends",
   "areYouSure": "Are you sure?",
   "typeDeleteToConfirm": "This action cannot be undone. Type DELETE to confirm.",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "activeTripLimitReached": "You've reached the limit of 10 active trips",
+  "upcomingTripLimitReached": "You've reached the limit of 99 upcoming trips"
 }

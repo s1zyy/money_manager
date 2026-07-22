@@ -252,5 +252,7 @@
 "friends": "Друзі",
   "areYouSure": "Ви впевнені?",
   "typeDeleteToConfirm": "Цю дію не можна скасувати. Введіть DELETE для підтвердження.",
-  "confirm": "Підтвердити"
+  "confirm": "Підтвердити",
+  "activeTripLimitReached": "Досягнуто ліміт у 10 активних поїздок",
+  "upcomingTripLimitReached": "Досягнуто ліміт у 99 майбутніх поїздок"
 }

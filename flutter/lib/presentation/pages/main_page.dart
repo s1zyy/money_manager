@@ -87,7 +87,55 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
     );
   }
 
+  String _badgeLabel(int count, {int cap = 99}) =>
+      count > cap ? '$cap+' : '$count';
+
+  Widget _tabWithBadge(IconData icon, String label, int count, Color badgeColor, {int cap = 99}) {
+    return Tab(
+      text: label,
+      icon: count > 0
+          ? Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Icon(icon, size: 18),
+                ),
+                Positioned(
+                  right: -12,
+                  top: -6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: badgeColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    child: Text(
+                      _badgeLabel(count, cap: cap),
+                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700, height: 1),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Icon(icon, size: 18),
+    );
+  }
+
   Widget _buildTripsTab(BuildContext pageContext, AppLocalizations l10n) {
+    return Consumer<TripsProvider>(
+      builder: (context, provider, _) {
+        final activeCount = provider.activeTrips.length;
+        final upcomingCount = provider.upcomingTrips.length;
+        final archivedCount = provider.archivedTrips.length;
+        return _buildTripsTabContent(pageContext, l10n, activeCount, upcomingCount, archivedCount);
+      },
+    );
+  }
+
+  Widget _buildTripsTabContent(BuildContext pageContext, AppLocalizations l10n,
+      int activeCount, int upcomingCount, int archivedCount) {
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) => [
         SliverAppBar(
@@ -150,9 +198,9 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                   labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                   unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
                   tabs: [
-                    Tab(icon: const Icon(Icons.flight_takeoff, size: 18), text: l10n.active),
-                    Tab(icon: const Icon(Icons.calendar_month, size: 18), text: l10n.upcoming),
-                    Tab(icon: const Icon(Icons.archive, size: 18), text: l10n.archived),
+                    _tabWithBadge(Icons.flight_takeoff, l10n.active, activeCount, const Color(0xFF22C55E), cap: 10),
+                    _tabWithBadge(Icons.calendar_month, l10n.upcoming, upcomingCount, const Color(0xFFF59E0B)),
+                    _tabWithBadge(Icons.archive, l10n.archived, archivedCount, AppTheme.textSecondary),
                   ],
                 ),
               ),
@@ -180,16 +228,12 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
               );
             }
 
-            final activeTrips = provider.trips.where((t) => t.status == TripStatus.active).toList();
-            final upcomingTrips = provider.trips.where((t) => t.status == TripStatus.upcoming).toList();
-            final archivedTrips = provider.trips.where((t) => t.status == TripStatus.archived).toList();
-
             return TabBarView(
               controller: _tabController,
               children: [
-                _buildTripsList(activeTrips, l10n.noActiveTrips, TripStatus.active),
-                _buildTripsList(upcomingTrips, l10n.noUpcomingTrips, TripStatus.upcoming),
-                _buildTripsList(archivedTrips, l10n.noArchivedTrips, TripStatus.archived),
+                _buildTripsList(provider.activeTrips, l10n.noActiveTrips, TripStatus.active),
+                _buildTripsList(provider.upcomingTrips, l10n.noUpcomingTrips, TripStatus.upcoming),
+                _buildTripsList(provider.archivedTrips, l10n.noArchivedTrips, TripStatus.archived),
               ],
             );
           },
@@ -321,7 +365,8 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                 subtitle: l10n.youWillBeOwner,
                 onTap: () {
                   Navigator.pop(modalContext);
-                  Navigator.push(pageContext, MaterialPageRoute(builder: (_) => const CreateTripPage()));
+                  Navigator.push(pageContext, MaterialPageRoute(builder: (_) => const CreateTripPage()))
+                      .then((_) => pageContext.read<TripsProvider>().clearError());
                 },
               ),
               const SizedBox(height: 12),

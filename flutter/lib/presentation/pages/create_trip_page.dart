@@ -436,8 +436,13 @@ class _CreateTripPageState extends State<CreateTripPage> {
     if (success) {
       Navigator.pop(context);
     } else {
+      final errMsg = switch (provider.errorMessage) {
+        'activeLimitReached' => l10n.activeTripLimitReached,
+        'upcomingLimitReached' => l10n.upcomingTripLimitReached,
+        _ => provider.errorMessage ?? l10n.failedToCreateTrip,
+      };
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(provider.errorMessage ?? l10n.failedToCreateTrip),
+        content: Text(errMsg),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));

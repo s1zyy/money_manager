@@ -252,5 +252,7 @@
   "friends": "Друзья",
   "areYouSure": "Вы уверены?",
   "typeDeleteToConfirm": "Это действие необратимо. Введите DELETE для подтверждения.",
-  "confirm": "Подтвердить"
+  "confirm": "Подтвердить",
+  "activeTripLimitReached": "Достигнут лимит в 10 активных поездок",
+  "upcomingTripLimitReached": "Достигнут лимит в 99 предстоящих поездок"
 }

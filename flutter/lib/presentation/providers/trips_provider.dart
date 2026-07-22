@@ -12,8 +12,14 @@ class TripsProvider extends ChangeNotifier {
 
   TripsProvider({required this.getUserTrips, required this.createTripUseCase, required this.joinTripByCodeUseCase,});
 
+  static const int activeLimit = 10;
+  static const int upcomingLimit = 99;
+
   List<Trip> _trips = [];
   List<Trip> get trips => _trips;
+  List<Trip> get activeTrips => _trips.where((t) => t.status == TripStatus.active).toList();
+  List<Trip> get upcomingTrips => _trips.where((t) => t.status == TripStatus.upcoming).toList();
+  List<Trip> get archivedTrips => _trips.where((t) => t.status == TripStatus.archived).toList();
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -23,6 +29,11 @@ class TripsProvider extends ChangeNotifier {
 
   String? _joinError;
   String? get joinError => _joinError;
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
 
   Future<void> loadTrips() async {
     _isLoading = true;
@@ -45,6 +56,21 @@ class TripsProvider extends ChangeNotifier {
     required DateTime endDate,
     required String currency,
   }) async {
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final isUpcoming = startDate.isAfter(todayStart);
+
+    if (!isUpcoming && activeTrips.length >= activeLimit) {
+      _errorMessage = 'activeLimitReached';
+      notifyListeners();
+      return false;
+    }
+    if (isUpcoming && upcomingTrips.length >= upcomingLimit) {
+      _errorMessage = 'upcomingLimitReached';
+      notifyListeners();
+      return false;
+    }
+
     _isLoading = true;
     _errorMessage = null;
 

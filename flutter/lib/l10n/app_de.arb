@@ -277,5 +277,7 @@
   "friends": "Freunde",
   "areYouSure": "Sind Sie sicher?",
   "typeDeleteToConfirm": "Diese Aktion kann nicht rückgängig gemacht werden. Geben Sie DELETE ein.",
-  "confirm": "Bestätigen"
+  "confirm": "Bestätigen",
+  "activeTripLimitReached": "Sie haben das Limit von 10 aktiven Reisen erreicht",
+  "upcomingTripLimitReached": "Sie haben das Limit von 99 bevorstehenden Reisen erreicht"
 }

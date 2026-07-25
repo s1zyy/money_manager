@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/date_time_extensions.dart';
@@ -464,11 +465,74 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                               padding: const EdgeInsets.only(right: 20),
                               child: const Icon(Icons.delete_outline, color: Colors.white),
                             ),
+                            confirmDismiss: (_) async {
+                              return await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => Dialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 52,
+                                          height: 52,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(Icons.delete_outline, color: Colors.red, size: 26),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          l10n.areYouSure,
+                                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          expense.description,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary),
+                                        ),
+                                        const SizedBox(height: 24),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: OutlinedButton(
+                                                onPressed: () => Navigator.pop(ctx, false),
+                                                style: OutlinedButton.styleFrom(
+                                                  padding: const EdgeInsets.symmetric(vertical: 13),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                  side: const BorderSide(color: AppTheme.textSecondary),
+                                                ),
+                                                child: Text(l10n.cancel, style: const TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: FilledButton(
+                                                onPressed: () => Navigator.pop(ctx, true),
+                                                style: FilledButton.styleFrom(
+                                                  backgroundColor: Colors.red,
+                                                  padding: const EdgeInsets.symmetric(vertical: 13),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                ),
+                                                child: Text(l10n.delete, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ) ?? false;
+                            },
                             onDismissed: (_) {
                               provider.deleteExpense(widget.tripId, expense.id);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.expenseDeleted), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating),
-                              );
+                              showSuccessOverlay(context, l10n.expenseDeleted);
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -528,7 +592,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   void _onAddExpense(BuildContext context, TripDashboardProvider provider, AppLocalizations l10n) {
     final startDate = provider.dashboard?.trip.startDate;
     if (startDate != null && startDate.dateOnly.isAfter(DateTime.now().dateOnly)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tripNotStarted), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      showErrorOverlay(context, l10n.tripNotStarted);
       return;
     }
     Navigator.push(
@@ -708,9 +772,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                 onTap: () {
                                   Clipboard.setData(ClipboardData(text: joinCode));
                                   Navigator.pop(sheetCtx);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n.joinCodeCopied), behavior: SnackBarBehavior.floating),
-                                  );
+                                  showSuccessOverlay(context, l10n.joinCodeCopied);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -1085,11 +1147,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         if (!ctx.mounted) return;
                         if (success) {
                           Navigator.pop(sheetCtx);
-                          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(l10n.memberAdded(name)),
-                            backgroundColor: Colors.green,
-                            behavior: SnackBarBehavior.floating,
-                          ));
+                          if (context.mounted) showSuccessOverlay(context, l10n.memberAdded(name));
                         } else {
                           setSheetState(() { isLoading = false; serverNameError = provider.errorMessage ?? l10n.failedToAdd; });
                         }
@@ -1175,11 +1233,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         Navigator.pop(sheetCtx);
                         final success = await provider.removeParticipant(tripId, participantId);
                         if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(success ? l10n.memberRemoved(name) : provider.errorMessage ?? l10n.failedToRemove),
-                          backgroundColor: success ? Colors.green : Colors.red,
-                          behavior: SnackBarBehavior.floating,
-                        ));
+                        if (success) {
+                          showSuccessOverlay(context, l10n.memberRemoved(name));
+                        } else {
+                          showErrorOverlay(context, provider.errorMessage ?? l10n.failedToRemove);
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),

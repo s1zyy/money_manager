@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/constants/currencies.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:money_manager/core/date_time_extensions.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/core/utils/date_picker_helper.dart';
@@ -109,15 +110,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (!_eachPaidOwn && _selectedPayerId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectWhoPaid), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      showErrorOverlay(context, l10n.selectWhoPaid);
       return;
     }
     if (_selectedParticipantIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectParticipants), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      showErrorOverlay(context, l10n.selectParticipants);
       return;
     }
     if (_splitMode == 'CUSTOM' && _remainingCents != 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.sharesMustSumToTotal), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      showErrorOverlay(context, l10n.sharesMustSumToTotal);
       return;
     }
 
@@ -133,10 +134,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
     }
 
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.expenseAdded), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating));
+      showSuccessOverlay(context, l10n.expenseAdded);
       Navigator.pop(context);
     } else if (mounted && provider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage!), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      showErrorOverlay(context, provider.errorMessage!);
     }
   }
 

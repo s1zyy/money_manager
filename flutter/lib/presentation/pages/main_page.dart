@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:flutter/services.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/entities/trip.dart';
@@ -512,13 +513,11 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                           final provider = pageContext.read<TripsProvider>();
                           final success = await provider.joinTrip(code, budget);
                           if (!pageContext.mounted) return;
-                          ScaffoldMessenger.of(pageContext).showSnackBar(
-                            SnackBar(
-                              content: Text(success ? l10n.joinedSuccessfully : (provider.joinError ?? l10n.errorJoiningTrip)),
-                              backgroundColor: success ? Colors.green : Colors.red,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
+                          if (success) {
+                            showSuccessOverlay(pageContext, l10n.joinedSuccessfully);
+                          } else {
+                            showErrorOverlay(pageContext, provider.joinError ?? l10n.errorJoiningTrip);
+                          }
                         }
                       },
                       style: FilledButton.styleFrom(

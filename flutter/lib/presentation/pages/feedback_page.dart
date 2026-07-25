@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:get_it/get_it.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -32,20 +33,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
         'message': _messageController.text.trim(),
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.feedbackSent),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ));
+      showSuccessOverlay(context, l10n.feedbackSent);
       Navigator.pop(context);
     } catch (_) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.failedToSave),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ));
+      showErrorOverlay(context, l10n.failedToSave);
     }
   }
 

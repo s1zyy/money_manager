@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/core/utils/date_picker_helper.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
@@ -415,11 +416,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
   Future<void> _onCreatePressed(BuildContext context, TripsProvider provider, AppLocalizations l10n) async {
     if (_startDate == null || _endDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.selectDates),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ));
+      showErrorOverlay(context, l10n.selectDates);
       return;
     }
     if (!_formKey.currentState!.validate()) return;
@@ -441,11 +438,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
         'upcomingLimitReached' => l10n.upcomingTripLimitReached,
         _ => provider.errorMessage ?? l10n.failedToCreateTrip,
       };
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(errMsg),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ));
+      showErrorOverlay(context, errMsg);
     }
   }
 }

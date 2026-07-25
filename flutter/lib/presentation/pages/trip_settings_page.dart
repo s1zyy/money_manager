@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/core/utils/date_picker_helper.dart';
@@ -437,7 +438,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       final success = await provider.unarchiveTrip(widget.tripId);
       if (mounted) {
         if (success) Navigator.of(context).pop();
-        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToUnarchive), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+        else showErrorOverlay(context, provider.errorMessage ?? l10n.failedToUnarchive);
       }
     }
   }
@@ -451,7 +452,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       final success = await provider.archiveTrip(widget.tripId);
       if (mounted) {
         if (success) { navigator.pop(); navigator.pop(); }
-        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+        else showErrorOverlay(context, provider.errorMessage ?? l10n.failedToArchive);
       }
     }
   }
@@ -465,7 +466,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
       final success = await provider.leaveTrip(widget.tripId);
       if (mounted) {
         if (success) { navigator.pop(); navigator.pop(); }
-        else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToLeave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+        else showErrorOverlay(context, provider.errorMessage ?? l10n.failedToLeave);
       }
     }
   }
@@ -497,7 +498,7 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
         endDate: _currentEndDate,
       );
       if (!tripSuccess) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+        if (mounted) showErrorOverlay(context, provider.errorMessage ?? l10n.failedToSave);
         return;
       }
     }
@@ -505,10 +506,10 @@ class _TripSettingsPageState extends State<TripSettingsPage> {
     final budgetSuccess = await provider.updateMyBudget(tripId: widget.tripId, budget: _myBudget);
     if (mounted) {
       if (budgetSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.settingsSaved), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating));
+        showSuccessOverlay(context, l10n.settingsSaved);
         Navigator.of(context).pop();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToSave), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+        showErrorOverlay(context, provider.errorMessage ?? l10n.failedToSave);
       }
     }
   }

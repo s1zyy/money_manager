@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/entities/settlement_transfer.dart';
@@ -35,10 +36,10 @@ class _SettlementPageState extends State<SettlementPage> {
     final success = await provider.archiveTrip(widget.tripId);
     if (!context.mounted) return;
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.settlementDone), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating));
+      showSuccessOverlay(context, l10n.settlementDone);
       Navigator.of(context).pop(true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage ?? l10n.failedToArchive), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating));
+      showErrorOverlay(context, provider.errorMessage ?? l10n.failedToArchive);
     }
   }
 

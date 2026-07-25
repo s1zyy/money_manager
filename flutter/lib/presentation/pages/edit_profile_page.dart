@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:money_manager/domain/usecases/participant/delete_account.dart';
 import 'package:money_manager/domain/usecases/participant/full_delete_account.dart';
 import 'package:money_manager/injection_container.dart';
@@ -57,9 +58,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final success = await auth.updateProfile(_nameController.text.trim());
     if (!mounted) return;
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileUpdated), backgroundColor: AppTheme.primary),
-      );
+      showSuccessOverlay(context, l10n.profileUpdated);
     } else {
       setState(() { _nameError = auth.errorMessage; });
     }
@@ -80,9 +79,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _currentPasswordController.clear();
       _newPasswordController.clear();
       _confirmPasswordController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.passwordChanged), backgroundColor: AppTheme.primary),
-      );
+      showSuccessOverlay(context, l10n.passwordChanged);
     } else {
       setState(() { _currentPasswordError = auth.errorMessage; });
     }
@@ -300,11 +297,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(e.toString().replaceFirst('Exception: ', '')),
-              backgroundColor: Colors.red),
-        );
+        showErrorOverlay(context, e.toString().replaceFirst('Exception: ', ''));
       }
     }
   }

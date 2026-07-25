@@ -107,8 +107,8 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Future<void> inviteVirtualParticipant(String tripId, String participantId, String email) async {
-        await remoteDataSource.inviteVirtualParticipant(tripId, participantId, email);
+  Future<void> inviteVirtualParticipant(String tripId, String participantId, String email, {bool force = false}) async {
+        await remoteDataSource.inviteVirtualParticipant(tripId, participantId, email, force: force);
       }
       
   @override

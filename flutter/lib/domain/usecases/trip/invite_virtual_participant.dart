@@ -5,7 +5,7 @@ class InviteVirtualParticipantUseCase {
 
   InviteVirtualParticipantUseCase({required this.repository});
 
-  Future<void> call(String tripId, String participantId, String email) {
-    return repository.inviteVirtualParticipant(tripId, participantId, email);
+  Future<void> call(String tripId, String participantId, String email, {bool force = false}) {
+    return repository.inviteVirtualParticipant(tripId, participantId, email, force: force);
   }
 }

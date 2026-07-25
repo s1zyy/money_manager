@@ -353,9 +353,9 @@ class TripDashboardProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> inviteVirtualParticipant(String tripId, String participantId, String email) async {
+  Future<bool> inviteVirtualParticipant(String tripId, String participantId, String email, {bool force = false}) async {
     try {
-      await inviteVirtualParticipantUseCase(tripId, participantId, email);
+      await inviteVirtualParticipantUseCase(tripId, participantId, email, force: force);
       return true;
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');

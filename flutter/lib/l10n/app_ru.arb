@@ -1,8 +1,6 @@
 {
   "@@locale": "ru",
-
   "appTitle": "TripPace",
-
   "login": "Войти",
   "register": "Регистрация",
   "email": "Почта",
@@ -17,7 +15,6 @@
   "retry": "Повторить",
   "delete": "Удалить",
   "join": "Вступить",
-
   "trips": "Поездки",
   "createTrip": "Создать поездку",
   "createNewTrip": "Новая поездка",
@@ -36,7 +33,9 @@
   "startDate": "Дата начала: {date}",
   "@startDate": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "endDate": "Дата окончания: {date}",
@@ -45,7 +44,6 @@
   "settingsSaved": "Настройки сохранены!",
   "failedToSave": "Не удалось сохранить",
   "failedToCreateTrip": "Не удалось создать поездку",
-
   "joinTrip": "Присоединиться",
   "joinTripByCode": "Войти по коду",
   "enterInviteCode": "Введите код приглашения от друга",
@@ -54,28 +52,22 @@
   "errorJoiningTrip": "Ошибка при вступлении",
   "joinCodeCopied": "Код скопирован в буфер обмена!",
   "inviteCode": "Код приглашения",
-
   "archiveTrip": "Архивировать поездку",
   "archiveTripConfirm": "Архивировать?",
   "archiveTripMessage": "Поездка будет перемещена в архив.",
   "failedToArchive": "Не удалось архивировать",
-
   "unarchiveTrip": "Разархивировать поездку",
   "unarchiveTripConfirm": "Разархивировать поездку?",
   "unarchiveTripMessage": "Поездка будет восстановлена в активный или предстоящий статус.",
   "failedToUnarchive": "Не удалось разархивировать",
-
   "deleteTrip": "Удалить поездку навсегда",
   "deleteTripConfirm": "Удалить поездку?",
   "deleteTripMessage": "Вы уверены? Это действие необратимо, вся история расходов будет потеряна.",
-
   "leaveTrip": "Покинуть поездку",
   "leaveTripConfirm": "Покинуть поездку?",
   "leaveTripMessage": "Вы потеряете доступ к этой поездке.",
   "failedToLeave": "Не удалось покинуть",
-
   "dangerZone": "Опасная зона",
-
   "members": "Участники",
   "owner": "владелец",
   "virtual": "виртуальный",
@@ -89,7 +81,6 @@
   "failedToRemove": "Не удалось удалить участника",
   "noParticipants": "Нет участников",
   "participantBalances": "Балансы участников",
-
   "expenses": "Расходы",
   "addExpense": "Добавить расход",
   "addNewExpense": "Новый расход",
@@ -104,14 +95,12 @@
   "expenseAdded": "Расход добавлен!",
   "expenseDeleted": "Расход удалён",
   "noExpensesYet": "Расходов пока нет. Добавьте первый!",
-
   "dailyLimit": "Дневной лимит",
   "remainingToday": "Осталось на сегодня:",
   "spentToday": "Потрачено сегодня",
   "overspentToday": "Перерасход за сегодня:",
   "myShare": "Моя доля",
   "notSet": "Не задано",
-
   "choose": "ВЫБРАТЬ",
   "enterName": "Введите имя",
   "enterBudget": "Введите бюджет",
@@ -121,7 +110,6 @@
   "prepaidExceedsBudget": "Предоплата не может превышать бюджет",
   "noAccountRegister": "Нет аккаунта? Зарегистрируйтесь",
   "registrationSuccessful": "Регистрация прошла успешно!",
-
   "active": "Активные",
   "upcoming": "Предстоящие",
   "archived": "Архив",
@@ -132,10 +120,11 @@
   "budgetAmount": "Бюджет: {amount}",
   "@budgetAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
-
   "startDateLabel": "Дата начала",
   "endDateLabel": "Дата окончания",
   "enterTripName": "Введите название поездки",
@@ -143,7 +132,6 @@
   "enterPrepaidAmount": "Введите сумму предоплаты",
   "prepaidAmount": "Сумма предоплаты",
   "unknown": "Неизвестно",
-
   "enterValidAmount": "Введите корректную сумму",
   "enterDescription": "Введите описание",
   "whoPaid": "Кто оплатил?",
@@ -154,17 +142,19 @@
   "splitCustom": "Своя сумма",
   "eachPaidOwn": "Каждый за себя",
   "sharesMustSumToTotal": "Суммы долей должны совпадать с общей суммой",
-
   "language": "Язык",
-
   "settleUp": "Рассчитаться",
   "settleUpSubtitle": "Поездка завершена. Вот минимальный набор переводов чтобы рассчитаться.",
   "tripEndedSettleUp": "Поездка завершена — пора рассчитаться",
   "paysTo": "{from} → {to}",
   "@paysTo": {
     "placeholders": {
-      "from": { "type": "String" },
-      "to": { "type": "String" }
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
     }
   },
   "allSettled": "Все рассчитались!",
@@ -172,7 +162,6 @@
   "archiveAndFinish": "Архивировать",
   "settlementDone": "Поездка успешно архивирована!",
   "noSettlementNeeded": "Все в расчёте. Переводы не нужны.",
-
   "enterEmail": "Введите email",
   "enterValidEmail": "Введите корректный email адрес",
   "enterPassword": "Введите пароль",
@@ -184,7 +173,6 @@
   "copyCode": "Скопировать",
   "currencyPickerTitle": "Валюта",
   "virtualParticipantHint": "Участник без аккаунта в приложении",
-
   "myBudget": "Мой бюджет",
   "budget": "Бюджет",
   "prepaid": "Предоплата",
@@ -194,7 +182,9 @@
   "budgetWithCurrency": "Бюджет ({currency})",
   "@budgetWithCurrency": {
     "placeholders": {
-      "currency": { "type": "String" }
+      "currency": {
+        "type": "String"
+      }
     }
   },
   "you": "Ты",
@@ -214,8 +204,12 @@
   "youWillJoinAs": "Ты войдёшь как {name} в поездку «{trip}»",
   "@youWillJoinAs": {
     "placeholders": {
-      "name": { "type": "String" },
-      "trip": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "trip": {
+        "type": "String"
+      }
     }
   },
   "checkCode": "Проверить код",
@@ -224,7 +218,9 @@
   "inviteParticipantTitle": "Пригласить {name}",
   "@inviteParticipantTitle": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "inviteParticipantDescription": "Участник получит письмо с кодом для регистрации в TripPace.",
@@ -240,7 +236,9 @@
   "loginToJoinAs": "Этот email уже зарегистрирован. Введи пароль, чтобы войти в поездку как {name}.",
   "@loginToJoinAs": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "deleteAccount": "Удалить аккаунт",
@@ -254,5 +252,7 @@
   "typeDeleteToConfirm": "Это действие необратимо. Введите DELETE для подтверждения.",
   "confirm": "Подтвердить",
   "activeTripLimitReached": "Достигнут лимит в 10 активных поездок",
-  "upcomingTripLimitReached": "Достигнут лимит в 99 предстоящих поездок"
+  "upcomingTripLimitReached": "Достигнут лимит в 99 предстоящих поездок",
+  "inviteAlreadySent": "Приглашение этому участнику уже отправлено",
+  "sendAgain": "Отправить снова"
 }

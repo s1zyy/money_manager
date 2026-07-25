@@ -239,8 +239,12 @@
   "youWillJoinAs": "Du trittst als {name} der Reise «{trip}» bei",
   "@youWillJoinAs": {
     "placeholders": {
-      "name": { "type": "String" },
-      "trip": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "trip": {
+        "type": "String"
+      }
     }
   },
   "checkCode": "Code prüfen",
@@ -249,7 +253,9 @@
   "inviteParticipantTitle": "{name} einladen",
   "@inviteParticipantTitle": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "inviteParticipantDescription": "Der Teilnehmer erhält einen Registrierungscode per E-Mail.",
@@ -265,7 +271,9 @@
   "loginToJoinAs": "Diese E-Mail ist bereits registriert. Gib dein Passwort ein, um der Reise als {name} beizutreten.",
   "@loginToJoinAs": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "deleteAccount": "Konto löschen",
@@ -279,5 +287,7 @@
   "typeDeleteToConfirm": "Diese Aktion kann nicht rückgängig gemacht werden. Geben Sie DELETE ein.",
   "confirm": "Bestätigen",
   "activeTripLimitReached": "Sie haben das Limit von 10 aktiven Reisen erreicht",
-  "upcomingTripLimitReached": "Sie haben das Limit von 99 bevorstehenden Reisen erreicht"
+  "upcomingTripLimitReached": "Sie haben das Limit von 99 bevorstehenden Reisen erreicht",
+  "inviteAlreadySent": "Einladung an diesen Teilnehmer bereits gesendet",
+  "sendAgain": "Erneut senden"
 }

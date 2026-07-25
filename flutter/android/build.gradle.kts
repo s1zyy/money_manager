@@ -1,4 +1,4 @@
-allprojects {b
+allprojects {
     repositories {
         google()
         mavenCentral()

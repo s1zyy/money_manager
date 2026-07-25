@@ -41,7 +41,7 @@ abstract class TripRepository {
   Future<void> deleteTrip(String tripId);
   Future<void> removeParticipant(String tripId, String participantId);
   Future<void> addVirtualParticipant(String tripId, String name, double budget);
-  Future<void> inviteVirtualParticipant(String tripId, String participantId, String email);
+  Future<void> inviteVirtualParticipant(String tripId, String participantId, String email, {bool force = false});
   Future<List<SettlementTransfer>> getSettlement(String tripId);
   Future<void> unarchiveTrip(String tripId);
 }

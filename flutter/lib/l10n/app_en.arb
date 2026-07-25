@@ -279,5 +279,7 @@
   "typeDeleteToConfirm": "This action cannot be undone. Type DELETE to confirm.",
   "confirm": "Confirm",
   "activeTripLimitReached": "You've reached the limit of 10 active trips",
-  "upcomingTripLimitReached": "You've reached the limit of 99 upcoming trips"
+  "upcomingTripLimitReached": "You've reached the limit of 99 upcoming trips",
+  "inviteAlreadySent": "Invite already sent to this participant",
+  "sendAgain": "Send again"
 }

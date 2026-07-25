@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/date_time_extensions.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/core/utils/date_picker_helper.dart';
@@ -143,6 +144,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   Widget build(BuildContext context) {
     final provider = context.watch<TripDashboardProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
     final isCustom = _splitMode == 'CUSTOM';
     final isSolo = provider.participantsMap.length == 1;
 
@@ -189,7 +191,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           decoration: InputDecoration(
                             labelText: l10n.amount,
                             labelStyle: const TextStyle(color: AppTheme.textSecondary),
-                            prefixIcon: const Icon(Icons.attach_money, color: AppTheme.textSecondary),
+                            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                            prefixIcon: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              child: Text(cs, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.textSecondary)),
+                            ),
                             filled: true, fillColor: Colors.white,
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
                             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),

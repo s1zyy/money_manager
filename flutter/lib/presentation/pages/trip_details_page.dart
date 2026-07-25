@@ -841,6 +841,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (sheetCtx) {
         bool sending = false;
+        bool alreadyInvited = false;
         String? sheetError;
         return StatefulBuilder(
           builder: (ctx, setSheetState) => Padding(
@@ -883,6 +884,24 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                   ),
                 ),
+                if (alreadyInvited) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, color: Colors.orange, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(l10n.inviteAlreadySent, style: const TextStyle(fontSize: 13, color: Colors.orange))),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -897,7 +916,6 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       ),
                     ),
                     const SizedBox(width: 12),
-
                     Expanded(
                       child: FilledButton(
                         onPressed: sending ? null : () async {
@@ -906,24 +924,43 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             setSheetState(() => sheetError = l10n.enterValidEmail);
                             return;
                           }
-                          setSheetState(() { sending = true; sheetError = null; });
-                          final success = await provider.inviteVirtualParticipant(tripId, participantId, email);
+                          final force = alreadyInvited;
+                          setSheetState(() { sending = true; sheetError = null; alreadyInvited = false; });
+                          final success = await provider.inviteVirtualParticipant(tripId, participantId, email, force: force);
                           if (!ctx.mounted) return;
                           if (success) {
+                            final entry = OverlayEntry(
+                              builder: (_) => Positioned(
+                                bottom: 50, left: 16, right: 16,
+                                child: Material(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+                                        const SizedBox(width: 10),
+                                        Text(l10n.inviteSent, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                            Overlay.of(context).insert(entry);
                             Navigator.pop(sheetCtx);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(l10n.inviteSent),
-                              backgroundColor: Colors.green,
-                              behavior: SnackBarBehavior.floating,
-                            ));
+                            Future.delayed(const Duration(seconds: 2), entry.remove);
                           } else {
-                            setSheetState(() { sending = false; sheetError = provider.errorMessage ?? l10n.failedToAdd; });
+                            final error = provider.errorMessage ?? l10n.failedToAdd;
+                            final alreadySent = error == 'Invite already sent';
+                            setSheetState(() { sending = false; sheetError = alreadySent ? null : error; alreadyInvited = alreadySent; });
                           }
                         },
                         style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
                         child: sending
                             ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : Text(l10n.send, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            : Text(alreadyInvited ? l10n.sendAgain : l10n.send, style: const TextStyle(fontWeight: FontWeight.w600)),
                       ),
                     ),
                   ],

@@ -57,6 +57,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final l10n = AppLocalizations.of(context)!;
     final success = await auth.updateProfile(_nameController.text.trim());
     if (!mounted) return;
+    FocusScope.of(context).unfocus();
     if (success) {
       showSuccessOverlay(context, l10n.profileUpdated);
     } else {
@@ -75,6 +76,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _newPasswordController.text,
     );
     if (!mounted) return;
+    FocusScope.of(context).unfocus();
     if (success) {
       _currentPasswordController.clear();
       _newPasswordController.clear();

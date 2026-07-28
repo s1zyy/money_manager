@@ -862,7 +862,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 onPressed: () async {
                   final budget = double.tryParse(budgetController.text) ?? 0.0;
                   Navigator.pop(sheetCtx);
-                  await provider.updateParticipantBudget(tripId: tripId, participantId: participantId, budget: budget);
+                  final success = await provider.updateParticipantBudget(tripId: tripId, participantId: participantId, budget: budget);
+                  if (!context.mounted) return;
+                  if (success) {
+                    showSuccessOverlay(context, l10n.settingsSaved);
+                  } else {
+                    showErrorOverlay(context, provider.errorMessage ?? l10n.somethingWentWrong);
+                  }
                 },
                 child: Text(l10n.saveBudget, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),

@@ -1,12 +1,12 @@
 <p align="center">
-  <h1 align="center">💸 Money Manager</h1>
+  <h1 align="center">✈️ TripPace</h1>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white"/>
   <img src="https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white"/>
-  <img src="https://img.shields.io/badge/iOS-compatible-000000?style=for-the-badge&logo=apple&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Android-compatible-3DDC84?style=for-the-badge&logo=android&logoColor=white"/>
+  <img src="https://img.shields.io/badge/iOS-App_Store-000000?style=for-the-badge&logo=apple&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Android-Google_Play-3DDC84?style=for-the-badge&logo=googleplay&logoColor=white"/>
   <img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge"/>
 </p>
 
@@ -20,9 +20,9 @@
 
 ## About
 
-**Money Manager** is a cross-platform mobile app that makes splitting trip expenses effortless. Create a trip, invite friends via a unique code, log expenses, and let the app automatically calculate who owes whom.
+**TripPace** is a trip expense-sharing app for iOS and Android. Add shared expenses on the go, split costs equally or with custom amounts, invite friends — even without an account — and settle up at the end with the minimum number of transfers.
 
-Think Splitwise, but built from scratch with a clean Flutter architecture and a Spring Boot backend.
+Built from scratch with a clean Flutter architecture and a Spring Boot backend deployed on Railway.
 
 ---
 
@@ -63,13 +63,17 @@ Think Splitwise, but built from scratch with a clean Flutter architecture and a 
 | | Feature |
 |---|---|
 | 🔐 | JWT authentication — register & login |
-| ✈️ | Create and manage group trips |
+| ✈️ | Full trip lifecycle — create, update, archive, unarchive, delete |
 | 🔗 | Join trips via shareable invite codes |
-| 💰 | Add expenses split across any participants |
-| 📊 | Live balance dashboard — see debts in real time |
-| 🗂️ | Archive completed trips |
-| 🌐 | Localization — EN / RU |
-| 📱 | Runs on iOS & Android |
+| 👥 | Virtual participants — invite people without an account |
+| 📧 | Email invite flow — virtual participant claims a real account |
+| 💰 | Expense tracking with equal or custom splits |
+| 📊 | Live balance dashboard & settlement suggestions |
+| 📉 | Per-participant budget & daily limit tracking |
+| 🌍 | 7 languages — EN, RU, UK, DE, FR, ES, PT |
+| 🛡️ | App version enforcement with automatic update screen |
+| 🗑️ | Soft delete or full account deletion |
+| 📱 | iOS & Android |
 
 ---
 
@@ -85,7 +89,7 @@ lib/
 │   ├── repositories/        # Abstract interfaces
 │   └── usecases/            # One class = one operation
 │       ├── auth/            # Login, Register, Logout
-│       ├── trip/            # CreateTrip, JoinTrip, ArchiveTrip…
+│       ├── trip/            # CreateTrip, JoinTrip, ArchiveTrip, InviteVirtualParticipant…
 │       └── expenses/        # AddExpense, UpdateExpense, DeleteExpense…
 │
 ├── data/                    ← Implements domain interfaces
@@ -94,21 +98,24 @@ lib/
 │   └── repositories/        # Repository implementations
 │
 ├── presentation/            ← UI layer
-│   ├── pages/               # LoginPage, MainPage, TripDetailsPage…
+│   ├── pages/               # LoginPage, MainPage, TripDetailsPage, SettlementPage…
 │   └── providers/           # AuthProvider, TripsProvider, TripDashboardProvider
 │
 ├── core/                    ← Shared infrastructure
 │   ├── dio_client.dart      # Base URL, timeout config
-│   └── auth_interceptor.dart# Injects JWT into every request
+│   ├── auth_interceptor.dart
+│   ├── app_version_interceptor.dart
+│   └── utils/               # Overlay notifications, date helpers
 │
 └── injection_container.dart  ← GetIt DI wiring (all registrations in one place)
 ```
 
 **Key decisions:**
-- **GetIt** for dependency injection — `sl<T>()` anywhere, no `BuildContext` threading required
+- **GetIt** for dependency injection — `sl<T>()` anywhere, no `BuildContext` threading
 - **Provider** (`ChangeNotifier`) for UI state — `AuthProvider` and `TripsProvider` are lazy singletons, `TripDashboardProvider` is a factory (new instance per trip)
-- **AuthInterceptor** auto-attaches the JWT from `FlutterSecureStorage` to every Dio request
-- Base URL is platform-conditional: `localhost:8080` on iOS, `10.0.2.2:8080` on Android emulator
+- **AuthInterceptor** auto-attaches JWT from `FlutterSecureStorage` to every request
+- **AppVersionInterceptor** adds `X-App-Version` header — backend rejects outdated clients
+- All notifications use a unified `OverlayEntry` system — works above bottom sheets
 
 ---
 
@@ -121,9 +128,8 @@ lib/
 | State management | Provider + ChangeNotifier |
 | Dependency injection | GetIt |
 | HTTP client | Dio 5 |
-| Secure storage | FlutterSecureStorage |
-| Localization | flutter_localizations (EN / RU) |
-| ID generation | uuid |
+| Secure storage | flutter_secure_storage |
+| Localization | flutter_localizations (7 languages) |
 
 ---
 
@@ -139,14 +145,17 @@ cd money_manager/flutter
 # 2. Install dependencies
 flutter pub get
 
-# 3. Run on iOS simulator
-flutter run
+# 3. Run on iOS simulator (local backend)
+flutter run --dart-define=BASE_URL=http://localhost:8080/api
 
-# 4. Run on Android emulator (uses 10.0.2.2 to reach host machine)
-flutter run -d android
+# 4. Run on Android emulator (local backend)
+flutter run --dart-define=BASE_URL=http://10.0.2.2:8080/api
+
+# 5. Run against production
+flutter run --dart-define=BASE_URL=https://trippace.up.railway.app/api
 ```
 
-Make sure the backend is running on `localhost:8080` before starting the app.
+> If `BASE_URL` is not passed, the app defaults to `https://trippace.up.railway.app/api`.
 
 ```bash
 # Static analysis
@@ -154,21 +163,39 @@ flutter analyze
 
 # Tests
 flutter test
+
+# Regenerate localizations after editing .arb files
+flutter gen-l10n
+```
+
+**Build for release:**
+
+```bash
+# Android (AAB for Google Play)
+flutter build appbundle --release
+
+# iOS (IPA for TestFlight / App Store)
+flutter build ipa --release
 ```
 
 ---
 
-## Project Structure — Pages
+## Pages
 
 | Page | Description |
 |---|---|
+| `SplashPage` | Animated splash screen |
 | `LoginPage` | Email + password login |
 | `RegisterPage` | New account creation |
-| `MainPage` | List of user's trips |
-| `CreateTripPage` | New trip form (name, dates, budget) |
-| `TripDetailsPage` | Expenses list + balance dashboard |
-| `AddExpensePage` | Add / edit an expense with participant selection |
-| `TripSettingsPage` | Trip info, participants, archive / leave |
+| `MainPage` | List of trips (Active / Upcoming / Archived) |
+| `CreateTripPage` | New trip form — name, dates, budget, currency |
+| `TripDetailsPage` | Expenses list, balance dashboard, participant management |
+| `AddExpensePage` | Add / edit expense with equal or custom split |
+| `SettlementPage` | Settle up — minimum transfer suggestions |
+| `TripSettingsPage` | Trip info, participants, archive / delete |
+| `EditProfilePage` | Update name, change password, delete account |
+| `FeedbackPage` | Send bug report or feedback |
+| `UpdateRequiredPage` | Shown when app version is outdated |
 
 ---
 
@@ -176,15 +203,15 @@ flutter test
 
 This app requires the REST API from the companion backend:
 
-**[⚙️ money_manager_backend](https://github.com/s1zyy/money_manager_backend)** — Spring Boot 4, Java 21, PostgreSQL
+**[⚙️ TripPace Backend](https://github.com/s1zyy/money_manager_backend)** — Spring Boot 4, Java 21, PostgreSQL, deployed on Railway
 
 ```
 ┌─────────────────────────┐
-│  Flutter App (this repo) │ ◄── you are here
+│  TripPace (this repo)    │ ◄── you are here
 └────────────┬────────────┘
-             │ HTTP / REST
+             │ HTTPS / REST
 ┌────────────▼────────────┐
-│     Spring Boot API      │
+│  Spring Boot (Railway)   │
 └────────────┬────────────┘
              │ JDBC
 ┌────────────▼────────────┐

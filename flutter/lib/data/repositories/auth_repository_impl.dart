@@ -45,4 +45,18 @@ class AuthRepositoryImpl implements AuthRepository {
     await localDataSource.saveToken(authModel.token);
     return authModel;
   }
+
+  @override
+  Future<AuthResult> googleSignIn(String idToken) async {
+    final authModel = await remoteDataSource.googleSignIn(idToken);
+    await localDataSource.saveToken(authModel.token);
+    return authModel;
+  }
+
+  @override
+  Future<AuthResult> appleSignIn(String identityToken, String? name) async {
+    final authModel = await remoteDataSource.appleSignIn(identityToken, name);
+    await localDataSource.saveToken(authModel.token);
+    return authModel;
+  }
 }

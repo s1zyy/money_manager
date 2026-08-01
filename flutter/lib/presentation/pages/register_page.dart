@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/widgets/google_logo_painter.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/claim_invite_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
@@ -37,6 +39,22 @@ class _RegisterPageState extends State<RegisterPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onAppleSignIn(AuthProvider auth) async {
+    final success = await auth.appleSignIn();
+    if (!mounted) return;
+    if (success) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const TripsPage()), (r) => false);
+    }
+  }
+
+  Future<void> _onGoogleSignIn(AuthProvider auth) async {
+    final success = await auth.googleSignIn();
+    if (!mounted) return;
+    if (success) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const TripsPage()), (r) => false);
+    }
   }
 
   Future<void> _onRegisterPressed(AuthProvider auth, AppLocalizations l10n) async {
@@ -178,13 +196,52 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
                               : FilledButton(
                                   onPressed: () => _onRegisterPressed(auth, l10n),
-                                  child: Text(l10n.register, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                  child: Text(l10n.register, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                                 ),
                         ),
                         if (auth.errorMessage != null) ...[
                           const SizedBox(height: 10),
                           Text(auth.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
                         ],
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 64,
+                              height: 64,
+                              child: OutlinedButton(
+                                onPressed: auth.isLoading ? null : () => _onGoogleSignIn(auth),
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.zero,
+                                  side: const BorderSide(color: Colors.black, width: 0.8),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                child: _googleIcon(),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            SizedBox(
+                              width: 64,
+                              height: 64,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: OverflowBox(
+                                  maxWidth: 80,
+                                  alignment: Alignment.center,
+                                  child: SignInWithAppleButton(
+                                    onPressed: auth.isLoading ? () {} : () => _onAppleSignIn(auth),
+                                    text: '',
+                                    style: SignInWithAppleButtonStyle.black,
+                                    borderRadius: BorderRadius.circular(16),
+                                    height: 64,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 20),
                         Row(children: [
                           Expanded(child: Divider(color: Colors.grey.shade300)),
@@ -216,6 +273,11 @@ class _RegisterPageState extends State<RegisterPage> {
     
   );
   }
+
+  Widget _googleIcon() => SizedBox(
+    width: 24, height: 24,
+    child: CustomPaint(painter: GoogleLogoPainter()),
+  );
 
   Widget _buildField({
     required TextEditingController controller,

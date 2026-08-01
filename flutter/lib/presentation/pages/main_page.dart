@@ -444,10 +444,13 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
               TextField(
                 controller: codeController,
                 autofocus: true,
-                textCapitalization: TextCapitalization.characters,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 8,
                 style: const TextStyle(fontSize: 16, letterSpacing: 2, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   hintText: l10n.inviteCodeHint,
+                  counterText: '',
                   prefixIcon: const Icon(Icons.vpn_key_outlined, color: AppTheme.secondary),
                   filled: true,
                   fillColor: AppTheme.secondary.withValues(alpha: 0.06),
@@ -509,14 +512,15 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                         final code = codeController.text.trim();
                         final budget = double.tryParse(budgetController.text) ?? 0.0;
                         if (code.isNotEmpty) {
-                          Navigator.pop(sheetContext);
                           final provider = pageContext.read<TripsProvider>();
                           final success = await provider.joinTrip(code, budget);
-                          if (!pageContext.mounted) return;
+                          if (!sheetContext.mounted) return;
                           if (success) {
+                            Navigator.pop(sheetContext);
+                            if (!pageContext.mounted) return;
                             showSuccessOverlay(pageContext, l10n.joinedSuccessfully);
                           } else {
-                            showErrorOverlay(pageContext, provider.joinError ?? l10n.errorJoiningTrip);
+                            showErrorOverlay(sheetContext, provider.joinError ?? l10n.errorJoiningTrip);
                           }
                         }
                       },

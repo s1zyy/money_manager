@@ -7,6 +7,8 @@ abstract class AuthRemoteDataSource {
   Future<AuthModel> register(String email, String password, String name, {String? inviteToken});
   Future<Map<String, dynamic>> validateInviteToken(String token);
   Future<AuthModel> claimInviteWithLogin(String token, String password);
+  Future<AuthModel> googleSignIn(String idToken);
+  Future<AuthModel> appleSignIn(String identityToken, String? name);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -60,6 +62,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await dio.post('/auth/claim-invite-login', data: {
         'token': token,
         'password': password,
+      });
+      return AuthModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<AuthModel> googleSignIn(String idToken) async {
+    try {
+      final response = await dio.post('/auth/google', data: {'idToken': idToken});
+      return AuthModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<AuthModel> appleSignIn(String identityToken, String? name) async {
+    try {
+      final response = await dio.post('/auth/apple', data: {
+        'identityToken': identityToken,
+        'name': name,
       });
       return AuthModel.fromJson(response.data);
     } on DioException catch (e) {

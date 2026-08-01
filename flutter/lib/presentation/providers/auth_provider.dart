@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:money_manager/domain/usecases/auth/claim_invite_with_login.dart';
+import 'package:money_manager/domain/usecases/auth/apple_sign_in.dart';
+import 'package:money_manager/domain/usecases/auth/google_sign_in.dart';
 import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
@@ -14,6 +16,8 @@ class AuthProvider extends ChangeNotifier {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
   final LogoutUseCase logoutUseCase;
+  final GoogleSignInUseCase googleSignInUseCase;
+  final AppleSignInUseCase appleSignInUseCase;
   final ValidateInviteTokenUseCase validateInviteTokenUseCase;
   final ClaimInviteWithLoginUseCase claimInviteWithLoginUseCase;
   final UpdateProfileUseCase updateProfileUseCase;
@@ -24,6 +28,8 @@ class AuthProvider extends ChangeNotifier {
     required this.loginUseCase,
     required this.registerUseCase,
     required this.logoutUseCase,
+    required this.googleSignInUseCase,
+    required this.appleSignInUseCase,
     required this.validateInviteTokenUseCase,
     required this.claimInviteWithLoginUseCase,
     required this.updateProfileUseCase,
@@ -71,6 +77,50 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _isLoading = false;
+      _errorMessage = _clean(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> googleSignIn() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final result = await googleSignInUseCase.call();
+      _currentUserEmail = result.email;
+      _currentUserName = result.name;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      final msg = _clean(e);
+      if (msg != 'Google sign in cancelled') _errorMessage = msg;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> appleSignIn() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final result = await appleSignInUseCase.call();
+      _currentUserEmail = result.email;
+      _currentUserName = result.name;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      final msg = e.toString().toLowerCase();
+      if (msg.contains('cancel') || msg.contains('unknown')) {
+        notifyListeners();
+        return false;
+      }
       _errorMessage = _clean(e);
       notifyListeners();
       return false;

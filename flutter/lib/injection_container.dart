@@ -35,6 +35,8 @@ import 'package:money_manager/domain/usecases/participant/full_delete_account.da
 import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/invite_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/auth/claim_invite_with_login.dart';
+import 'package:money_manager/domain/usecases/auth/apple_sign_in.dart';
+import 'package:money_manager/domain/usecases/auth/google_sign_in.dart';
 import 'package:money_manager/domain/usecases/auth/validate_invite_token.dart';
 import 'package:money_manager/domain/usecases/trip/archive_trip.dart';
 import 'package:money_manager/domain/usecases/trip/create_trip.dart';
@@ -229,6 +231,8 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       loginUseCase: sl(),
       registerUseCase: sl(),
       logoutUseCase: sl(),
+      googleSignInUseCase: sl(),
+      appleSignInUseCase: sl(),
       validateInviteTokenUseCase: sl(),
       claimInviteWithLoginUseCase: sl(),
       updateProfileUseCase: sl(),
@@ -255,6 +259,14 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
 
   sl.registerLazySingleton(
     () => LoginUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => GoogleSignInUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => AppleSignInUseCase(repository: sl()),
   );
 
   sl.registerLazySingleton(

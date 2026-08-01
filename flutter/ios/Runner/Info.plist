@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>money_manager</string>
+	<string>TripPace</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -48,6 +48,19 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>mailto</string>
+	</array>
+	<key>GIDClientID</key>
+	<string>19599645200-73t7qkss18pbq6gu3skcgl9e9bn3lltc.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.19599645200-73t7qkss18pbq6gu3skcgl9e9bn3lltc</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

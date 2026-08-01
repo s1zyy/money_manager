@@ -96,7 +96,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ? auth.currentUserName![0].toUpperCase()
         : '?';
 
-    return Scaffold(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -271,6 +273,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ],
         ),
       ),
+    ),
     );
   }
 

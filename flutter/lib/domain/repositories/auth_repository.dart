@@ -7,4 +7,6 @@ abstract class AuthRepository {
   Future<bool> hasToken();
   Future<Map<String, dynamic>> validateInviteToken(String token);
   Future<AuthResult> claimInviteWithLogin(String token, String password);
+  Future<AuthResult> googleSignIn(String idToken);
+  Future<AuthResult> appleSignIn(String identityToken, String? name);
 }

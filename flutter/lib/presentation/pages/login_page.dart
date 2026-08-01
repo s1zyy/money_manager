@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/core/widgets/google_logo_painter.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/register_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
@@ -32,6 +34,22 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onAppleSignIn(AuthProvider auth) async {
+    final success = await auth.appleSignIn();
+    if (!mounted) return;
+    if (success) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const TripsPage()));
+    }
+  }
+
+  Future<void> _onGoogleSignIn(AuthProvider auth) async {
+    final success = await auth.googleSignIn();
+    if (!mounted) return;
+    if (success) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const TripsPage()));
+    }
   }
 
   Future<void> _onLoginPressed(AuthProvider auth, AppLocalizations l10n) async {
@@ -106,7 +124,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                // Форма
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
                   child: Form(
@@ -149,13 +166,54 @@ class _LoginPageState extends State<LoginPage> {
                               ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
                               : FilledButton(
                                   onPressed: () => _onLoginPressed(auth, l10n),
-                                  child: Text(l10n.login, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                  child: Text(l10n.login, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                                 ),
                         ),
                         if (auth.errorMessage != null) ...[
                           const SizedBox(height: 10),
                           Text(auth.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
                         ],
+                        const SizedBox(height: 20),
+                        _buildSocialDivider(),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 64,
+                              height: 64,
+                              child: OutlinedButton(
+                                onPressed: auth.isLoading ? null : () => _onGoogleSignIn(auth),
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.zero,
+                                  side: const BorderSide(color: Colors.black, width: 0.8),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                child: _googleIcon(),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            SizedBox(
+                              width: 64,
+                              height: 64,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: OverflowBox(
+                                  maxWidth: 80,
+                                  alignment: Alignment.center,
+                                  child: SignInWithAppleButton(
+                                    onPressed: auth.isLoading ? () {} : () => _onAppleSignIn(auth),
+                                    text: '',
+                                    style: SignInWithAppleButtonStyle.black,
+                                    borderRadius: BorderRadius.circular(16),
+                                    height: 64,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterPage())),
@@ -176,6 +234,23 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  Widget _buildSocialDivider() {
+    final l10n = AppLocalizations.of(context)!;
+    return Row(children: [
+      const Expanded(child: Divider()),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Text(l10n.orDivider, style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+      ),
+      const Expanded(child: Divider()),
+    ]);
+  }
+
+  Widget _googleIcon() => SizedBox(
+    width: 24, height: 24,
+    child: CustomPaint(painter: GoogleLogoPainter()),
+  );
 
   Widget _buildField({
     required TextEditingController controller,

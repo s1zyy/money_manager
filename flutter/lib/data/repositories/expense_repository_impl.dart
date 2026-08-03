@@ -47,6 +47,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     List<String>? newParticipantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     return await remoteDataSource.updateExpense(
       tripId: tripId,
@@ -57,6 +58,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       newParticipantIds: newParticipantIds,
       customShares: customShares,
       description: description,
+      isPrepaid: isPrepaid,
     );
   }
 

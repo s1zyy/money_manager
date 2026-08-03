@@ -84,6 +84,7 @@
   "expenses": "Витрати",
   "addExpense": "Додати витрату",
   "addNewExpense": "Нова витрата",
+  "editExpense": "Редагувати витрату",
   "saveExpense": "Зберегти витрату",
   "amount": "Сума",
   "description": "Опис",

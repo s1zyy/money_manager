@@ -108,6 +108,7 @@
   "expenses": "费用",
   "addExpense": "添加费用",
   "addNewExpense": "新增费用",
+  "editExpense": "编辑费用",
   "saveExpense": "保存费用",
   "amount": "金额",
   "description": "描述",

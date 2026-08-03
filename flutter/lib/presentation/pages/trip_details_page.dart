@@ -7,6 +7,7 @@ import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/entities/trip.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/add_expense_page.dart';
+import 'package:money_manager/presentation/pages/update_expense_page.dart';
 import 'package:money_manager/presentation/pages/settlement_page.dart';
 import 'package:money_manager/presentation/pages/trip_settings_page.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
@@ -28,6 +29,7 @@ class TripDetailsPage extends StatefulWidget {
 
 class _TripDetailsPageState extends State<TripDetailsPage> {
   final Map<String, bool> _expandedOverrides = {};
+  bool _prepaidExpanded = true;
 
   String _dayKey(DateTime day) =>
       '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
@@ -408,9 +410,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     final cs = currencySymbol(provider.dashboard?.trip.currency ?? 'EUR');
     final grouped = provider.expensesByDay;
     final days = grouped.keys.toList();
+    final startDate = provider.dashboard?.trip.startDate;
+    final isUpcoming = startDate != null && startDate.dateOnly.isAfter(DateTime.now().dateOnly);
+
+    final prepaid = provider.prepaidExpenses;
 
     return Column(
-      children: days.map((day) {
+      children: [
+      ...days.map((day) {
         final dayExpenses = grouped[day]!;
         final dayTotal = dayExpenses.fold(0.0, (sum, e) => sum + provider.myShareOf(e));
         final dateStr = '${day.day.toString().padLeft(2, '0')}.${day.month.toString().padLeft(2, '0')}.${day.year}';
@@ -534,7 +541,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                               provider.deleteExpense(widget.tripId, expense.id);
                               showSuccessOverlay(context, l10n.expenseDeleted);
                             },
-                            child: Container(
+                            child: GestureDetector(
+                              onTap: () => Navigator.push(context, MaterialPageRoute(
+                                builder: (_) => ChangeNotifierProvider.value(
+                                  value: provider,
+                                  child: UpdateExpensePage(tripId: widget.tripId, expense: expense, forcePrepaid: isUpcoming),
+                                ),
+                              )),
+                              child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
@@ -575,6 +589,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                 ],
                               ),
                             ),
+                            ),
                           );
                         }).toList(),
                       )
@@ -583,7 +598,77 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
             ),
           ],
         );
-      }).toList(),
+      }),
+      if (prepaid.isNotEmpty) ...[
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () => setState(() => _prepaidExpanded = !_prepaidExpanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              children: [
+                AnimatedRotation(
+                  turns: _prepaidExpanded ? 0.25 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: const Icon(Icons.chevron_right, size: 20, color: AppTheme.primary),
+                ),
+                const SizedBox(width: 6),
+                const Icon(Icons.credit_card_outlined, size: 14, color: AppTheme.textSecondary),
+                const SizedBox(width: 6),
+                Text(l10n.prepaidExpenses, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textSecondary, letterSpacing: 0.5)),
+              ],
+            ),
+          ),
+        ),
+        if (_prepaidExpanded) ...prepaid.map((expense) {
+          final payerName = expense.payerId != null ? provider.getParticipantName(expense.payerId!) : l10n.eachPaidOwn;
+          return GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(
+              builder: (_) => ChangeNotifierProvider.value(
+                value: provider,
+                child: UpdateExpensePage(tripId: provider.dashboard!.trip.id, expense: expense, forcePrepaid: isUpcoming),
+              ),
+            )),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.primary.withValues(alpha: 0.15)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42, height: 42,
+                    decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                    child: const Icon(Icons.credit_card_outlined, color: AppTheme.primary, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(expense.description, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.textPrimary)),
+                        const SizedBox(height: 2),
+                        Text(l10n.paidBy(payerName), style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('$cs${expense.amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.textPrimary)),
+                      Text('${l10n.myShare}: $cs${provider.myShareOf(expense).toStringAsFixed(2)}', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ],
+      ],
     );
   }
 
@@ -591,16 +676,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   void _onAddExpense(BuildContext context, TripDashboardProvider provider, AppLocalizations l10n) {
     final startDate = provider.dashboard?.trip.startDate;
-    if (startDate != null && startDate.dateOnly.isAfter(DateTime.now().dateOnly)) {
-      showErrorOverlay(context, l10n.tripNotStarted);
-      return;
-    }
+    final isUpcoming = startDate != null && startDate.dateOnly.isAfter(DateTime.now().dateOnly);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: provider,
-          child: AddExpensePage(tripId: widget.tripId),
+          child: AddExpensePage(tripId: widget.tripId, forcePrepaid: isUpcoming),
         ),
       ),
     );

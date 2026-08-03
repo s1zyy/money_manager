@@ -11,7 +11,8 @@ import 'package:money_manager/presentation/providers/trip_dashboard_provider.dar
 
 class AddExpensePage extends StatefulWidget {
   final String tripId;
-  const AddExpensePage({Key? key, required this.tripId}) : super(key: key);
+  final bool forcePrepaid;
+  const AddExpensePage({Key? key, required this.tripId, this.forcePrepaid = false}) : super(key: key);
 
   @override
   State<AddExpensePage> createState() => _AddExpensePageState();
@@ -29,7 +30,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   String _splitMode = 'EQUAL';
   bool _eachPaidOwn = false;
-  bool _isPrepaid = false;
+  late bool _isPrepaid;
 
   final List<String> _selectedParticipantIds = [];
   final Map<String, TextEditingController> _shareControllers = {};
@@ -50,6 +51,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   @override
   void initState() {
     super.initState();
+    _isPrepaid = widget.forcePrepaid;
     _amountController.addListener(_onAmountChanged);
   }
 
@@ -226,7 +228,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         const SizedBox(height: 12),
 
                         GestureDetector(
-                          onTap: () => setState(() => _isPrepaid = !_isPrepaid),
+                          onTap: widget.forcePrepaid ? null : () => setState(() => _isPrepaid = !_isPrepaid),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
@@ -246,7 +248,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                   ],
                                 ),
                                 const Spacer(),
-                                Switch(value: _isPrepaid, onChanged: (val) => setState(() => _isPrepaid = val), activeColor: AppTheme.primary),
+                                Switch(value: _isPrepaid, onChanged: widget.forcePrepaid ? null : (val) => setState(() => _isPrepaid = val), activeColor: AppTheme.primary),
                               ],
                             ),
                           ),

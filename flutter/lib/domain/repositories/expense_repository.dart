@@ -24,6 +24,7 @@ abstract class ExpenseRepository {
     List<String>? newParticipantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   });
 
   Future<void> deleteExpense(String tripId, String expenseId);

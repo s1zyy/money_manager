@@ -108,6 +108,7 @@
   "expenses": "Despesas",
   "addExpense": "Adicionar despesa",
   "addNewExpense": "Nova despesa",
+  "editExpense": "Editar despesa",
   "saveExpense": "Salvar despesa",
   "amount": "Valor",
   "description": "Descrição",

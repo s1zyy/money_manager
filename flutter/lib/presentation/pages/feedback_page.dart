@@ -45,7 +45,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
       backgroundColor: AppTheme.background,
       body: Column(
         children: [
@@ -148,6 +150,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
           ),
         ],
       ),
+    ),
     );
   }
 

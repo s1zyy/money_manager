@@ -112,6 +112,7 @@
   "expenses": "Expenses",
   "addExpense": "Add Expense",
   "addNewExpense": "Add New Expense",
+  "editExpense": "Edit Expense",
   "saveExpense": "Save Expense",
   "amount": "Amount",
   "description": "Description",

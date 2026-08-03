@@ -84,6 +84,7 @@
   "expenses": "Расходы",
   "addExpense": "Добавить расход",
   "addNewExpense": "Новый расход",
+  "editExpense": "Редактировать расход",
   "saveExpense": "Сохранить расход",
   "amount": "Сумма",
   "description": "Описание",

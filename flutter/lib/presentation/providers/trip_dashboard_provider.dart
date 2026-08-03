@@ -156,6 +156,44 @@ class TripDashboardProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateExpense({
+    required String tripId,
+    required String expenseId,
+    required double amount,
+    DateTime? date,
+    required String splitMode,
+    String? payerId,
+    List<String>? participantIds,
+    Map<String, double>? customShares,
+    required String description,
+    bool isPrepaid = false,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await updateExpenseUseCase(
+        tripId: tripId,
+        expenseId: expenseId,
+        amount: amount,
+        date: date ?? DateTime.now(),
+        splitMode: splitMode,
+        newParticipantIds: participantIds,
+        customShares: customShares,
+        description: description,
+        isPrepaid: isPrepaid,
+      );
+      await loadDashboard(tripId);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteExpense(String tripId, String expenseId) async {
     if (_dashboard == null) return;
 

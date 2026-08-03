@@ -108,6 +108,7 @@
   "expenses": "Ausgaben",
   "addExpense": "Ausgabe hinzufügen",
   "addNewExpense": "Neue Ausgabe",
+  "editExpense": "Ausgabe bearbeiten",
   "saveExpense": "Ausgabe speichern",
   "amount": "Betrag",
   "description": "Beschreibung",

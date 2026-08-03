@@ -471,7 +471,9 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
   }
 
   Widget _buildConfirmStep(BuildContext context, AppLocalizations l10n) {
-    return Column(
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _handle(),
@@ -527,6 +529,7 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
         const SizedBox(height: 10),
         _cancelButton(context, l10n, onTap: () => setState(() { _choice = null; _confirmController.clear(); })),
       ],
+    ),
     );
   }
 

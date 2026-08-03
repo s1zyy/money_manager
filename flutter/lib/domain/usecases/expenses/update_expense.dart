@@ -15,6 +15,7 @@ class UpdateExpenseUseCase {
     List<String>? newParticipantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     return await repository.updateExpense(
       tripId: tripId,
@@ -25,6 +26,7 @@ class UpdateExpenseUseCase {
       newParticipantIds: newParticipantIds,
       customShares: customShares,
       description: description,
+      isPrepaid: isPrepaid,
     );
   }
 }

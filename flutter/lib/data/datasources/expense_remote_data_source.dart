@@ -25,6 +25,7 @@ abstract class ExpenseRemoteDataSource {
     List<String>? newParticipantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   });
   Future<void> deleteExpense(String tripId, String expenseId);
 }
@@ -88,6 +89,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     List<String>? newParticipantIds,
     Map<String, double>? customShares,
     required String description,
+    bool isPrepaid = false,
   }) async {
     try {
       final body = <String, dynamic>{
@@ -95,6 +97,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
         'date': date.toIso8601String().split('T')[0],
         'splitMode': splitMode,
         'description': description,
+        'isPrepaid': isPrepaid,
       };
       if (splitMode == 'EQUAL') {
         body['newParticipantIds'] = newParticipantIds;

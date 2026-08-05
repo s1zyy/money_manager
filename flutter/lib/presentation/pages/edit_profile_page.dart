@@ -6,7 +6,10 @@ import 'package:money_manager/domain/usecases/participant/full_delete_account.da
 import 'package:money_manager/injection_container.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
+import 'package:money_manager/presentation/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -88,13 +91,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() { _passwordSaving = false; });
   }
 
+  Future<void> _pickAndUploadAvatar() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    if (picked == null || !mounted) return;
+
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picked.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Avatar',
+          lockAspectRatio: true,
+          cropStyle: CropStyle.circle,
+        ),
+        IOSUiSettings(
+          title: 'Crop Avatar',
+          aspectRatioLockEnabled: true,
+          cropStyle: CropStyle.circle,
+        ),
+      ],
+    );
+    if (cropped == null || !mounted) return;
+
+    final profile = context.read<ProfileProvider>();
+    final l10n = AppLocalizations.of(context)!;
+    final success = await profile.uploadAvatar(cropped.path);
+    if (!mounted) return;
+    if (success) {
+      if (profile.avatarUrl != null) {
+        context.read<AuthProvider>().setAvatarUrl(profile.avatarUrl!);
+      }
+      showSuccessOverlay(context, l10n.profileUpdated);
+    } else {
+      showErrorOverlay(context, profile.errorMessage ?? l10n.somethingWentWrong);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final auth = context.watch<AuthProvider>();
-    final initial = (auth.currentUserName?.isNotEmpty == true)
-        ? auth.currentUserName![0].toUpperCase()
-        : '?';
+    final initial = (auth.currentUserName?.isNotEmpty == true) ? auth.currentUserName![0].toUpperCase() : '?';
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -114,12 +152,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
-              child: CircleAvatar(
-                radius: 44,
-                backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
-                child: Text(initial,
-                    style: const TextStyle(
-                        fontSize: 36, fontWeight: FontWeight.bold, color: AppTheme.primary)),
+              child: GestureDetector(
+                onTap: _pickAndUploadAvatar,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 44,
+                      backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
+                      backgroundImage: auth.currentUserAvatarUrl != null
+                          ? NetworkImage(auth.currentUserAvatarUrl!)
+                          : null,
+                      child: auth.currentUserAvatarUrl == null
+                          ? Text(initial, style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppTheme.primary))
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0, right: 0,
+                      child: Container(
+                        width: 26, height: 26,
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.camera_alt, color: Colors.white, size: 14),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 32),

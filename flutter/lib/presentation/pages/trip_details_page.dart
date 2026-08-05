@@ -292,6 +292,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     final balance = p.balance;
                     final isPositive = balance >= 0;
                     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+                    final avatarUrl = provider.getParticipantAvatarUrl(p.participantId);
 
                     return Container(
                       margin: const EdgeInsets.only(right: 10),
@@ -307,7 +308,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           CircleAvatar(
                             radius: 14,
                             backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
-                            child: Text(initial, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primary)),
+                            backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                            child: avatarUrl == null ? Text(initial, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primary)) : null,
                           ),
                           const SizedBox(height: 4),
                           Text(name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppTheme.textPrimary)),
@@ -746,6 +748,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           final isMe = id == myId;
                           final isVirtual = provider.isVirtualParticipant(id);
                           final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+                          final avatarUrl = entry.value.avatarUrl;
 
                           final card = Container(
                             margin: const EdgeInsets.only(bottom: 8),
@@ -768,9 +771,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                       backgroundColor: isVirtual
                                           ? Colors.grey.shade200
                                           : AppTheme.primary.withValues(alpha: 0.15),
+                                      backgroundImage: (!isVirtual && avatarUrl != null) ? NetworkImage(avatarUrl) : null,
                                       child: isVirtual
                                           ? const Icon(Icons.person_outline, color: AppTheme.textSecondary, size: 20)
-                                          : Text(initial, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primary, fontSize: 15)),
+                                          : (avatarUrl == null ? Text(initial, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primary, fontSize: 15)) : null),
                                     ),
                                     if (isEntryOwner)
                                       Positioned(

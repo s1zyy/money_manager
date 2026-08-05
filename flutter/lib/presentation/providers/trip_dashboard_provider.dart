@@ -117,6 +117,7 @@ class TripDashboardProvider extends ChangeNotifier {
 
   String getParticipantName(String id) => _participantsMap[id]?.name ?? 'Unknown';
   bool isVirtualParticipant(String id) => _participantsMap[id]?.isVirtual ?? false;
+  String? getParticipantAvatarUrl(String id) => _participantsMap[id]?.avatarUrl;
 
   Future<bool> addExpense({
     required String tripId,

@@ -32,6 +32,7 @@ import 'package:money_manager/domain/usecases/participant/update_profile.dart';
 import 'package:money_manager/domain/usecases/participant/change_password.dart';
 import 'package:money_manager/domain/usecases/participant/delete_account.dart';
 import 'package:money_manager/domain/usecases/participant/full_delete_account.dart';
+import 'package:money_manager/domain/usecases/participant/upload_avatar.dart';
 import 'package:money_manager/domain/usecases/trip/add_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/trip/invite_virtual_participant.dart';
 import 'package:money_manager/domain/usecases/auth/claim_invite_with_login.dart';
@@ -56,6 +57,7 @@ import 'package:money_manager/domain/usecases/trip/update_participant_budget.dar
 import 'package:money_manager/presentation/pages/login_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/locale_provider.dart';
+import 'package:money_manager/presentation/providers/profile_provider.dart';
 import 'package:money_manager/presentation/providers/trip_dashboard_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 
@@ -216,6 +218,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
     () => FullDeleteAccountUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => UploadAvatarUseCase(repository: sl()),
+  );
+
   //-----
 
   //Auth + login
@@ -239,6 +245,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
       changePasswordUseCase: sl(),
       getProfileUseCase: sl(),
     ),
+  );
+
+  sl.registerLazySingleton(
+    () => ProfileProvider(uploadAvatarUseCase: sl()),
   );
 
   sl.registerLazySingleton(

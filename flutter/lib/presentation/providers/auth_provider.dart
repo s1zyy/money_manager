@@ -53,16 +53,57 @@ class AuthProvider extends ChangeNotifier {
 
   String? _currentUserEmail;
   String? _currentUserName;
+  String? _currentUserAvatarUrl;
   String? get currentUserEmail => _currentUserEmail;
   String? get currentUserName => _currentUserName;
+  String? get currentUserAvatarUrl => _currentUserAvatarUrl;
+
+  void setAvatarUrl(String url) {
+    _currentUserAvatarUrl = url;
+    notifyListeners();
+  }
 
   Future<void> loadProfile() async {
     try {
       final profile = await getProfileUseCase.call();
       _currentUserName = profile.name;
       _currentUserEmail = profile.email;
+      _currentUserAvatarUrl = profile.avatarUrl;
       notifyListeners();
     } catch (_) {}
+  }
+
+  Future<bool> updateProfile(String name) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final updatedName = await updateProfileUseCase.call(name);
+      _currentUserName = updatedName;
+      return true;
+    } catch (e) {
+      _errorMessage = _clean(e);
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await changePasswordUseCase.call(currentPassword, newPassword);
+      return true;
+    } catch (e) {
+      _errorMessage = _clean(e);
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> login(String email, String password) async {
@@ -72,8 +113,10 @@ class AuthProvider extends ChangeNotifier {
       final result = await loginUseCase.call(email, password);
       _currentUserEmail = result.email.isNotEmpty ? result.email : email;
       _currentUserName = result.name.isNotEmpty ? result.name : null;
+      _currentUserAvatarUrl = null;
       _isLoading = false;
       notifyListeners();
+      loadProfile();
       return true;
     } catch (e) {
       _isLoading = false;
@@ -91,8 +134,10 @@ class AuthProvider extends ChangeNotifier {
       final result = await googleSignInUseCase.call();
       _currentUserEmail = result.email;
       _currentUserName = result.name;
+      _currentUserAvatarUrl = null;
       _isLoading = false;
       notifyListeners();
+      loadProfile();
       return true;
     } catch (e) {
       _isLoading = false;
@@ -111,8 +156,10 @@ class AuthProvider extends ChangeNotifier {
       final result = await appleSignInUseCase.call();
       _currentUserEmail = result.email;
       _currentUserName = result.name;
+      _currentUserAvatarUrl = null;
       _isLoading = false;
       notifyListeners();
+      loadProfile();
       return true;
     } catch (e) {
       _isLoading = false;
@@ -170,41 +217,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await claimInviteWithLoginUseCase.call(token, password);
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _isLoading = false;
-      _errorMessage = _clean(e);
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> updateProfile(String name) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-    try {
-      final updatedName = await updateProfileUseCase.call(name);
-      _currentUserName = updatedName;
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _isLoading = false;
-      _errorMessage = _clean(e);
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> changePassword(String currentPassword, String newPassword) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-    try {
-      await changePasswordUseCase.call(currentPassword, newPassword);
       _isLoading = false;
       notifyListeners();
       return true;

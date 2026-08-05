@@ -62,5 +62,9 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TripPace needs access to your photos to set a profile avatar.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>TripPace needs camera access to take a profile photo.</string>
 </dict>
 </plist>

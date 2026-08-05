@@ -5,5 +5,5 @@ class GetProfileUseCase {
 
   GetProfileUseCase({required this.repository});
 
-  Future<({String name, String email})> call() => repository.getMe();
+  Future<({String name, String email, String? avatarUrl})> call() => repository.getMe();
 }

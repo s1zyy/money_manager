@@ -18,6 +18,7 @@ class ProfilePage extends StatelessWidget {
     final name = auth.currentUserName ?? '';
     final email = auth.currentUserEmail ?? '';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    final avatarUrl = auth.currentUserAvatarUrl;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -54,20 +55,10 @@ class ProfilePage extends StatelessWidget {
                         CircleAvatar(
                           radius: 44,
                           backgroundColor: Colors.white.withValues(alpha: 0.2),
-                          child: Text(initial, style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white)),
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4)],
-                            ),
-                            child: const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.primary),
-                          ),
+                          backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                          child: avatarUrl == null
+                              ? Text(initial, style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white))
+                              : null,
                         ),
                       ],
                     ),

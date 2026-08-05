@@ -12,7 +12,7 @@ class ParticipantRepositoryImpl implements ParticipantRepository{
   }
 
   @override
-  Future<({String name, String email})> getMe() async {
+  Future<({String name, String email, String? avatarUrl})> getMe() async {
     return participantRemoteDataSource.getMe();
   }
 
@@ -34,5 +34,10 @@ class ParticipantRepositoryImpl implements ParticipantRepository{
   @override
   Future<void> fullDeleteAccount() async {
     return participantRemoteDataSource.fullDeleteAccount();
+  }
+
+  @override
+  Future<String> uploadAvatar(String filePath) async {
+    return participantRemoteDataSource.uploadAvatar(filePath);
   }
 }

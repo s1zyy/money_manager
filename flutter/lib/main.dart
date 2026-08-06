@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/domain/usecases/auth/check_auth.dart';
+import 'package:money_manager/core/deep_link_service.dart';
 import 'package:money_manager/injection_container.dart' as di;
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/presentation/pages/splash_page.dart';
@@ -18,6 +19,7 @@ void main() async {
   
 
   await di.init(navigatorKey: navigatorKey);
+  di.sl<DeepLinkService>().init();
 
   runApp(
     MultiProvider(

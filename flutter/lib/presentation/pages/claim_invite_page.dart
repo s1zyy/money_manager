@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
 class ClaimInvitePage extends StatefulWidget {
-  const ClaimInvitePage({super.key});
+  final String? initialToken;
+  const ClaimInvitePage({super.key, this.initialToken});
 
   @override
   State<ClaimInvitePage> createState() => _ClaimInvitePageState();
@@ -30,6 +31,10 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthProvider>().clearError();
+      if (widget.initialToken != null) {
+        _codeController.text = widget.initialToken!;
+        _onValidateCode(context.read<AuthProvider>());
+      }
     });
   }
 
@@ -130,7 +135,6 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Шаг 1: ввод кода
                       TextField(
                         controller: _codeController,
                         enabled: !_codeValidated,

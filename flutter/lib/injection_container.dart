@@ -55,6 +55,7 @@ import 'package:money_manager/domain/usecases/trip/update_trip.dart';
 import 'package:money_manager/domain/usecases/trip/update_my_budget.dart';
 import 'package:money_manager/domain/usecases/trip/update_participant_budget.dart';
 import 'package:money_manager/presentation/pages/login_page.dart';
+import 'package:money_manager/core/deep_link_service.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/locale_provider.dart';
 import 'package:money_manager/presentation/providers/profile_provider.dart';
@@ -249,6 +250,10 @@ Future<void> init({required GlobalKey<NavigatorState> navigatorKey}) async {
 
   sl.registerLazySingleton(
     () => ProfileProvider(uploadAvatarUseCase: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => DeepLinkService(navigatorKey: navigatorKey),
   );
 
   sl.registerLazySingleton(

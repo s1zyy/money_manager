@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:money_manager/core/constants/currencies.dart';
 import 'package:money_manager/core/date_time_extensions.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
@@ -854,28 +855,55 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                               const SizedBox(height: 12),
                               Text(joinCode, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 6, color: Colors.white)),
                               const SizedBox(height: 14),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(ClipboardData(text: joinCode));
-                                  Navigator.pop(sheetCtx);
-                                  showSuccessOverlay(context, l10n.joinCodeCopied);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Clipboard.setData(ClipboardData(text: joinCode));
+                                      Navigator.pop(sheetCtx);
+                                      showSuccessOverlay(context, l10n.joinCodeCopied);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.copy, color: Colors.white, size: 16),
+                                          const SizedBox(width: 8),
+                                          Text(l10n.copyCode, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(Icons.copy, color: Colors.white, size: 16),
-                                      const SizedBox(width: 8),
-                                      Text(l10n.copyCode, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                                    ],
+                                  const SizedBox(width: 10),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Share.share('Join my trip in TripPace!\n\nTap to open: trippace://join?code=$joinCode\n\nOr enter code manually: $joinCode');
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.share, color: Colors.white, size: 16),
+                                          const SizedBox(width: 8),
+                                          const Text('Share', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),

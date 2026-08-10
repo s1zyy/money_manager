@@ -21,16 +21,20 @@ class DeepLinkService {
   }
 
   void _handle(Uri uri) {
-    if (uri.scheme != 'trippace') return;
     final context = navigatorKey.currentContext;
     if (context == null) return;
 
-    switch (uri.host) {
+    String? action;
+    if (uri.scheme == 'trippace') {
+      action = uri.host;
+    } else if (uri.scheme == 'https' && uri.host == 'trippace.app') {
+      action = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+    }
+
+    switch (action) {
       case 'join':
         final code = uri.queryParameters['code'];
-        if (code != null) {
-          showJoinTripSheet(context, initialCode: code);
-        }
+        if (code != null) showJoinTripSheet(context, initialCode: code);
       case 'invite':
         final token = uri.queryParameters['token'];
         if (token != null) {

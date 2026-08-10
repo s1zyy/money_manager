@@ -8,7 +8,7 @@ class DioClient {
   DioClient() : dio = Dio() {
     final baseUrl = _prodUrl.isNotEmpty
         ? _prodUrl
-        : 'https://trippace.up.railway.app/api';
+        : 'https://trippace.app/api';
 
     dio.options = BaseOptions(
       baseUrl: baseUrl,

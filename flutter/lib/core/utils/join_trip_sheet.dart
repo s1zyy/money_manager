@@ -3,10 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:money_manager/core/utils/overlay_notification.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/presentation/providers/auth_provider.dart';
 import 'package:money_manager/presentation/providers/trips_provider.dart';
 import 'package:provider/provider.dart';
 
 void showJoinTripSheet(BuildContext context, {String? initialCode}) {
+  final isLoggedIn = context.read<AuthProvider>().currentUserEmail != null;
+  if (!isLoggedIn) {
+    showErrorOverlay(context, 'Please log in to join a trip');
+    return;
+  }
+
   final codeController = TextEditingController(text: initialCode ?? '');
   final budgetController = TextEditingController();
   final l10n = AppLocalizations.of(context)!;
@@ -138,7 +145,9 @@ void showJoinTripSheet(BuildContext context, {String? initialCode}) {
                           if (!context.mounted) return;
                           showSuccessOverlay(context, l10n.joinedSuccessfully);
                         } else {
-                          showErrorOverlay(sheetContext, provider.joinError ?? l10n.errorJoiningTrip);
+                          Navigator.pop(sheetContext);
+                          if (!context.mounted) return;
+                          showErrorOverlay(context, provider.joinError ?? l10n.errorJoiningTrip);
                         }
                       }
                     },

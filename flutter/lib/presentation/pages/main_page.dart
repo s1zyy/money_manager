@@ -365,8 +365,9 @@ class _TripsPageState extends State<TripsPage> with SingleTickerProviderStateMix
                 subtitle: l10n.youWillBeOwner,
                 onTap: () {
                   Navigator.pop(modalContext);
+                  final tripsProvider = pageContext.read<TripsProvider>();
                   Navigator.push(pageContext, MaterialPageRoute(builder: (_) => const CreateTripPage()))
-                      .then((_) => pageContext.read<TripsProvider>().clearError());
+                      .then((_) => tripsProvider.clearError());
                 },
               ),
               const SizedBox(height: 12),

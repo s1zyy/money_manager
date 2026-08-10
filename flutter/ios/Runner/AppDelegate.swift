@@ -10,4 +10,16 @@ import UIKit
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+
+  override func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    _ = super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+      return true
+    }
+    return false
+  }
 }

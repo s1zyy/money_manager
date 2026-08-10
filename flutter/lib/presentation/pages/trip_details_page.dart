@@ -490,7 +490,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                           width: 52,
                                           height: 52,
                                           decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(0.1),
+                                            color: Colors.red.withValues(alpha: 0.1),
                                             shape: BoxShape.circle,
                                           ),
                                           child: const Icon(Icons.delete_outline, color: Colors.red, size: 26),
@@ -882,24 +882,32 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 10),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Share.share('Join my trip in TripPace!\n\nTap to open: trippace://join?code=$joinCode\n\nOr enter code manually: $joinCode');
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withValues(alpha: 0.2),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(Icons.share, color: Colors.white, size: 16),
-                                          const SizedBox(width: 8),
-                                          const Text('Share', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                                        ],
+                                  Builder(
+                                    builder: (btnCtx) => GestureDetector(
+                                      onTap: () async {
+                                        final box = btnCtx.findRenderObject() as RenderBox?;
+                                        final pos = box?.localToGlobal(Offset.zero) ?? Offset.zero;
+                                        final size = box?.size ?? const Size(100, 44);
+                                        await Share.share(
+                                          'Join my trip in TripPace!\n\nhttps://trippace.app/join?code=$joinCode\n\nOr enter code manually: $joinCode',
+                                          sharePositionOrigin: pos & size,
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.share, color: Colors.white, size: 16),
+                                            const SizedBox(width: 8),
+                                            const Text('Share', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

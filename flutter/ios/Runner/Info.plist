@@ -12,6 +12,14 @@
 				<string>trippace</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.19599645200-73t7qkss18pbq6gu3skcgl9e9bn3lltc</string>
+			</array>
+		</dict>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
@@ -60,19 +68,10 @@
 	<array>
 		<string>mailto</string>
 	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>GIDClientID</key>
 	<string>19599645200-73t7qkss18pbq6gu3skcgl9e9bn3lltc.apps.googleusercontent.com</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.19599645200-73t7qkss18pbq6gu3skcgl9e9bn3lltc</string>
-			</array>
-		</dict>
-	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>TripPace needs access to your photos to set a profile avatar.</string>
 	<key>NSCameraUsageDescription</key>

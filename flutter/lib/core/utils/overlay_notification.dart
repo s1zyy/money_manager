@@ -32,6 +32,8 @@ void _showOverlay(BuildContext context, String message, Color color, IconData ic
       ),
     ),
   );
-  Overlay.of(context).insert(entry);
+  final overlay = Navigator.of(context, rootNavigator: true).overlay;
+  if (overlay == null) return;
+  overlay.insert(entry);
   Future.delayed(const Duration(seconds: 2), entry.remove);
 }

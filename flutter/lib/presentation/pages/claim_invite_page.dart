@@ -175,9 +175,9 @@ class _ClaimInvitePageState extends State<ClaimInvitePage> {
                         Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.08),
+                            color: AppTheme.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppTheme.primary.withOpacity(0.3)),
+                            border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             children: [

@@ -9,6 +9,8 @@ abstract class AuthRemoteDataSource {
   Future<AuthModel> claimInviteWithLogin(String token, String password);
   Future<AuthModel> googleSignIn(String idToken);
   Future<AuthModel> appleSignIn(String identityToken, String? name);
+  Future<void> forgotPassword(String email);
+  Future<void> resetPassword(String token, String newPassword);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -87,6 +89,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'name': name,
       });
       return AuthModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    try {
+      await dio.post('/auth/forgot-password', data: {'email': email});
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String token, String newPassword) async {
+    try {
+      await dio.post('/auth/reset-password', data: {'token': token, 'newPassword': newPassword});
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e));
     }

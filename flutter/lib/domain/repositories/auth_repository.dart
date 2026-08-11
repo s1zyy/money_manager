@@ -9,4 +9,6 @@ abstract class AuthRepository {
   Future<AuthResult> claimInviteWithLogin(String token, String password);
   Future<AuthResult> googleSignIn(String idToken);
   Future<AuthResult> appleSignIn(String identityToken, String? name);
+  Future<void> forgotPassword(String email);
+  Future<void> resetPassword(String token, String newPassword);
 }

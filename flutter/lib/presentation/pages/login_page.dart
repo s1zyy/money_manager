@@ -3,6 +3,7 @@ import 'package:money_manager/core/widgets/google_logo_painter.dart';
 import 'package:money_manager/core/theme/app_theme.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/presentation/pages/forgot_password_page.dart';
 import 'package:money_manager/presentation/pages/register_page.dart';
 import 'package:money_manager/presentation/pages/main_page.dart';
 import 'package:money_manager/presentation/providers/auth_provider.dart';
@@ -158,7 +159,15 @@ class _LoginPageState extends State<LoginPage> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 6),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordPage())),
+                            child: Text(l10n.forgotPassword, style: const TextStyle(color: AppTheme.primary, fontSize: 13)),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
                           height: 52,

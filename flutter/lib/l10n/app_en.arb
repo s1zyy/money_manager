@@ -282,5 +282,17 @@
   "activeTripLimitReached": "You've reached the limit of 10 active trips",
   "upcomingTripLimitReached": "You've reached the limit of 99 upcoming trips",
   "inviteAlreadySent": "Invite already sent to this participant",
-  "sendAgain": "Send again"
+  "sendAgain": "Send again",
+
+  "forgotPassword": "Forgot password?",
+  "forgotPasswordTitle": "Forgot password?",
+  "forgotPasswordSubtitle": "Enter your email and we'll send you a reset code.",
+  "sendResetCode": "Send reset code",
+  "alreadyHaveCode": "Already have a code?",
+  "resetPasswordTitle": "Set new password",
+  "resetPasswordSubtitle": "Enter the code from your email and choose a new password.",
+  "resetCode": "Reset code",
+  "enterResetCode": "Enter the code from the email",
+  "passwordChangedSuccess": "Password changed! Please log in.",
+  "passwordMin8": "Password must be at least 8 characters"
 }

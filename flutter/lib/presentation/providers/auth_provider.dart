@@ -5,6 +5,8 @@ import 'package:money_manager/domain/usecases/auth/google_sign_in.dart';
 import 'package:money_manager/domain/usecases/auth/login.dart';
 import 'package:money_manager/domain/usecases/auth/logout.dart';
 import 'package:money_manager/domain/usecases/auth/register.dart';
+import 'package:money_manager/domain/usecases/auth/forgot_password.dart';
+import 'package:money_manager/domain/usecases/auth/reset_password.dart';
 import 'package:money_manager/domain/usecases/auth/validate_invite_token.dart';
 import 'package:money_manager/domain/usecases/participant/change_password.dart';
 import 'package:money_manager/domain/usecases/participant/get_profile.dart';
@@ -23,6 +25,8 @@ class AuthProvider extends ChangeNotifier {
   final UpdateProfileUseCase updateProfileUseCase;
   final ChangePasswordUseCase changePasswordUseCase;
   final GetProfileUseCase getProfileUseCase;
+  final ForgotPasswordUseCase forgotPasswordUseCase;
+  final ResetPasswordUseCase resetPasswordUseCase;
 
   AuthProvider({
     required this.loginUseCase,
@@ -35,6 +39,8 @@ class AuthProvider extends ChangeNotifier {
     required this.updateProfileUseCase,
     required this.changePasswordUseCase,
     required this.getProfileUseCase,
+    required this.forgotPasswordUseCase,
+    required this.resetPasswordUseCase,
   });
 
   bool _isLoading = false;
@@ -217,6 +223,40 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await claimInviteWithLoginUseCase.call(token, password);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = _clean(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> forgotPassword(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await forgotPasswordUseCase.call(email);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = _clean(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> resetPassword(String token, String newPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await resetPasswordUseCase.call(token, newPassword);
       _isLoading = false;
       notifyListeners();
       return true;

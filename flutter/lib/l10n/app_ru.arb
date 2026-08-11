@@ -255,5 +255,17 @@
   "activeTripLimitReached": "Достигнут лимит в 10 активных поездок",
   "upcomingTripLimitReached": "Достигнут лимит в 99 предстоящих поездок",
   "inviteAlreadySent": "Приглашение этому участнику уже отправлено",
-  "sendAgain": "Отправить снова"
+  "sendAgain": "Отправить снова",
+
+  "forgotPassword": "Забыли пароль?",
+  "forgotPasswordTitle": "Забыли пароль?",
+  "forgotPasswordSubtitle": "Введите email и мы отправим вам код сброса.",
+  "sendResetCode": "Отправить код",
+  "alreadyHaveCode": "Уже есть код?",
+  "resetPasswordTitle": "Новый пароль",
+  "resetPasswordSubtitle": "Введите код из письма и выберите новый пароль.",
+  "resetCode": "Код сброса",
+  "enterResetCode": "Введите код из письма",
+  "passwordChangedSuccess": "Пароль изменён! Войдите в аккаунт.",
+  "passwordMin8": "Пароль должен содержать минимум 8 символов"
 }

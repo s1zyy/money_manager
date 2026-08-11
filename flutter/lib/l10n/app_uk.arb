@@ -255,5 +255,17 @@
   "activeTripLimitReached": "Досягнуто ліміт у 10 активних поїздок",
   "upcomingTripLimitReached": "Досягнуто ліміт у 99 майбутніх поїздок",
   "inviteAlreadySent": "Запрошення цьому учаснику вже надіслано",
-  "sendAgain": "Надіслати знову"
+  "sendAgain": "Надіслати знову",
+
+  "forgotPassword": "Забули пароль?",
+  "forgotPasswordTitle": "Забули пароль?",
+  "forgotPasswordSubtitle": "Введіть email і ми надішлемо вам код скидання.",
+  "sendResetCode": "Надіслати код",
+  "alreadyHaveCode": "Вже є код?",
+  "resetPasswordTitle": "Новий пароль",
+  "resetPasswordSubtitle": "Введіть код з листа і оберіть новий пароль.",
+  "resetCode": "Код скидання",
+  "enterResetCode": "Введіть код з листа",
+  "passwordChangedSuccess": "Пароль змінено! Увійдіть в акаунт.",
+  "passwordMin8": "Пароль має містити мінімум 8 символів"
 }

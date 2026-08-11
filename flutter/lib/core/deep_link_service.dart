@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:money_manager/core/utils/join_trip_sheet.dart';
 import 'package:money_manager/presentation/pages/claim_invite_page.dart';
+import 'package:money_manager/presentation/pages/reset_password_page.dart';
 
 class DeepLinkService {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -42,6 +43,11 @@ class DeepLinkService {
             MaterialPageRoute(builder: (_) => ClaimInvitePage(initialToken: token)),
           );
         }
+      case 'reset':
+        final token = uri.queryParameters['token'];
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => ResetPasswordPage(initialToken: token)),
+        );
     }
   }
 

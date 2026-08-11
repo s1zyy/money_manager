@@ -290,5 +290,17 @@
   "activeTripLimitReached": "Você atingiu o limite de 10 viagens ativas",
   "upcomingTripLimitReached": "Você atingiu o limite de 99 viagens futuras",
   "inviteAlreadySent": "Convite já enviado a este participante",
-  "sendAgain": "Enviar novamente"
+  "sendAgain": "Enviar novamente",
+
+  "forgotPassword": "Esqueceu a senha?",
+  "forgotPasswordTitle": "Esqueceu a senha?",
+  "forgotPasswordSubtitle": "Digite seu email e enviaremos um código de redefinição.",
+  "sendResetCode": "Enviar código",
+  "alreadyHaveCode": "Já tem um código?",
+  "resetPasswordTitle": "Nova senha",
+  "resetPasswordSubtitle": "Digite o código do email e escolha uma nova senha.",
+  "resetCode": "Código de redefinição",
+  "enterResetCode": "Digite o código do email",
+  "passwordChangedSuccess": "Senha alterada! Por favor faça login.",
+  "passwordMin8": "A senha deve ter pelo menos 8 caracteres"
 }

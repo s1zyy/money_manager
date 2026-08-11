@@ -59,4 +59,14 @@ class AuthRepositoryImpl implements AuthRepository {
     await localDataSource.saveToken(authModel.token);
     return authModel;
   }
+
+  @override
+  Future<void> forgotPassword(String email) {
+    return remoteDataSource.forgotPassword(email);
+  }
+
+  @override
+  Future<void> resetPassword(String token, String newPassword) {
+    return remoteDataSource.resetPassword(token, newPassword);
+  }
 }

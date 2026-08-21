@@ -70,10 +70,11 @@ Built from scratch with a clean Flutter architecture and a Spring Boot backend d
 | 💰 | Expense tracking with equal or custom splits |
 | 📊 | Live balance dashboard & settlement suggestions |
 | 📉 | Per-participant budget & daily limit tracking |
-| 🌍 | 7 languages — EN, RU, UK, DE, FR, ES, PT |
+| 🌍 | 8 languages — EN, RU, UK, DE, FR, ES, PT, ZH |
+| 🔑 | Forgot password — email reset link via deep link |
 | 🛡️ | App version enforcement with automatic update screen |
 | 🗑️ | Soft delete or full account deletion |
-| 📱 | iOS & Android |
+| 📱 | iOS & Android — targeting App Store & Google Play |
 
 ---
 
@@ -184,8 +185,11 @@ flutter build ipa --release
 
 | Page | Description |
 |---|---|
-| `SplashPage` | Animated splash screen |
-| `LoginPage` | Email + password login |
+| `OnboardingPage` | Animated onboarding for first-time users |
+| `SplashPage` | Splash screen — checks auth state on startup |
+| `LoginPage` | Email + password login, with "Forgot password?" link |
+| `ForgotPasswordPage` | Request password reset link via email |
+| `ResetPasswordPage` | Enter reset code & set new password (deep link aware) |
 | `RegisterPage` | New account creation |
 | `MainPage` | List of trips (Active / Upcoming / Archived) |
 | `CreateTripPage` | New trip form — name, dates, budget, currency |
@@ -193,7 +197,9 @@ flutter build ipa --release
 | `AddExpensePage` | Add / edit expense with equal or custom split |
 | `SettlementPage` | Settle up — minimum transfer suggestions |
 | `TripSettingsPage` | Trip info, participants, archive / delete |
+| `ProfilePage` | User profile overview |
 | `EditProfilePage` | Update name, change password, delete account |
+| `ClaimInvitePage` | Claim email invite — register or login to join as real participant |
 | `FeedbackPage` | Send bug report or feedback |
 | `UpdateRequiredPage` | Shown when app version is outdated |
 

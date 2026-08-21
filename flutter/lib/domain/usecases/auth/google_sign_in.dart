@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:money_manager/domain/entities/auth_result.dart';
 import 'package:money_manager/domain/repositories/auth_repository.dart';
@@ -12,13 +13,20 @@ class GoogleSignInUseCase {
 
   Future<AuthResult> call() async {
     final googleSignIn = GoogleSignIn(serverClientId: _webClientId);
-    final account = await googleSignIn.signIn();
-    if (account == null) throw Exception('Google sign in cancelled');
+    try {
+      final account = await googleSignIn.signIn();
+      if (account == null) throw Exception('Google sign in cancelled');
 
-    final auth = await account.authentication;
-    final idToken = auth.idToken;
-    if (idToken == null) throw Exception('Failed to get Google ID token');
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null) throw Exception('Failed to get Google ID token');
 
-    return await repository.googleSignIn(idToken);
+      return await repository.googleSignIn(idToken);
+    } on PlatformException catch (e) {
+      if (e.code == 'sign_in_failed' || e.message?.contains('access_denied') == true) {
+        throw Exception('Google sign in cancelled');
+      }
+      rethrow;
+    }
   }
 }
